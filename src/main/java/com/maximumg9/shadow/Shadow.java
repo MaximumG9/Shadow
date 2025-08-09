@@ -277,6 +277,7 @@ public class Shadow implements Tickable {
 
     public void broadcast(Text text) {
         this.server.getPlayerManager().broadcast(text, false);
+
     }
 
     public IndirectPlayer getIndirect(ServerPlayerEntity player) {
