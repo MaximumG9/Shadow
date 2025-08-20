@@ -55,7 +55,7 @@ public class LifeweaverHeart implements ItemUseCallback {
                     getShadow(world.getServer()).ERROR("Existing lifeweaver attribute modifier is not add value");
                     return null;
                 }
-                instance.updateModifier(
+                instance.overwritePersistentModifier(
                     new EntityAttributeModifier(
                         GetHeart.ATTR_ID,
                         healthIncrease + modifier.value(),

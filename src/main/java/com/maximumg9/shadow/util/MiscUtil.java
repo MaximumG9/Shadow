@@ -24,7 +24,7 @@ public abstract class MiscUtil {
     public static String padLeft(String original, char padding, int desiredLength) {
         if(original.length() >= desiredLength) return original;
         StringBuilder builder = new StringBuilder(original);
-        for (int i = 0; i < desiredLength - builder.length(); i++) {
+        for(int i = 0; i < desiredLength - builder.length(); i++) {
             builder.insert(0, padding);
         }
         return builder.toString();
@@ -50,10 +50,10 @@ public abstract class MiscUtil {
 
     public static ItemStack getItemWithContext(ItemRepresentable item, ScreenHandlerContext context) {
         return context.get(
-                        (world, blockPos) -> world.getRegistryManager()
-                )
-                .map(item::getAsItem)
-                .orElse(getErrorItem());
+                (world, blockPos) -> world.getRegistryManager()
+            )
+            .map(item::getAsItem)
+            .orElse(getErrorItem());
     }
 
     public static ItemStack getErrorItem() {
