@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface RoleFactory<T extends Role> {
     T makeRole(@Nullable IndirectPlayer player);
-
+    
     default T fromNBT(NbtCompound nbt, @Nullable IndirectPlayer player) {
         T role = makeRole(player);
         role.readNbt(nbt);

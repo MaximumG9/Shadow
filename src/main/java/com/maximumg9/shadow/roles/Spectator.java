@@ -17,63 +17,63 @@ public class Spectator extends Role {
     public static final RoleFactory<Spectator> FACTORY = new Factory();
     private static final Style STYLE = Style.EMPTY.withColor(Formatting.GRAY);
     private static final ItemStack ITEM_STACK = new ItemStack(Items.LIGHT);
-
+    
     static {
         ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new Spectator(null).getName());
     }
-
+    
     public Spectator(@Nullable IndirectPlayer player) {
         super(player, List.of());
     }
-
+    
     @Override
     public Faction getFaction() {
         return Faction.SPECTATOR;
     }
-
+    
     @Override
     public SubFaction getSubFaction() { return SubFaction.SPECTATOR; }
-
+    
     @Override
     public String getRawName() {
         return "Spectator";
     }
-
+    
     @Override
     public Style getStyle() {
         return STYLE;
     }
-
+    
     @Override
     public void onNight() {
         this.player.sendOverlay(
-                Text.literal("It is now night")
-                        .styled((style) -> style.withColor(Formatting.GRAY)),
-                CancelPredicates.IS_DAY
+            Text.literal("It is now night")
+                .styled(style -> style.withColor(Formatting.GRAY)),
+            CancelPredicates.IS_DAY
         );
         super.onNight();
     }
-
+    
     @Override
     public void onDay() {
         this.player.sendOverlay(
-                Text.literal("It's now day")
-                        .styled((style) -> style.withColor(Formatting.YELLOW)),
-                CancelPredicates.IS_NIGHT
+            Text.literal("It is now day")
+                .styled(style -> style.withColor(Formatting.YELLOW)),
+            CancelPredicates.IS_NIGHT
         );
         super.onDay();
     }
-
+    
     @Override
     public Roles getRole() {
         return Roles.SPECTATOR;
     }
-
+    
     @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
         return ITEM_STACK.copy();
     }
-
+    
     private static class Factory implements RoleFactory<Spectator> {
         @Override
         public Spectator makeRole(@Nullable IndirectPlayer player) {

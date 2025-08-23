@@ -5,8 +5,7 @@ public enum AbilityResult {
     CLOSE(true,false),
     NO_CLOSE_AND_RESET(false,true),
     CLOSE_AND_RESET(true,true);
-
-
+    
     public final boolean close;
     public final boolean reset;
 

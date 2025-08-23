@@ -20,10 +20,10 @@ public enum Food {
         List<Food> nonRandomFoods = Arrays.stream(Food.values()).filter((food) -> !food.name().equals("RANDOM")).toList();
         return nonRandomFoods.get(Random.createLocal().nextBetween(0, nonRandomFoods.size())).foodGiver.apply(count);
     });
-
-    public final Function<Integer,ItemStack> foodGiver;
-
-    Food(Function<Integer,ItemStack> foodGiver) {
+    
+    public final Function<Integer, ItemStack> foodGiver;
+    
+    Food(Function<Integer, ItemStack> foodGiver) {
         this.foodGiver = foodGiver;
     }
 }

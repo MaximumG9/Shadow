@@ -18,43 +18,43 @@ import java.util.function.Function;
 
 @Mixin(Items.class)
 public class ItemsMixin {
-
-    @Inject(method="register(Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/item/Item;)Lnet/minecraft/item/Item;",at=@At("HEAD"), cancellable = true)
+    
+    @Inject(method = "register(Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/item/Item;)Lnet/minecraft/item/Item;", at = @At("HEAD"), cancellable = true)
     private static void register(RegistryKey<Item> key, Item item, CallbackInfoReturnable<Item> cir) {
         Function<Item.Settings, Item> modifiedItemConstructor = Shadow.modifiedItems.get(key.getValue());
-
-        if(modifiedItemConstructor == null) {
+        
+        if (modifiedItemConstructor == null) {
             item.registryEntry = Registries.ITEM.createEntry(item);
             return;
         }
-
+        
         Item.Settings settings = new Item.Settings();
-
+        
         item.getComponents()
-                .forEach((component) ->
-                        addComponent(settings,component)
-                );
-
+            .forEach((component) ->
+                addComponent(settings, component)
+            );
+        
         settings.recipeRemainder(item.getRecipeRemainder());
-
+        
         Item moddedItem = modifiedItemConstructor.apply(settings);
-
+        
         moddedItem.registryEntry = Registries.ITEM.createEntry(moddedItem);
-
+        
         moddedItem.requiredFeatures = item.getRequiredFeatures();
-
+        
         if (moddedItem instanceof BlockItem) {
-            ((BlockItem)moddedItem).appendBlocks(Item.BLOCK_ITEMS, moddedItem);
+            ((BlockItem) moddedItem).appendBlocks(Item.BLOCK_ITEMS, moddedItem);
         }
-
+        
         Registry.register(Registries.ITEM, key, moddedItem);
-
+        
         cir.setReturnValue(moddedItem);
         cir.cancel();
     }
-
+    
     @Unique
     private static <T> void addComponent(Item.Settings settings, Component<T> component) {
-        settings.component(component.type(),component.value());
+        settings.component(component.type(), component.value());
     }
 }

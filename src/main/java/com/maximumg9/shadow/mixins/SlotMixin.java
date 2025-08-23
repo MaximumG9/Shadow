@@ -14,9 +14,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Slot.class)
 public class SlotMixin {
-    @Shadow @Final public Inventory inventory;
-
-    @Inject(method = "canInsert",at=@At("HEAD"), cancellable = true)
+    @Shadow
+    @Final
+    public Inventory inventory;
+    
+    @Inject(method = "canInsert", at = @At("HEAD"), cancellable = true)
     public void canInsert(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
         if (this.inventory instanceof PlayerInventory) return;
         if (!NBTUtil.getCustomData(stack).getBoolean(NBTUtil.RESTRICT_MOVEMENT_KEY)) return;

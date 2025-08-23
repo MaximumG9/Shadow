@@ -30,41 +30,30 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 public class RoleSlotScreenHandler extends ShadowScreenHandler {
     private static final int SIZE = 9 * 6;
-    private static final Text NEXT_PAGE_TEXT = Text.literal("Next Page").styled((style) -> style.withColor(Formatting.GOLD));
-    private static final Text LAST_PAGE_TEXT = Text.literal("Last Page").styled((style) -> style.withColor(Formatting.GOLD));
-    private static final Text EXIT_SCREEN_TEXT = Text.literal("Return to role menu").styled((style) -> style.withColor(Formatting.RED));
+    private static final Text NEXT_PAGE_TEXT = Text.literal("Next Page").styled(style -> style.withColor(Formatting.GOLD));
+    private static final Text LAST_PAGE_TEXT = Text.literal("Last Page").styled(style -> style.withColor(Formatting.GOLD));
+    private static final Text EXIT_SCREEN_TEXT = Text.literal("Return to role menu").styled(style -> style.withColor(Formatting.RED));
     private final RoleSlot slot;
-    // What does the UI look like? Well here it is:
-    // ,--------------------------------------------,
-    // | Up | Up | Up | Up | Up | Up | Up | Up |Next|
-    // |Role|Role|Role|Role|Role|Role|Role|Role|    |
-    // |Down|Down|Down|Down|Down|Down|Down|Down|    |
-    // | Up | Up | Up | Up | Up | Up | Up | Up |    |
-    // |Role|Role|Role|Role|Role|Role|Role|Role|    |
-    // |Down|Down|Down|Down|Down|Down|Down|Down|Exit|
-    // '--------------------------------------------'
-
-    // The role weight items are made by buildPage
-    // The Next and Exit items are made by buildUI
+    
     private final SimpleInventory inventory;
     private final ScreenHandlerContext context;
     private int page = 0;
-
+    
     private RoleSlotScreenHandler(int syncID, RoleSlot slot, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(ScreenHandlerType.GENERIC_9X6, syncID, playerInventory);
         this.context = context;
-
+        
         this.slot = slot;
-
+        
         this.inventory = new SimpleInventory(SIZE);
-
+        
         initSlots();
-
+        
         buildUI();
     }
-
+    
     void initSlots() {
-        for(int k = 0; k < SIZE; ++k) {
+        for (int k = 0; k < SIZE; ++k) {
             this.addSlot(
                 new Slot(
                     inventory,
@@ -76,40 +65,40 @@ public class RoleSlotScreenHandler extends ShadowScreenHandler {
         }
         super.initSlots();
     }
-
+    
     private void buildUI() {
-        if(this.page < (Roles.values().length / 9) / 2) {
+        if (this.page < (Roles.values().length / 9) / 2) {
             ItemStack nextPageStack = Items.SPECTRAL_ARROW.getDefaultStack();
             nextPageStack.set(DataComponentTypes.ITEM_NAME, NEXT_PAGE_TEXT);
             this.inventory.setStack(8, nextPageStack);
         }
-        if(this.page > 0) {
+        if (this.page > 0) {
             ItemStack nextPageStack = Items.SPECTRAL_ARROW.getDefaultStack();
             nextPageStack.set(DataComponentTypes.ITEM_NAME, LAST_PAGE_TEXT);
             this.inventory.setStack(9 + 8, nextPageStack);
         }
-
+        
         ItemStack exitStack = Items.BARRIER.getDefaultStack();
         exitStack.set(DataComponentTypes.ITEM_NAME, EXIT_SCREEN_TEXT);
         this.inventory.setStack(SIZE - 1, exitStack);
-
+        
         buildPage();
     }
-
+    
     private void buildPage() {
         int startRoleIndicies = page * 6 * 8;
-
-        for(int row = 0; row < 6; row++) {
-            for(int column = 0; column < 8; column++) {
+        
+        for (int row = 0; row < 6; row++) {
+            for (int column = 0; column < 8; column++) {
                 int roleIndex = startRoleIndicies + row * 8 + column;
-
-                if(roleIndex >= Roles.values().length) break;
-
+                
+                if (roleIndex >= Roles.values().length) break;
+                
                 Roles role = Roles.values()[roleIndex];
                 Role proxyRole = role.factory.makeRole(null);
-
+                
                 int weight = slot.getWeight(role);
-
+                
                 ItemStack roleStack = MiscUtil.getItemWithContext(proxyRole, this.context);
                 roleStack.set(
                     DataComponentTypes.LORE,
@@ -130,108 +119,108 @@ public class RoleSlotScreenHandler extends ShadowScreenHandler {
                             )
                     )
                 );
-
-                if(weight > 0) {
+                
+                if (weight > 0) {
                     roleStack.set(
                         DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,
                         true
                     );
                 }
-
+                
                 int count = MathHelper.clamp(weight, 1, 99);
                 roleStack.setCount(count);
                 roleStack.set(
                     DataComponentTypes.MAX_STACK_SIZE,
                     count
                 );
-
+                
                 this.inventory.setStack(row * 9 + column, roleStack);
             }
         }
     }
-
+    
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if(player instanceof ServerPlayerEntity sPlayer) {
+        if (player instanceof ServerPlayerEntity sPlayer) {
             // Yeah, I'm a bit of a math guy
-            if(slotIndex % 9 < 8) {
-                if(
+            if (slotIndex % 9 < 8) {
+                if (
                     actionType == SlotActionType.SWAP ||
-                    actionType == SlotActionType.CLONE ||
-                    actionType == SlotActionType.THROW ||
-                    actionType == SlotActionType.PICKUP_ALL ||
-                    actionType == SlotActionType.QUICK_CRAFT
+                        actionType == SlotActionType.CLONE ||
+                        actionType == SlotActionType.THROW ||
+                        actionType == SlotActionType.PICKUP_ALL ||
+                        actionType == SlotActionType.QUICK_CRAFT
                 ) return;
-
+                
                 ClickType clickType = button == 0 ? ClickType.LEFT : ClickType.RIGHT;
-
+                
                 // Oh, also sorry to whoever works with this next, but I just wanted to do it this way :P
-
+                
                 int roleRow = (slotIndex / 9);
-
+                
                 int roleColumn = (slotIndex - (slotIndex / 9)) % 8;
-
+                
                 int roleIndex = roleRow * 8 + roleColumn;
-
-                if(roleIndex >= Roles.values().length) return;
-
+                
+                if (roleIndex >= Roles.values().length) return;
+                
                 Roles role = Roles.values()[roleIndex];
                 LogUtils.getLogger().info(role.name);
-
-                if(clickType == ClickType.LEFT) {
-                    this.slot.setWeight(role,this.slot.getWeight(role) + 1);
-                } else if(this.slot.weightSum() > 1 && this.slot.getWeight(role) > 0) {
-                    this.slot.setWeight(role,this.slot.getWeight(role) - 1);
+                
+                if (clickType == ClickType.LEFT) {
+                    this.slot.setWeight(role, this.slot.getWeight(role) + 1);
+                } else if (this.slot.weightSum() > 1 && this.slot.getWeight(role) > 0) {
+                    this.slot.setWeight(role, this.slot.getWeight(role) - 1);
                 }
                 // nothing for clicking the role icon for now!
-
+                
                 this.buildPage();
                 this.syncState();
-            } else if(slotIndex == 8) {
-                if(this.page >= (Roles.values().length / 9) / 2) return;
+            } else if (slotIndex == 8) {
+                if (this.page >= (Roles.values().length / 9) / 2) return;
                 this.page++;
                 this.buildUI();
                 this.syncState();
-            } else if(slotIndex == 9 + 8) {
-                if(this.page <= 0) return;
+            } else if (slotIndex == 9 + 8) {
+                if (this.page <= 0) return;
                 this.page--;
                 this.buildUI();
                 this.syncState();
-            } else if(slotIndex == SIZE - 1) {
+            } else if (slotIndex == SIZE - 1) {
                 sPlayer.closeHandledScreen();
             }
         }
     }
-
+    
     @Override
     public void onClosed(PlayerEntity player) {
-        if(player instanceof ServerPlayerEntity sPlayer) {
+        if (player instanceof ServerPlayerEntity sPlayer) {
             Shadow shadow = getShadow(sPlayer.getServer());
             shadow.saveAsync();
-
+            
             shadow.addTickable(Delay.instant(
-                    () -> shadow.config.roleManager.showRoleListIndex(sPlayer, true)
+                () -> shadow.config.roleManager.showRoleListIndex(sPlayer, true)
             ));
         }
     }
-
+    
     @Override
     public ItemStack quickMove(PlayerEntity player, int slot) {
         return null;
     }
-
+    
     @Override
     public boolean canUse(PlayerEntity player) {
         return true;
     }
-
+    
     public record Factory(Text name, RoleSlot slot) implements NamedScreenHandlerFactory {
-
+        
         @Override
         public Text getDisplayName() {
             return name;
         }
-
+        
         @Override
         public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
             return new RoleSlotScreenHandler(

@@ -18,20 +18,22 @@ import java.util.List;
 @Mixin(net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket.class)
 public class EntityEquipmentUpdateS2CPacketMixin {
     @Mutable
-    @Shadow @Final private List<Pair<EquipmentSlot, ItemStack>> equipmentList;
-
-    @Inject(method = "<init>(ILjava/util/List;)V",at=@At("TAIL"))
+    @Shadow
+    @Final
+    private List<Pair<EquipmentSlot, ItemStack>> equipmentList;
+    
+    @Inject(method = "<init>(ILjava/util/List;)V", at = @At("TAIL"))
     public void init(int entityId, List<Pair<EquipmentSlot, ItemStack>> equipmentList, CallbackInfo ci) {
         ArrayList<Pair<EquipmentSlot, ItemStack>> newList = new ArrayList<>(equipmentList);
         newList.replaceAll(
             pair ->
-            pair.mapSecond(
-                item ->
-                    NBTUtil.getCustomData(item)
-                        .getBoolean(NBTUtil.INVISIBLE_KEY) ? ItemStack.EMPTY : item
-            )
+                pair.mapSecond(
+                    item ->
+                        NBTUtil.getCustomData(item)
+                            .getBoolean(NBTUtil.INVISIBLE_KEY) ? ItemStack.EMPTY : item
+                )
         );
-
+        
         this.equipmentList = newList;
     }
 }

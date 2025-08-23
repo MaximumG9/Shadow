@@ -14,41 +14,37 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class Looker extends AbstractVillager {
+    public static final RoleFactory<Looker> FACTORY = new Factory();
     private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(SeeEnderEyesGlow::new);
-    @Override
-    public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) { return ITEM_STACK.copy(); }
-
+    private static final Style STYLE = Style.EMPTY.withColor(Formatting.DARK_GREEN);
+    private static final ItemStack ITEM_STACK = new ItemStack(Items.ENDER_EYE);
+    
+    static {
+        ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new Looker(null).getName());
+    }
+    
     public Looker(@Nullable IndirectPlayer player) {
         super(player, ABILITY_FACTORIES);
     }
-
+    @Override
+    public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) { return ITEM_STACK.copy(); }
     @Override
     public SubFaction getSubFaction() { return SubFaction.VILLAGER_SUPPORT; }
-
     @Override
     public String getRawName() {
         return "Looker";
     }
-
-    private static final Style STYLE = Style.EMPTY.withColor(Formatting.DARK_GREEN);
     @Override
     public Style getStyle() { return STYLE; }
-
     @Override
     public Roles getRole() {
         return Roles.LOOKER;
     }
-
-    public static final RoleFactory<Looker> FACTORY = new Factory();
+    
     private static class Factory implements RoleFactory<Looker> {
         @Override
         public Looker makeRole(@Nullable IndirectPlayer player) {
             return new Looker(player);
         }
-    }
-
-    private static final ItemStack ITEM_STACK = new ItemStack(Items.ENDER_EYE);
-    static {
-        ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new Looker(null).getName());
     }
 }

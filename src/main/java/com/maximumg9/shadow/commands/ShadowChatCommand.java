@@ -28,43 +28,43 @@ public class ShadowChatCommand {
                         .executes(ShadowChatCommand::sendShadowChat)
                 )
         );
-        dispatcher.register( literal("sc").redirect(cmd) );
-        dispatcher.register( literal("$shadowchat").redirect(cmd) );
-        dispatcher.register( literal("$sc").redirect(cmd) );
+        dispatcher.register(literal("sc").redirect(cmd));
+        dispatcher.register(literal("$shadowchat").redirect(cmd));
+        dispatcher.register(literal("$sc").redirect(cmd));
     }
-
+    
     private static int sendShadowChat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         MinecraftServer server = ctx.getSource().getServer();
         Shadow shadow = getShadow(server);
-        if(!ctx.getSource().isExecutedByPlayer()) {
+        if (!ctx.getSource().isExecutedByPlayer()) {
             ctx.getSource().sendError(Text.literal("You are not a player").styled(style -> style.withColor(Formatting.RED)));
             return 0;
         }
-
+        
         IndirectPlayer player = shadow.getIndirect(ctx.getSource().getPlayerOrThrow());
-
-        if(player.role == null || player.role.getFaction() != Faction.SHADOW) {
+        
+        if (player.role == null || player.role.getFaction() != Faction.SHADOW) {
             ctx.getSource().sendError(Text.literal("You are not a shadow").styled(style -> style.withColor(Formatting.RED)));
             return 0;
         }
-
+        
         Text msg = MessageArgumentType.getMessage(ctx, "message");
-
-            shadow.getAllPlayers().stream().filter(
-                (p) ->
+        
+        shadow.getAllPlayers().stream().filter(
+            (p) ->
                 p.role != null && p.role.getFaction() == Faction.SHADOW
-            ).forEach((p) ->
-                p.sendMessage(
-                    Text.literal("[Shadow Chat]")
-                        .styled(style -> style.withColor(Formatting.DARK_RED))
-                        .append(Text.literal(" <"))
-                        .append(player.getName().copy().setStyle(player.role.getStyle()))
-                        .append(Text.literal("> "))
-                        .append(msg),
-                    CancelPredicates.cancelOnPhaseChange(shadow.state.phase)
-                )
-            );
-
+        ).forEach((p) ->
+            p.sendMessage(
+                Text.literal("[Shadow Chat]")
+                    .styled(style -> style.withColor(Formatting.DARK_RED))
+                    .append(Text.literal(" <"))
+                    .append(player.getName().copy().setStyle(player.role.getStyle()))
+                    .append(Text.literal("> "))
+                    .append(msg),
+                CancelPredicates.cancelOnPhaseChange(shadow.state.phase)
+            )
+        );
+        
         return 1;
     }
 }

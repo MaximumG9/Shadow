@@ -13,39 +13,34 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ShadowRole extends AbstractShadow {
-    public ShadowRole(@Nullable IndirectPlayer player) {
-        super(player,List.of(Cull::new));
+    public static final RoleFactory<ShadowRole> FACTORY = new Factory();
+    private static final Style STYLE = Style.EMPTY.withColor(Formatting.RED);
+    private static final ItemStack ITEM_STACK = new ItemStack(Items.NETHERITE_SWORD);
+    
+    static {
+        ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new ShadowRole(null).getName());
     }
-
+    
+    public ShadowRole(@Nullable IndirectPlayer player) {
+        super(player, List.of(Cull::new));
+    }
     @Override
     public SubFaction getSubFaction() { return SubFaction.SHADOW; }
-
     @Override
     public String getRawName() { return "Shadow"; }
-
-    private static final Style STYLE = Style.EMPTY.withColor(Formatting.RED);
     @Override
     public Style getStyle() { return STYLE; }
-
     @Override
     public Roles getRole() {
         return Roles.SHADOW;
     }
-
-    public static final RoleFactory<ShadowRole> FACTORY = new Factory();
-
+    @Override
+    public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) { return ITEM_STACK.copy(); }
+    
     private static class Factory implements RoleFactory<ShadowRole> {
         @Override
         public ShadowRole makeRole(@Nullable IndirectPlayer player) {
             return new ShadowRole(player);
         }
     }
-
-    private static final ItemStack ITEM_STACK = new ItemStack(Items.NETHERITE_SWORD);
-    static {
-        ITEM_STACK.set(DataComponentTypes.ITEM_NAME,new ShadowRole(null).getName());
-    }
-
-    @Override
-    public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) { return ITEM_STACK.copy(); }
 }

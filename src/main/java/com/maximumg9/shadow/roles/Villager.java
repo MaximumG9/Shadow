@@ -12,40 +12,36 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class Villager extends AbstractVillager {
-    @Override
-    public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) { return ITEM_STACK.copy(); }
-
+    public static final RoleFactory<Villager> FACTORY = new Factory();
+    private static final Style STYLE = Style.EMPTY.withColor(Formatting.GREEN);
+    private static final ItemStack ITEM_STACK = new ItemStack(Items.EMERALD);
+    
+    static {
+        ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new Villager(null).getName());
+    }
+    
     public Villager(@Nullable IndirectPlayer player) {
         super(player, List.of());
     }
-
+    @Override
+    public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) { return ITEM_STACK.copy(); }
     @Override
     public SubFaction getSubFaction() { return SubFaction.VILLAGER_OUTLIER; }
-
     @Override
     public String getRawName() {
         return "Villager";
     }
-
     @Override
     public Roles getRole() {
         return Roles.VILLAGER;
     }
-
-    private static final Style STYLE = Style.EMPTY.withColor(Formatting.GREEN);
     @Override
     public Style getStyle() { return STYLE; }
-
-    public static final RoleFactory<Villager> FACTORY = new Factory();
+    
     private static class Factory implements RoleFactory<Villager> {
         @Override
         public Villager makeRole(@Nullable IndirectPlayer player) {
             return new Villager(player);
         }
-    }
-
-    private static final ItemStack ITEM_STACK = new ItemStack(Items.EMERALD);
-    static {
-        ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new Villager(null).getName());
     }
 }

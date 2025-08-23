@@ -19,50 +19,50 @@ public enum Roles {
     LIFEWEAVER(Lifeweaver.FACTORY),
     SHADOW(ShadowRole.FACTORY),
     ORACLE(Oracle.FACTORY);
-
-
+    
+    
     public final String name;
     public final RoleFactory<?> factory;
     public final Faction faction;
-
+    
     Roles(RoleFactory<?> factory) {
-        this(factory.makeRole(null).getRawName(),factory, factory.makeRole(null).getFaction());
+        this(factory.makeRole(null).getRawName(), factory, factory.makeRole(null).getFaction());
     }
-
+    
     Roles(String name, RoleFactory<?> factory, Faction faction) {
         this.name = name;
         this.factory = factory;
         this.faction = faction;
     }
-
+    
     public static CompletableFuture<Suggestions> suggest(CommandContext<?> ignoredCtx, SuggestionsBuilder builder) {
         Arrays.stream(values())
             .filter(
                 (role) ->
                     Objects.requireNonNull(role.name)
-                    .startsWith(builder.getRemaining())
+                        .startsWith(builder.getRemaining())
             ).forEach(
                 (role) ->
                     builder.suggest(role.name)
             );
-
+        
         return builder.buildFuture();
     }
-
+    
     public static Roles getRole(String roleName) {
         List<Roles> possibleRoles = Arrays.stream(values()).filter((role) -> role.name.equals(roleName)).toList();
-
-        if(possibleRoles.isEmpty()) {
+        
+        if (possibleRoles.isEmpty()) {
             throw new IllegalArgumentException("No role with name: " + roleName);
         }
-
-        if(possibleRoles.size() > 1) {
+        
+        if (possibleRoles.size() > 1) {
             throw new IllegalStateException("Roles are broken, multiple roles with same name: " + roleName);
         }
-
+        
         return possibleRoles.getFirst();
     }
-
+    
     @NotNull
     public static Roles getRole(CommandContext<?> ctx, String argumentName) {
         String roleName = StringArgumentType.getString(ctx, argumentName);

@@ -15,30 +15,30 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 public abstract class ServerWorldMixin {
     @Unique
     private double fractionalTime = 0;
-
-    @Redirect(method = "tickTime",at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;setTimeOfDay(J)V"))
+    
+    @Redirect(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;setTimeOfDay(J)V"))
     public void setTimeOfDay(ServerWorld instance, long timeOfDay) {
         Shadow shadow = getShadow(instance.getServer());
-        if(shadow.state.phase != GamePhase.PLAYING) {
+        if (shadow.state.phase != GamePhase.PLAYING) {
             shadow.setSilentDay();
         }
-
+        
         if (timeOfDay % 24000 < 13000 && shadow.isNight()) {
             shadow.setDay();
         }
-
-        if(timeOfDay % 24000 > 13000 && !shadow.isNight()) {
+        
+        if (timeOfDay % 24000 > 13000 && !shadow.isNight()) {
             shadow.setNight();
         }
-
-        if(shadow.isNight()) {
+        
+        if (shadow.isNight()) {
             fractionalTime += shadow.config.additionalTimePerTickDuringNight;
-
+            
             timeOfDay += MathHelper.floor(fractionalTime);
-
+            
             fractionalTime = fractionalTime % 1;
         }
-
+        
         instance.setTimeOfDay(timeOfDay);
     }
 }

@@ -1,6 +1,6 @@
 package com.maximumg9.shadow.mixins;
 
-import com.maximumg9.shadow.Eye;
+import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.NBTUtil;
@@ -30,38 +30,40 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
-    @org.spongepowered.asm.mixin.Shadow @Final public MinecraftServer server;
-
+    @org.spongepowered.asm.mixin.Shadow
+    @Final
+    public MinecraftServer server;
+    
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
     }
-
-    @Inject(method="sendPickup",at=@At("HEAD"))
+    
+    @Inject(method = "sendPickup", at = @At("HEAD"))
     private void pickupEnderEye(Entity item, int count, CallbackInfo ci) {
         Shadow shadow = getShadow(Objects.requireNonNull(item.getServer()));
-
-        if(item instanceof ItemEntity) {
+        
+        if (item instanceof ItemEntity) {
             List<Eye> eyesCopy = new ArrayList<>(shadow.state.eyes);
-            for(Eye eye : eyesCopy) {
-                if(eye.item().equals(item.getUuid())) {
+            for (Eye eye : eyesCopy) {
+                if (eye.item().equals(item.getUuid())) {
                     eye.destroy(shadow);
                     shadow.state.eyes.remove(eye);
                 }
             }
         }
     }
-
-    @Inject(method= "onDisconnect", at=@At("HEAD"))
+    
+    @Inject(method = "onDisconnect", at = @At("HEAD"))
     public void onDisconnect(CallbackInfo ci) {
         Shadow shadow = getShadow(server);
         Text name = this.getName();
         shadow.addTickable(
             Delay.of(
                 () -> {
-                    if(
+                    if (
                         shadow
-                        .getIndirect((ServerPlayerEntity) (Object) this)
-                        .getOfflineTicks() >=
+                            .getIndirect((ServerPlayerEntity) (Object) this)
+                            .getOfflineTicks() >=
                             shadow.config.disconnectTime
                     ) {
                         shadow.broadcast(
@@ -79,14 +81,14 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             )
         );
     }
-
-    @Inject(method = "dropItem",at=@At("HEAD"), cancellable = true)
+    
+    @Inject(method = "dropItem", at = @At("HEAD"), cancellable = true)
     public void dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
-        if(NBTUtil.getCustomData(stack).getBoolean(NBTUtil.RESTRICT_MOVEMENT_KEY)) {
+        if (NBTUtil.getCustomData(stack).getBoolean(NBTUtil.RESTRICT_MOVEMENT_KEY)) {
             cir.setReturnValue(null);
             cir.cancel();
-            if(this.getInventory().insertStack(stack)) return;
-            this.getInventory().setStack(0,stack);
+            if (this.getInventory().insertStack(stack)) return;
+            this.getInventory().setStack(0, stack);
         }
     }
 }

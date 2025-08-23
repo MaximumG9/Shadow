@@ -3,6 +3,8 @@
 - [ ] Anti-stall
 - [ ] End regen
 - [ ] Saved rolelist
-- [ ] In role slot list set barriers for ones not in play and struct voids for others
-- [ ] Role slot menu rework
-- [ ] Modifiers
+- [X] In role slot list set barriers for ones not in play and struct voids for others
+- [X] Role slot menu rework
+- [X] Modifiers
+- [ ] Poseidon's Wrath
+- [ ] Grace period weapon cooldowns

@@ -23,30 +23,30 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 @Mixin(MessageCommand.class)
 public class MessageCommandMixin {
-    @Inject(method="execute",at=@At("HEAD"), cancellable = true)
+    @Inject(method = "execute", at = @At("HEAD"), cancellable = true)
     private static void execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, SignedMessage message, CallbackInfo ci) throws CommandSyntaxException {
-        if(!source.isExecutedByPlayer()) return;
+        if (!source.isExecutedByPlayer()) return;
         ServerPlayerEntity p = source.getPlayerOrThrow();
         Shadow shadow = getShadow(source.getServer());
-
-        if(shadow.state.phase != GamePhase.PLAYING) return;
-        if(shadow.config.disableChat) ci.cancel();
-
+        
+        if (shadow.state.phase != GamePhase.PLAYING) return;
+        if (shadow.config.disableChat) ci.cancel();
+        
         IndirectPlayer player = shadow.getIndirect(p);
-        if((player.role == null || player.role.getFaction() == Faction.SPECTATOR) && !p.hasPermissionLevel(3)) {
+        if ((player.role == null || player.role.getFaction() == Faction.SPECTATOR) && !p.hasPermissionLevel(3)) {
             player.sendMessageNow(
                 Text.literal("You are a spectator so you cannot message").styled(style -> style.withColor(Formatting.YELLOW))
             );
             ci.cancel();
             return;
         }
-
-        if(player.chatMessageCooldown > 0) {
+        
+        if (player.chatMessageCooldown > 0) {
             player.sendMessageNow(
                 Text.literal("You are still on chat cooldown for ")
                     .styled(style -> style.withColor(Formatting.GRAY))
                     .append(
-                        Text.literal(TimeUtil.ticksToText(player.chatMessageCooldown,false))
+                        Text.literal(TimeUtil.ticksToText(player.chatMessageCooldown, false))
                             .styled(style -> style.withColor(Formatting.YELLOW))
                     )
                     .append(" seconds.")
@@ -54,7 +54,7 @@ public class MessageCommandMixin {
             ci.cancel();
             return;
         }
-
+        
         player.chatMessageCooldown = shadow.config.chatMessageCooldown;
     }
 }

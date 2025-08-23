@@ -1,4 +1,4 @@
-package com.maximumg9.shadow;
+package com.maximumg9.shadow.items;
 
 import com.maximumg9.shadow.util.ItemData;
 import com.maximumg9.shadow.util.MiscUtil;
@@ -21,55 +21,55 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 public class ParticipationEye implements ItemUseCallback {
     @Unique
-    public static Identifier ID = MiscUtil.shadowID("participation_eye");
-
+    public static final Identifier ID = MiscUtil.shadowID("participation_eye");
+    
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if(!(world instanceof ServerWorld)) return null;
-
+        if (!(world instanceof ServerWorld)) return null;
+        
         ItemStack item = user.getStackInHand(hand);
         EnderEyeData data = EnderEyeData.read(item);
-
+        
         EnderEyeData newData = new EnderEyeData(!data.participating);
         newData.write(item);
-
+        
         getShadow(world.getServer())
             .getIndirect((ServerPlayerEntity) user)
             .participating = newData.participating;
-
+        
         return TypedActionResult.success(item);
     }
-
+    
     public record EnderEyeData(boolean participating) implements ItemData {
-
-        private static final Text PARTICIPATING_TEXT = Text.literal("Participating").styled((style) -> style.withColor(Formatting.GREEN));
-        private static final Text NOT_PARTICIPATING_TEXT = Text.literal("Not Participating").styled((style) -> style.withColor(Formatting.RED));
-
+        
+        private static final Text PARTICIPATING_TEXT = Text.literal("Participating").styled(style -> style.withColor(Formatting.GREEN));
+        private static final Text NOT_PARTICIPATING_TEXT = Text.literal("Not Participating").styled(style -> style.withColor(Formatting.RED));
+        
+        public static EnderEyeData read(ItemStack stack) {
+            NbtCompound customData = NBTUtil.getCustomData(stack);
+            
+            boolean participating = customData.getBoolean("participating");
+            
+            return new EnderEyeData(participating);
+        }
+        
         @Override
         public void write(ItemStack stack) {
             NBTUtil.applyCustomDataToStack(stack, (compound) -> {
-                compound.putBoolean("participating",participating);
-
+                compound.putBoolean("participating", participating);
+                
                 return compound;
             });
-
+            
             NBTUtil.addID(stack, ID);
-
-            stack.apply(DataComponentTypes.ITEM_NAME, Text.literal("This text should never appear"),(text) -> {
-                if(participating) {
+            
+            stack.apply(DataComponentTypes.ITEM_NAME, Text.literal("This text should never appear"), (text) -> {
+                if (participating) {
                     return PARTICIPATING_TEXT;
                 } else {
                     return NOT_PARTICIPATING_TEXT;
                 }
             });
-        }
-
-        public static EnderEyeData read(ItemStack stack) {
-            NbtCompound customData = NBTUtil.getCustomData(stack);
-
-            boolean participating = customData.getBoolean("participating");
-
-            return new EnderEyeData(participating);
         }
     }
 }

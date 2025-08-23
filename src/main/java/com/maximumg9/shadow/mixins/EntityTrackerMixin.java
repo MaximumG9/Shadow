@@ -21,40 +21,42 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 @Mixin(ServerChunkLoadingManager.EntityTracker.class)
 public class EntityTrackerMixin {
-    @org.spongepowered.asm.mixin.Shadow @Final Entity entity;
-
+    @org.spongepowered.asm.mixin.Shadow
+    @Final
+    Entity entity;
+    
     @Redirect(
         method = "sendToOtherNearbyPlayers",
         at = @At(
             value = "INVOKE",
-                target = "Lnet/minecraft/server/network/PlayerAssociatedNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V"
+            target = "Lnet/minecraft/server/network/PlayerAssociatedNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V"
         )
     )
     public void sendToOtherNearbyPlayers(PlayerAssociatedNetworkHandler instance, Packet<?> packet) {
-        if(packet.getPacketId() != PlayPackets.SET_ENTITY_DATA) {
+        if (packet.getPacketId() != PlayPackets.SET_ENTITY_DATA) {
             instance.sendPacket(packet);
             return;
         }
         Shadow shadow = getShadow(instance.getPlayer().getServer());
         IndirectPlayer player = shadow.getIndirect(instance.getPlayer());
-
-        if(!(packet instanceof EntityTrackerUpdateS2CPacket originalPacket)) {
+        
+        if (!(packet instanceof EntityTrackerUpdateS2CPacket originalPacket)) {
             instance.sendPacket(packet);
             return;
         }
-
-        if(shadow.isNight() && this.entity.getType() == EntityType.PLAYER) {
-            if(player.role == null || !player.role.hasAbility(SeeGlowing.ID)) {
+        
+        if (shadow.isNight() && this.entity.getType() == EntityType.PLAYER) {
+            if (player.role == null || !player.role.hasAbility(SeeGlowing.ID)) {
                 EntityTrackerUpdateS2CPacket noGlowingPacket = new EntityTrackerUpdateS2CPacket(
                     originalPacket.id(),
                     originalPacket.trackedValues()
                         .stream()
                         .map(
                             (entry) -> {
-                                if(entry.id() == Entity.FLAGS.id()) {
+                                if (entry.id() == Entity.FLAGS.id()) {
                                     @SuppressWarnings("unchecked")
                                     DataTracker.SerializedEntry<Byte> bEntry = (DataTracker.SerializedEntry<Byte>) entry;
-
+                                    
                                     return new DataTracker.SerializedEntry<>(
                                         bEntry.id(),
                                         bEntry.handler(),
@@ -69,19 +71,19 @@ public class EntityTrackerMixin {
                 return;
             }
         }
-
+        
         if (player.role == null || !player.role.hasAbility(SeeEnderEyesGlow.ID)) {
-            if(shadow.state.eyes.stream().anyMatch(eye -> eye.display().equals(this.entity.getUuid()))) {
+            if (shadow.state.eyes.stream().anyMatch(eye -> eye.display().equals(this.entity.getUuid()))) {
                 EntityTrackerUpdateS2CPacket eyeGlowingPacket = new EntityTrackerUpdateS2CPacket(
                     originalPacket.id(),
                     originalPacket.trackedValues()
                         .stream()
                         .map(
                             (entry) -> {
-                                if(entry.id() == Entity.FLAGS.id()) {
+                                if (entry.id() == Entity.FLAGS.id()) {
                                     @SuppressWarnings("unchecked")
                                     DataTracker.SerializedEntry<Byte> bEntry = (DataTracker.SerializedEntry<Byte>) entry;
-
+                                    
                                     return new DataTracker.SerializedEntry<>(
                                         bEntry.id(),
                                         bEntry.handler(),
@@ -96,8 +98,8 @@ public class EntityTrackerMixin {
                 return;
             }
         }
-
+        
         instance.sendPacket(originalPacket);
-
+        
     }
 }

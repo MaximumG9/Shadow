@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 public abstract class AbstractShadow extends Role {
     private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(ToggleStrength::new, SeeGlowing::new);
-
+    
     AbstractShadow(IndirectPlayer player, List<Ability.Factory> abilityFactories) {
         super(
             player,
@@ -24,11 +24,11 @@ public abstract class AbstractShadow extends Role {
             ).toList()
         );
     }
-
+    
     @Override
     public void init() {
         super.init();
-        if(this.player.getShadow()
+        if (this.player.getShadow()
             .getAllPlayers()
             .stream()
             .noneMatch(
@@ -38,13 +38,13 @@ public abstract class AbstractShadow extends Role {
                         player.playerUUID != this.player.playerUUID
             )) {
             this.player.sendMessage(
-                Text.literal("The are no other Shadows (good luck!)"),
+                Text.literal("The are no other shadows (good luck!)"),
                 CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
             );
         } else {
             this.player.sendMessage(
-                Text.literal("The other Shadows are: ")
-                    .styled((style) -> style.withColor(Formatting.RED))
+                Text.literal("The other shadows are: ")
+                    .styled(style -> style.withColor(Formatting.RED))
                     .append(
                         Texts.join(
                             this.player.getShadow()
@@ -58,33 +58,33 @@ public abstract class AbstractShadow extends Role {
                                 ).map(
                                     (player) -> player.getName().copy().setStyle(player.role.getStyle())
                                 ).toList(),
-                            Text.literal(",").styled((style -> style.withColor(Formatting.GRAY)))
+                            Text.literal(", ").styled((style -> style.withColor(Formatting.GRAY)))
                         )
                     ),
                 CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
             );
         }
     }
-
+    
     @Override
     public Faction getFaction() { return Faction.SHADOW; }
-
+    
     @Override
     public void onNight() {
         this.player.sendOverlay(
-                Text.literal("It is now night, your opportunity to kill")
-                        .styled((style) -> style.withColor(Formatting.GOLD)),
-                CancelPredicates.IS_DAY
+            Text.literal("It is now night, your opportunity to kill")
+                .styled(style -> style.withColor(Formatting.GOLD)),
+            CancelPredicates.IS_DAY
         );
         super.onNight();
     }
-
+    
     @Override
     public void onDay() {
         this.player.sendOverlay(
-                Text.literal("It's now day")
-                        .styled((style) -> style.withColor(Formatting.YELLOW)),
-                CancelPredicates.IS_NIGHT
+            Text.literal("It's now day")
+                .styled(style -> style.withColor(Formatting.YELLOW)),
+            CancelPredicates.IS_NIGHT
         );
         super.onDay();
     }

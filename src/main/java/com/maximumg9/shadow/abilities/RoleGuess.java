@@ -5,6 +5,8 @@ import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.TimeUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -22,14 +24,18 @@ import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class RoleGuess extends CooldownAbility {
+public class RoleGuess extends Ability {
+    public static final Identifier ID = MiscUtil.shadowID("role_guess");
     private static final ItemStack ITEM_STACK;
     private static final Text NAME = Text.literal("Role Guess")
         .styled(style -> style.withColor(Formatting.RED));
-
+    
+    private static final int COOLDOWN_TIME = 8 * 60 * 20;
+    
     static {
-        ITEM_STACK = new ItemStack(Items.WRITABLE_BOOK,1);
+        ITEM_STACK = new ItemStack(Items.WRITABLE_BOOK, 1);
         ITEM_STACK.set(
             DataComponentTypes.ITEM_NAME,
             NAME
@@ -37,89 +43,105 @@ public class RoleGuess extends CooldownAbility {
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                Text.literal("Guess a role ")
-                    .append(Text.literal("IF")
-                        .styled(style -> style.withBold(true)))
-                    .append(Text.literal(":")),
-                Text.literal("Shadows alive x 2 >= villagers alive ")
-                    .append(Text.literal("AND")
-                        .styled(style -> style.withBold(true))),
-                Text.literal("with an 8 minute cooldown"),
+                TextUtil.gray("Guess the role of a player to kill them."),
+                TextUtil.gray("This ability cannot be used if the"),
+                TextUtil.gray("number of non-shadows alive is less than"),
+                TextUtil.gray("or equal to the number of shadows alive."),
+                Text.literal("⌛ 8 minute cooldown").styled(style -> style.withColor(Formatting.BLUE)),
                 Text.literal("IF YOU GUESS INCORRECTLY, YOU DIE")
                     .styled(style -> style.withColor(Formatting.RED).withBold(true)),
                 Ability.AbilityText()
             )
         );
     }
-
+    
     private final List<Roles> unguessableRoles;
     private final List<Faction> unguessableFactions;
-
+    
     public RoleGuess(IndirectPlayer player) {
         super(player);
-        if(player.role != null) {
+        if (player.role != null) {
             this.unguessableRoles = List.of(player.role.getRole());
         } else {
             this.unguessableRoles = List.of();
         }
         this.unguessableFactions = List.of(Faction.SPECTATOR);
     }
-
+    
     public RoleGuess(IndirectPlayer player, List<Roles> unguessableRoles, List<Faction> unguessableFactions) {
         super(player);
         this.unguessableRoles = unguessableRoles;
         this.unguessableFactions = unguessableFactions;
     }
-
-    @Override
-    public Text getName() {
-        return NAME;
+    
+    public List<Supplier<AbilityFilterResult>> getFilters() {
+        return List.of(
+            () -> {
+                if (getShadow().isGracePeriod())
+                    return AbilityFilterResult.FAIL("You cannot use this ability in Grace Period.");
+                return AbilityFilterResult.PASS();
+            },
+            () -> {
+                long timeLeft = this.getCooldownTimeLeft(RoleGuess.COOLDOWN_TIME);
+                if (timeLeft > 0)
+                    return AbilityFilterResult.FAIL("This ability is on cooldown for " + TimeUtil.ticksToText(timeLeft, true));
+                return AbilityFilterResult.PASS();
+            },
+            () -> {
+                long shadows = getShadow().indirectPlayerManager
+                    .getRecentlyOnlinePlayers(getShadow().config.disconnectTime)
+                    .stream()
+                    .filter(
+                        (player) ->
+                            player.role != null &&
+                                player.role.getFaction() == Faction.SHADOW
+                    ).count();
+                long nonShadows = (long) getShadow().indirectPlayerManager
+                    .getRecentlyOnlinePlayers(getShadow().config.disconnectTime)
+                    .stream().filter(
+                        (player) -> player.role != null &&
+                            player.role.getFaction() != Faction.SPECTATOR
+                    )
+                    .count() - shadows;
+                
+                if (shadows >= nonShadows)
+                    return AbilityFilterResult.FAIL("You cannot guess when the number of shadows alive meets or exceeds the number of non-shadows alive.");
+                return AbilityFilterResult.PASS();
+            }
+        );
     }
-
-    @Override
-    int defaultCooldown() {
-        return 20 * 60 * 8;
-    }
-
-    @Override
-    int initialCooldown() {
-        return 20 * 60 * 3;
-    }
-
+    
     @Override
     public AbilityResult apply() {
         this.player.getPlayerOrThrow().openHandledScreen(
             new DecisionScreenHandler.Factory<>(
                 Text.literal("Person to guess"),
-                (target, p) -> {
-                    if(target == null) {
-                        p.sendMessage(
+                (target, actor, _a, _b) -> {
+                    if (target == null) {
+                        actor.sendMessage(
                             Text.literal("Failed to select player to guess")
                                 .styled(style -> style.withColor(Formatting.RED))
                         );
                         return;
                     }
-                    p.openHandledScreen(
+                    actor.openHandledScreen(
                         new DecisionScreenHandler.Factory<>(
                             Text.literal("Role to guess"),
-                            (guessedRole, pl) -> {
-                                if(guessedRole == null) {
-                                    pl.sendMessage(
-                                        Text.literal("Failed to select role to guess")
-                                            .styled(style -> style.withColor(Formatting.RED))
-                                    );
+                            (guessedRole, pl, __a, __b) -> {
+                                if (guessedRole == null) {
+                                    pl.sendMessage(TextUtil.error("Failed to select role to guess"));
                                     return;
                                 }
-                                if(target.role == null) {
-                                    pl.sendMessage(
-                                        Text.literal("That person's role is null")
-                                            .styled(style -> style.withColor(Formatting.RED))
-                                    );
+                                if (target.role == null) {
+                                    pl.sendMessage(TextUtil.error("That person's role is null."));
                                     return;
                                 }
-                                if(guessedRole.getRole() == target.role.getRole()) {
-                                    Text roleName = target.role.getName();
-
+                                
+                                this.resetLastActivated();
+                                
+                                if (guessedRole.getRole() == target.role.getRole()) {
+                                    pl.sendMessage(TextUtil.success("You successfully guessed your target's role."));
+                                    
                                     RegistryEntry<DamageType> magicDamage = target
                                         .getShadow()
                                         .getServer()
@@ -133,17 +155,9 @@ public class RoleGuess extends CooldownAbility {
                                             this.getShadow().state.phase
                                         )
                                     );
-                                    pl.sendMessage(
-                                        Text.literal("Killed target ")
-                                            .styled(style -> style.withColor(Formatting.RED))
-                                            .append(
-                                                target.getName()
-                                            )
-                                            .append(Text.literal(" ("))
-                                            .append(roleName)
-                                            .append(Text.literal(")"))
-                                    );
                                 } else {
+                                    pl.sendMessage(TextUtil.error("You guessed your target's role incorrectly!"));
+                                    
                                     RegistryEntry<DamageType> magicDamage = target
                                         .getShadow()
                                         .getServer()
@@ -175,11 +189,12 @@ public class RoleGuess extends CooldownAbility {
         );
         return AbilityResult.NO_CLOSE;
     }
-
-    public static final Identifier ID = MiscUtil.shadowID("role_guess");
+    
     @Override
-    public Identifier getID() { return ID; }
-
+    public Identifier getID() {
+        return ID;
+    }
+    
     @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
         return ITEM_STACK.copy();

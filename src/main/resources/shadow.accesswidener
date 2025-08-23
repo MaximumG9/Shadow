@@ -19,3 +19,6 @@ accessible field net/minecraft/entity/Entity FLAGS Lnet/minecraft/entity/data/Tr
 accessible field net/minecraft/entity/Entity GLOWING_FLAG_INDEX I
 
 accessible method net/minecraft/entity/projectile/ProjectileEntity <init> (Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V
+
+accessible field net/minecraft/entity/boss/dragon/EnderDragonFight previouslyKilled Z
+mutable field net/minecraft/entity/boss/dragon/EnderDragonFight previouslyKilled Z

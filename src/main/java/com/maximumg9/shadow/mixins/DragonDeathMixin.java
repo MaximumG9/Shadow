@@ -18,11 +18,11 @@ public class DragonDeathMixin extends MobEntity {
     protected DragonDeathMixin(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
     }
-
+    
     @Override
     public void onDeath(DamageSource damageSource) {
         Shadow shadow = getShadow(Objects.requireNonNull(this.getServer()));
-
+        
         shadow.endGame(
             shadow
                 .indirectPlayerManager

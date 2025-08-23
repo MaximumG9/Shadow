@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public class Config {
+    public final RoleManager roleManager;
+    public final ModifierManager modifierManager;
+    public final MaxCooldownManager maxCooldownManager;
+    private final Path saveFile;
+    
     public int worldBorderSize = 150;
     public int roleSlotCount = 25;
     public int overworldEyes = 8;
@@ -23,15 +28,14 @@ public class Config {
     public double cullRadius = 18.0;
     public boolean disableChat = false;
     public int disconnectTime = 20 * 60 * 10;
-    public final RoleManager roleManager;
-    public final MaxCooldownManager maxCooldownManager;
-
+    public int gracePeriodTicks = 20 * 60 * 3;
+    
     public Config(Shadow shadow, Path saveFile) {
         this.roleManager = new RoleManager(shadow, this);
+        this.modifierManager = new ModifierManager(shadow);
         this.maxCooldownManager = new MaxCooldownManager();
         this.saveFile = saveFile;
     }
-
     private void readNbt(NbtCompound nbt) {
         this.worldBorderSize = nbt.getInt("worldBorderSize");
         this.roleSlotCount = nbt.getInt("roleSlotCount");
@@ -45,11 +49,13 @@ public class Config {
         this.chatMessageCooldown = nbt.getInt("chatMessageCooldown");
         this.cullRadius = nbt.getDouble("cullRadius");
         this.disableChat = nbt.getBoolean("disableChat");
-
+        this.disconnectTime = nbt.getInt("disconnectTime");
+        this.gracePeriodTicks = nbt.getInt("gracePeriodTicks");
+        
         this.maxCooldownManager.readNbt(nbt.getCompound("maxCooldownManager"));
         this.roleManager.readNbt(nbt.getCompound("roleManager"));
+        this.modifierManager.readNbt(nbt.getCompound("modifierManager"));
     }
-
     private NbtCompound writeNbt(NbtCompound nbt) {
         nbt.putInt("worldBorderSize", this.worldBorderSize);
         nbt.putInt("roleSlotCount", this.roleSlotCount);
@@ -63,30 +69,28 @@ public class Config {
         nbt.putInt("chatMessageCooldown", this.chatMessageCooldown);
         nbt.putDouble("cullRadius", this.cullRadius);
         nbt.putBoolean("disableChat", this.disableChat);
-
+        nbt.putInt("disconnectTime", this.disconnectTime);
+        nbt.putInt("gracePeriodTicks", this.gracePeriodTicks);
+        
         nbt.put("maxCooldownManager", this.maxCooldownManager.writeNbt(new NbtCompound()));
         nbt.put("roleManager", this.roleManager.writeNbt(new NbtCompound()));
+        nbt.put("modifierManager", this.modifierManager.writeNbt(new NbtCompound()));
         return nbt;
     }
-
     public Config copy(Shadow shadow) {
         Config newConfig = new Config(shadow, this.saveFile);
-
+        
         newConfig.readNbt(this.writeNbt(new NbtCompound()));
-
+        
         return newConfig;
     }
-
     public void load() throws IOException {
-        NbtCompound compound = NbtIo.readCompressed(saveFile, new NbtSizeTracker(0xffffffffffffL,256));
-        if(compound == null) throw new FileNotFoundException("Could not find config file");
+        NbtCompound compound = NbtIo.readCompressed(saveFile, new NbtSizeTracker(0xffffffffffffL, 256));
+        if (compound == null) throw new FileNotFoundException("Could not find config file");
         this.readNbt(compound);
     }
-
     public void save() throws IOException {
         NbtCompound data = this.writeNbt(new NbtCompound());
-        NbtIo.writeCompressed(data,this.saveFile);
+        NbtIo.writeCompressed(data, this.saveFile);
     }
-
-    private final Path saveFile;
 }

@@ -14,9 +14,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 
 public class SheriffBow extends Ability {
+    public static final Identifier ID = MiscUtil.shadowID("sheriff_bow");
     private static final ItemStack ITEM_STACK;
+    
     static {
-        ITEM_STACK = new ItemStack(Items.BOW,1);
+        ITEM_STACK = new ItemStack(Items.BOW, 1);
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
@@ -29,18 +31,17 @@ public class SheriffBow extends Ability {
         );
         ITEM_STACK.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("Sheriff Bow").styled((style) -> style.withColor(Formatting.GOLD))
+            Text.literal("Sheriff Bow").styled(style -> style.withColor(Formatting.GOLD))
         );
         ITEM_STACK.set(
-                DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
-                Unit.INSTANCE
+            DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
+            Unit.INSTANCE
         );
     }
-
+    
     public SheriffBow(IndirectPlayer player) {
         super(player);
     }
-
     private static ItemStack createSheriffBow(IndirectPlayer player) {
         ItemStack item =
             NBTUtil.applyCustomDataToStack(
@@ -61,10 +62,11 @@ public class SheriffBow extends Ability {
             DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,
             true
         );
+        
         NBTUtil.flagRestrictMovement(item);
         return item;
     }
-
+    
     @Override
     public void init() {
         player.giveItem(
@@ -72,37 +74,31 @@ public class SheriffBow extends Ability {
             MiscUtil.DELETE_WARN,
             CancelPredicates.cancelOnPhaseChange(player.getShadow().state.phase)
         );
+        
         super.init();
     }
-
     @Override
     public void deInit() {
         player.scheduleUntil(
             (player) ->
                 player.getInventory()
-                    .remove((item) -> player.getUuid().equals(NBTUtil.getCustomData(item).getUuid("owner"))
-                            ,
-            1,
-                player.playerScreenHandler.getCraftingInput()),
+                    .remove((item) -> player.getUuid().equals(NBTUtil.getCustomData(item).getUuid("owner")),
+                        1,
+                        player.playerScreenHandler.getCraftingInput()),
             CancelPredicates.cancelOnPhaseChange(player.getShadow().state.phase));
         super.deInit();
     }
-    public static final Identifier ID = MiscUtil.shadowID("sheriff_bow");
+    
     @Override
     public Identifier getID() { return ID; }
-
+    
     @Override
     public AbilityResult apply() {
         return AbilityResult.NO_CLOSE;
     }
-
+    
     @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
-        ItemStack item = ITEM_STACK.copy();
-        item.set(
-            DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,
-            true
-        );
-        return item;
+        return ITEM_STACK.copy();
     }
 }

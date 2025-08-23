@@ -22,18 +22,18 @@ import java.util.function.BooleanSupplier;
 public abstract class MinecraftServerMixin implements ShadowProvider {
     @Unique
     private Shadow shadow;
-
+    
     @Override
     public Shadow shadow$getShadow() {
         return this.shadow;
     }
-
-    @Inject(method="<init>",at=@At("CTOR_HEAD"))
+    
+    @Inject(method = "<init>", at = @At("CTOR_HEAD"))
     public void init(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, Proxy proxy, DataFixer dataFixer, ApiServices apiServices, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory, CallbackInfo ci) {
         this.shadow = new Shadow((MinecraftServer) (Object) this);
     }
-
-    @Inject(method="tick", at=@At("HEAD"))
+    
+    @Inject(method = "tick", at = @At("HEAD"))
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
         this.shadow.tick();
     }

@@ -21,21 +21,23 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 @Mixin(EntityTrackerEntry.class)
 public class EntityTrackerEntryMixin {
-    @org.spongepowered.asm.mixin.Shadow @Final private Entity entity;
-
-    @ModifyArg(method = "sendPackets",at= @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/EntityTrackerUpdateS2CPacket;<init>(ILjava/util/List;)V"))
+    @org.spongepowered.asm.mixin.Shadow
+    @Final
+    private Entity entity;
+    
+    @ModifyArg(method = "sendPackets", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/EntityTrackerUpdateS2CPacket;<init>(ILjava/util/List;)V"))
     public List<DataTracker.SerializedEntry<?>> newEntityTrackerPacket(List<DataTracker.SerializedEntry<?>> changedEntries, @Local(argsOnly = true) ServerPlayerEntity player) {
         Shadow shadow = getShadow(player.getServer());
-
+        
         IndirectPlayer Iplayer = shadow.getIndirect(player);
-        if(shadow.isNight() && this.entity.getType() == EntityType.PLAYER) {
-            if(Iplayer.role == null || !Iplayer.role.hasAbility(SeeGlowing.ID)) {
+        if (shadow.isNight() && this.entity.getType() == EntityType.PLAYER) {
+            if (Iplayer.role == null || !Iplayer.role.hasAbility(SeeGlowing.ID)) {
                 changedEntries.replaceAll(
                     (entry) -> {
-                        if(entry.id() == Entity.FLAGS.id()) {
+                        if (entry.id() == Entity.FLAGS.id()) {
                             @SuppressWarnings("unchecked")
                             DataTracker.SerializedEntry<Byte> bEntry = (DataTracker.SerializedEntry<Byte>) entry;
-
+                            
                             return new DataTracker.SerializedEntry<>(
                                 bEntry.id(),
                                 bEntry.handler(),
@@ -47,15 +49,15 @@ public class EntityTrackerEntryMixin {
                 );
             }
         }
-
+        
         if (Iplayer.role == null || !Iplayer.role.hasAbility(SeeEnderEyesGlow.ID)) {
-            if(shadow.state.eyes.stream().anyMatch(eye -> eye.display().equals(this.entity.getUuid()))) {
+            if (shadow.state.eyes.stream().anyMatch(eye -> eye.display().equals(this.entity.getUuid()))) {
                 changedEntries.replaceAll(
                     (entry) -> {
-                        if(entry.id() == Entity.FLAGS.id()) {
+                        if (entry.id() == Entity.FLAGS.id()) {
                             @SuppressWarnings("unchecked")
                             DataTracker.SerializedEntry<Byte> bEntry = (DataTracker.SerializedEntry<Byte>) entry;
-
+                            
                             return new DataTracker.SerializedEntry<>(
                                 bEntry.id(),
                                 bEntry.handler(),
@@ -67,7 +69,7 @@ public class EntityTrackerEntryMixin {
                 );
             }
         }
-
+        
         return changedEntries;
     }
 }

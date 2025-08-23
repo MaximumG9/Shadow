@@ -12,21 +12,21 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class CancelCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
-                literal("$cancel")
-                        .requires((source) -> source.hasPermissionLevel(3))
-                        .executes((ctx) -> {
-                            Shadow shadow = getShadow(ctx.getSource().getServer());
-                            try {
-                                shadow.resetState();
-
-                                ctx.getSource().sendFeedback(
-                                        () -> Text.literal("Cancelled Game"),
-                                        true);
-                            } catch (Throwable t) {
-                                LogUtils.getLogger().error("error while cancelling", t);
-                            }
-                            return 0;
-                        })
+            literal("$cancel")
+                .requires((source) -> source.hasPermissionLevel(3))
+                .executes((ctx) -> {
+                    Shadow shadow = getShadow(ctx.getSource().getServer());
+                    try {
+                        shadow.resetState();
+                        
+                        ctx.getSource().sendFeedback(
+                            () -> Text.literal("Cancelled Game"),
+                            true);
+                    } catch (Throwable t) {
+                        LogUtils.getLogger().error("error while cancelling", t);
+                    }
+                    return 0;
+                })
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.maximumg9.shadow;
+package com.maximumg9.shadow.items;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

@@ -16,18 +16,19 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 @Mixin(PlayerAdvancementTracker.class)
 public class PlayerAdvancementTrackerMixin {
-    @Shadow private ServerPlayerEntity owner;
-
-    @Redirect(method = "method_53637",at= @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V"))
+    @Shadow
+    private ServerPlayerEntity owner;
+    
+    @Redirect(method = "method_53637", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V"))
     public void redirectBroadcast(PlayerManager instance, Text message, boolean overlay) {
         com.maximumg9.shadow.Shadow shadow = getShadow(this.owner.server);
-        if(shadow.state.phase != GamePhase.PLAYING) {
-            instance.broadcast(message,overlay);
+        if (shadow.state.phase != GamePhase.PLAYING) {
+            instance.broadcast(message, overlay);
             return;
         }
         IndirectPlayer player = shadow.getIndirect(this.owner);
-
-        if(player.role != null && player.role.getFaction() != Faction.SPECTATOR) {
+        
+        if (player.role != null && player.role.getFaction() != Faction.SPECTATOR) {
             instance.broadcast(message, overlay);
         }
     }
