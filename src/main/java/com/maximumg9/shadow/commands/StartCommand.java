@@ -69,7 +69,6 @@ public class StartCommand {
         Shadow shadow = getShadow(server);
         
         shadow.addTickable(new StartTicker(shadow));
-        shadow.addTickable(new GracePeriodTicker(shadow));
         
         for (IndirectPlayer player : shadow.getOnlinePlayers()) {
             ServerPlayerEntity entity = player.getPlayerOrThrow();
@@ -128,6 +127,8 @@ class StartTicker implements Tickable {
         
         if (!shadow.config.roleManager.pickRoles()) return;
         if (!shadow.config.modifierManager.pickModifiers()) return;
+
+        shadow.addTickable(new GracePeriodTicker(shadow));
         
         for (IndirectPlayer player : shadow.getOnlinePlayers()) {
             if (player.role == null) {
