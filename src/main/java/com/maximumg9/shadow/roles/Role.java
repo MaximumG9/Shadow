@@ -113,7 +113,8 @@ public abstract class Role implements ItemRepresentable {
                         abilitySelector,
                         AbilityStar.ID
                     )
-                )),
+                )
+            ),
             MiscUtil.DELETE_WARN
         );
         

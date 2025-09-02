@@ -118,6 +118,13 @@ public abstract class PersistentProjectileMixin extends ProjectileEntity {
                 1.0f,
                 1.0f
             );
+
+            if(target instanceof LivingEntity le) {
+                if(le.isBlocking()) {
+                    le.stopUsingItem();
+                }
+            }
+
             return Float.MAX_VALUE;
         }
         

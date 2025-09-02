@@ -58,10 +58,6 @@ public class SheriffBow extends Ability {
             DataComponentTypes.ITEM_NAME,
             Text.literal("Sheriff Bow").styled(style -> style.withColor(Formatting.GOLD))
         );
-        item.set(
-            DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,
-            true
-        );
         
         NBTUtil.flagRestrictMovement(item);
         return item;
