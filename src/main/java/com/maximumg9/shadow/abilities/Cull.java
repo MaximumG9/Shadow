@@ -2,6 +2,7 @@ package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -32,6 +33,7 @@ public class Cull extends Ability {
             Text.literal("Cull")
                 .styled(style -> style.withColor(Formatting.RED))
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     private boolean usedThisNight = false;

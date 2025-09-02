@@ -40,34 +40,35 @@ public class DebugCommand {
                                     argument("role", string())
                                         .suggests(Roles::suggest)
                                         .executes((ctx) -> {
-                                                ServerPlayerEntity player = EntityArgumentType.getPlayer(ctx, "player");
-                                                Roles role = Roles.getRole(ctx, "role");
-                                                Shadow shadow = getShadow(ctx.getSource().getServer());
-                                                
-                                                IndirectPlayer indirectPlayer = shadow.getIndirect(player);
-                                                
-                                                if (indirectPlayer.role != null) {
-                                                    indirectPlayer.role.deInit();
-                                                }
-                                                
-                                                indirectPlayer.role = role.factory.makeRole(indirectPlayer);
-                                                
-                                                indirectPlayer.role.init();
-                                                
-                                                
-                                                ctx.getSource().sendFeedback(() ->
-                                                        Text.literal("Set ")
-                                                            .append(player.getName())
-                                                            .append(Text.literal("'s Role to "))
-                                                            .append(
-                                                                Objects.requireNonNull(indirectPlayer.role)
-                                                                    .getName()
-                                                            ),
-                                                    false);
-                                                
-                                                return 1;
+                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(ctx, "player");
+                                            Roles role = Roles.getRole(ctx, "role");
+                                            Shadow shadow = getShadow(ctx.getSource().getServer());
+
+                                            IndirectPlayer indirectPlayer = shadow.getIndirect(player);
+
+                                            if (indirectPlayer.role != null) {
+                                                indirectPlayer.role.deInit();
                                             }
-                                        )
+
+                                            indirectPlayer.role = role.factory.makeRole(indirectPlayer);
+
+                                            indirectPlayer.role.init();
+
+
+                                            ctx.getSource().sendFeedback(
+                                                () ->
+                                                Text.literal("Set ")
+                                                    .append(player.getName())
+                                                    .append(Text.literal("'s Role to "))
+                                                    .append(
+                                                        Objects.requireNonNull(indirectPlayer.role)
+                                                            .getName()
+                                                    ),
+                                            false
+                                            );
+
+                                            return 1;
+                                        })
                                 )
                         )
                 )

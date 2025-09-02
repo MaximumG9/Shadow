@@ -38,6 +38,7 @@ public class GetHeart extends Ability {
                 Ability.AbilityText()
             )
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
 
     public GetHeart(IndirectPlayer player) {

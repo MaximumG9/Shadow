@@ -37,6 +37,7 @@ public class SheriffBow extends Ability {
             DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
             Unit.INSTANCE
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     public SheriffBow(IndirectPlayer player) {

@@ -1,6 +1,7 @@
 package com.maximumg9.shadow.util;
 
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -8,6 +9,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
@@ -51,5 +53,13 @@ public abstract class NBTUtil {
             nbt.putString(ID_NAME, id.toString());
             return nbt;
         });
+    }
+
+    public static ItemStack removeAttributeModifiers(ItemStack stack) {
+        stack.set(
+            DataComponentTypes.ATTRIBUTE_MODIFIERS,
+            new AttributeModifiersComponent(List.of(), true)
+        );
+        return stack;
     }
 }

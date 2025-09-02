@@ -1,6 +1,7 @@
 package com.maximumg9.shadow.modifiers;
 
 import com.maximumg9.shadow.screens.ItemRepresentable;
+import com.maximumg9.shadow.util.NBTUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -27,6 +28,7 @@ public class AddModifier implements ItemRepresentable {
             DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
             Unit.INSTANCE
         );
+        NBTUtil.removeAttributeModifiers(stack);
         return stack;
     }
 }

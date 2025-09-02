@@ -5,6 +5,7 @@ import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.TimeUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
@@ -53,6 +54,7 @@ public class RoleGuess extends Ability {
                 Ability.AbilityText()
             )
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     private final List<Roles> unguessableRoles;

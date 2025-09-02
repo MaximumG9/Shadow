@@ -59,5 +59,6 @@ public class Lifeweaver extends AbstractVillager {
     private static final ItemStack ITEM_STACK = new ItemStack(Items.GOLDEN_APPLE);
     static {
         ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new Lifeweaver(null).getName());
+        ITEM_STACK.remove(DataComponentTypes.FOOD);
     }
 }

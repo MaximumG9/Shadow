@@ -1,9 +1,9 @@
 package com.maximumg9.shadow.modifiers;
 
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
@@ -11,8 +11,6 @@ import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Unit;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class QuickStart extends Modifier {
     public static final ModifierFactory<QuickStart> FACTORY = new Factory();
@@ -26,10 +24,7 @@ public class QuickStart extends Modifier {
             DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
             Unit.INSTANCE
         );
-        ITEM_STACK.set(
-            DataComponentTypes.ATTRIBUTE_MODIFIERS,
-            new AttributeModifiersComponent(List.of(), true)
-        );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     boolean triggered = false;

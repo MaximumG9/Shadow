@@ -1,6 +1,7 @@
 package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -48,6 +49,7 @@ public class ToggleStrength extends Ability {
             DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
             Unit.INSTANCE
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     private boolean hasStrength = false;
