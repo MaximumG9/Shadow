@@ -56,7 +56,7 @@ public class ShadowChatCommand {
         ).forEach((p) ->
             p.sendMessage(
                 Text.literal("[Shadow Chat]")
-                    .styled(style -> style.withColor(Formatting.DARK_RED))
+                    .styled(style -> style.withColor(Formatting.RED))
                     .append(Text.literal(" <"))
                     .append(player.getName().copy().setStyle(player.role.getStyle()))
                     .append(Text.literal("> "))
