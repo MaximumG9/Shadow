@@ -18,9 +18,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 public class ToggleStrength extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("toggle_strength");
     private static final ItemStack ITEM_STACK;
@@ -56,16 +53,6 @@ public class ToggleStrength extends Ability {
     
     public ToggleStrength(IndirectPlayer player) {
         super(player);
-    }
-    
-    public List<Supplier<AbilityFilterResult>> getFilters() {
-        return List.of(
-            () -> {
-                if (getShadow().isGracePeriod())
-                    return AbilityFilterResult.FAIL("You cannot use this ability in Grace Period.");
-                return AbilityFilterResult.PASS();
-            }
-        );
     }
     
     @Override
