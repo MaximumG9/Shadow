@@ -40,7 +40,6 @@ import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
-import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
