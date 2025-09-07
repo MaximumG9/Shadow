@@ -3,7 +3,7 @@ package com.maximumg9.shadow.abilities;
 import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.filters.Filters;
 import com.maximumg9.shadow.items.LifeweaverHeart;
-import com.maximumg9.shadow.roles.Lifeweaver;
+import com.maximumg9.shadow.roles.villager.Lifeweaver;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;

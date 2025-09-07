@@ -1,5 +1,6 @@
-package com.maximumg9.shadow.roles;
+package com.maximumg9.shadow.roles.neutral;
 
+import com.maximumg9.shadow.roles.*;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;

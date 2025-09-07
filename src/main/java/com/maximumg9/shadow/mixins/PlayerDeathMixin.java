@@ -4,7 +4,7 @@ import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.ObfuscateRole;
 import com.maximumg9.shadow.roles.Faction;
-import com.maximumg9.shadow.roles.Spectator;
+import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.damage.DamageSource;

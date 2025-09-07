@@ -1,5 +1,12 @@
 package com.maximumg9.shadow.roles;
 
+import com.maximumg9.shadow.roles.neutral.Spectator;
+import com.maximumg9.shadow.roles.shadow.Oracle;
+import com.maximumg9.shadow.roles.shadow.ShadowRole;
+import com.maximumg9.shadow.roles.villager.Lifeweaver;
+import com.maximumg9.shadow.roles.villager.Looker;
+import com.maximumg9.shadow.roles.villager.Sheriff;
+import com.maximumg9.shadow.roles.villager.Villager;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;

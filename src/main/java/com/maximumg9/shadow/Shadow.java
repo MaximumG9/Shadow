@@ -6,7 +6,7 @@ import com.maximumg9.shadow.commands.*;
 import com.maximumg9.shadow.config.Config;
 import com.maximumg9.shadow.items.*;
 import com.maximumg9.shadow.roles.Faction;
-import com.maximumg9.shadow.roles.Spectator;
+import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayerManager;
