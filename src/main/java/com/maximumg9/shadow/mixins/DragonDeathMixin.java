@@ -29,7 +29,9 @@ public class DragonDeathMixin extends MobEntity {
                 .getRecentlyOnlinePlayers(shadow.config.disconnectTime)
                 .stream()
                 .filter((player) -> {
-                    assert player.originalRole != null;
+                    if(player.originalRole == null) {
+                        return false;
+                    }
                     return player.originalRole.faction == Faction.VILLAGER;
                 }).toList(),
             Faction.VILLAGER,
