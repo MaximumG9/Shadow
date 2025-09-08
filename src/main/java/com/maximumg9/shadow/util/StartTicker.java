@@ -143,7 +143,7 @@ public class StartTicker implements Tickable {
 
             while (true) {
                 int x = (int) (center.getX() * netherScaleFactor) + this.shadow.random.nextBetween(-radius, radius);
-                int y = this.shadow.random.nextBetween(NETHER_LAVA_HEIGHT, nether.getHeight());
+                int y = this.shadow.random.nextBetween(NETHER_LAVA_HEIGHT, nether.getLogicalHeight());
                 int z = (int) (center.getZ() * netherScaleFactor) + this.shadow.random.nextBetween(-radius, radius);
 
                 pos.set(x, y, z);
