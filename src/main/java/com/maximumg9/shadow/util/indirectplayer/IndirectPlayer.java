@@ -396,6 +396,8 @@ public class IndirectPlayer implements ItemRepresentable {
                 player.getHungerManager().setFoodLevel(20);
                 player.getHungerManager().setSaturationLevel(5f);
                 player.clearStatusEffects();
+                player.setExperienceLevel(0);
+                player.setExperiencePoints(0);
                 
                 AttributeContainer attributes = player.getAttributes();
                 
