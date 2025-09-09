@@ -51,7 +51,7 @@ public class RoleGuess extends Ability {
                 Text.literal("⌛ 8 minute cooldown").styled(style -> style.withColor(Formatting.BLUE)),
                 Text.literal("IF YOU GUESS INCORRECTLY, YOU DIE")
                     .styled(style -> style.withColor(Formatting.RED).withBold(true)),
-                Ability.AbilityText()
+                AbilityText()
             )
         );
         NBTUtil.removeAttributeModifiers(ITEM_STACK);
