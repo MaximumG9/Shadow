@@ -28,7 +28,8 @@
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
-    "SlotMixin"
+    "SlotMixin",
+    "TridentEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

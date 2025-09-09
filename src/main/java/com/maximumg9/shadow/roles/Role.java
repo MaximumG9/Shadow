@@ -107,11 +107,13 @@ public abstract class Role implements ItemRepresentable {
         );
         
         player.giveItemNow(
-            NBTUtil.flagRestrictMovement(
-                NBTUtil.flagAsInvisible(
-                    NBTUtil.addID(
-                        abilitySelector,
-                        AbilityStar.ID
+            NBTUtil.flagDisableAttributes(
+                NBTUtil.flagRestrictMovement(
+                    NBTUtil.flagAsInvisible(
+                        NBTUtil.addID(
+                            abilitySelector,
+                            AbilityStar.ID
+                        )
                     )
                 )
             ),

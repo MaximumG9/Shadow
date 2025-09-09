@@ -2,6 +2,7 @@ package com.maximumg9.shadow.roles;
 
 import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.roles.shadow.Oracle;
+import com.maximumg9.shadow.roles.shadow.PoseidonsWrath;
 import com.maximumg9.shadow.roles.shadow.ShadowRole;
 import com.maximumg9.shadow.roles.villager.Lifeweaver;
 import com.maximumg9.shadow.roles.villager.Looker;
@@ -20,10 +21,12 @@ import java.util.concurrent.CompletableFuture;
 
 public enum Roles {
     SPECTATOR(Spectator.FACTORY),
+
     VILLAGER(Villager.FACTORY),
     SHERIFF(Sheriff.FACTORY),
     LOOKER(Looker.FACTORY),
     LIFEWEAVER(Lifeweaver.FACTORY),
+    POSEIDONS_WRATH(PoseidonsWrath.FACTORY),
     SHADOW(ShadowRole.FACTORY),
     ORACLE(Oracle.FACTORY);
     

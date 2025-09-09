@@ -18,6 +18,8 @@ public abstract class Ability implements ItemRepresentable {
         .styled(style -> style.withColor(Formatting.BLUE));
     private static final Text ITEM_TEXT = Text.literal("[ITEM]")
         .styled(style -> style.withColor(Formatting.GOLD));
+    private static final Text INVISIBLE_TEXT = Text.literal("[INVISIBLE]")
+        .styled(style -> style.withColor(Formatting.GRAY));
     private static final Text ABILITY_TEXT = Text.literal("[ABILITY]")
         .styled(style -> style.withColor(Formatting.DARK_PURPLE));
     
@@ -29,6 +31,7 @@ public abstract class Ability implements ItemRepresentable {
     }
     static MutableText PassiveText() { return PASSIVE_TEXT.copy(); }
     static MutableText ItemText() { return ITEM_TEXT.copy(); }
+    static MutableText InvisibleText() { return INVISIBLE_TEXT.copy(); }
     static MutableText AbilityText() { return ABILITY_TEXT.copy(); }
     public List<Filter> getFilters() { return List.of(); }
     public long getLastActivated() { return lastActivated; }
