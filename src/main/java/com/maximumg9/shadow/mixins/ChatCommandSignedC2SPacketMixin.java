@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ChatCommandSignedC2SPacketMixin {
 
     /**
-     * @reason Same as {@link MixinServerboundChatPacket#onGetSignature}.
+     * @reason Same as [REDACTED].
      * @author Aizistral
      */
 

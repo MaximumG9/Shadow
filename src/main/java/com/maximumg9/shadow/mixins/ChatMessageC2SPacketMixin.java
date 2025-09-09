@@ -14,7 +14,7 @@ public class ChatMessageC2SPacketMixin {
     /**
      * @reason Strip signatures before relaying messages to other clients, if they arrive signed
      * This is important for mod to be able to operate in server-only mode without
-     * {@link NCRConfigLegacy#convertToGameMessage()} enabled.
+     * [REDACTED] enabled.
      * @author Aizistral
      */
 
