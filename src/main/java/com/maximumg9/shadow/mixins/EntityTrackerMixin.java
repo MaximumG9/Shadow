@@ -1,21 +1,28 @@
 package com.maximumg9.shadow.mixins;
 
 import com.maximumg9.shadow.Shadow;
+import com.maximumg9.shadow.abilities.PoseidonsTrident;
 import com.maximumg9.shadow.abilities.SeeEnderEyesGlow;
 import com.maximumg9.shadow.abilities.SeeGlowing;
+import com.maximumg9.shadow.roles.Faction;
+import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.PlayerAssociatedNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerChunkLoadingManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
@@ -101,5 +108,22 @@ public class EntityTrackerMixin {
         
         instance.sendPacket(originalPacket);
         
+    }
+
+    @Inject(
+        method = "updateTrackedStatus(Lnet/minecraft/server/network/ServerPlayerEntity;)V",
+        at=@At("HEAD"),
+        cancellable = true
+    )
+    public void updateTrackedStatus(ServerPlayerEntity player, CallbackInfo ci) {
+        if(!(this.entity instanceof TridentEntity trident)) return;
+        if(!PoseidonsTrident.ID.equals(NBTUtil.getID(trident.getItemStack()))) return;
+
+        Shadow shadow = getShadow(this.entity.getServer());
+        IndirectPlayer iPlayer = shadow.getIndirect(player);
+
+        if(iPlayer.role == null || iPlayer.role.getFaction() != Faction.SHADOW) {
+            ci.cancel();
+        }
     }
 }

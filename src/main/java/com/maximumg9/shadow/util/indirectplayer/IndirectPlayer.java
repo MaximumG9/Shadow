@@ -6,7 +6,7 @@ import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.modifiers.Modifier;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
-import com.maximumg9.shadow.roles.Spectator;
+import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.mojang.authlib.GameProfile;

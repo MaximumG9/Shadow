@@ -1,13 +1,13 @@
 package com.maximumg9.shadow.config;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 
 public class MaxCooldownManager {
     
-    private final Object2IntOpenHashMap<Identifier> cooldownMap = new Object2IntOpenHashMap<>();
+    private final Object2LongOpenHashMap<Identifier> cooldownMap = new Object2LongOpenHashMap<>();
     
     public MaxCooldownManager() { }
     
@@ -16,17 +16,17 @@ public class MaxCooldownManager {
             Identifier id = Identifier.tryParse(key);
             if (id == null) continue;
             if (!nbt.contains(key, NbtElement.INT_TYPE)) continue;
-            cooldownMap.put(id, nbt.getInt(key));
+            cooldownMap.put(id, nbt.getLong(key));
         }
     }
     
-    public int getMaxCooldown(Identifier id, int defaultMaxCooldown) {
+    public long getMaxCooldown(Identifier id, long defaultMaxCooldown) {
         return cooldownMap.putIfAbsent(id, defaultMaxCooldown);
     }
     
     NbtCompound writeNbt(NbtCompound nbt) {
-        cooldownMap.object2IntEntrySet().fastForEach((entry) ->
-            nbt.putInt(entry.getKey().toString(), entry.getIntValue())
+        cooldownMap.object2LongEntrySet().fastForEach((entry) ->
+            nbt.putLong(entry.getKey().toString(), entry.getLongValue())
         );
         return nbt;
     }

@@ -1,6 +1,7 @@
 package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -26,6 +27,7 @@ public class SeeEnderEyesGlow extends Ability {
                 PassiveText()
             )
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     public SeeEnderEyesGlow(IndirectPlayer player) {

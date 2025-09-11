@@ -1,6 +1,7 @@
 package com.maximumg9.shadow.util;
 
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -8,13 +9,15 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 public abstract class NBTUtil {
     public static final String ID_NAME = "id";
     public static final String INVISIBLE_KEY = "invisible";
-    public static final String RESTRICT_MOVEMENT_KEY = "invisible";
+    public static final String DISABLE_ATTRIBUTES_KEY = "disable_attr";
+    public static final String RESTRICT_MOVEMENT_KEY = "restrict_movement";
     public static NbtCompound getCustomData(@NotNull ItemStack stack) {
         NbtComponent component = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (component == null) return new NbtCompound();
@@ -39,6 +42,12 @@ public abstract class NBTUtil {
             return nbt;
         });
     }
+    public static ItemStack flagDisableAttributes(@NotNull ItemStack stack) {
+        return applyCustomDataToStack(stack, nbt -> {
+            nbt.putBoolean(DISABLE_ATTRIBUTES_KEY, true);
+            return nbt;
+        });
+    }
     public static boolean hasID(@NotNull ItemStack stack, Identifier id) {
         return Objects.equals(getID(stack), id);
     }
@@ -51,5 +60,13 @@ public abstract class NBTUtil {
             nbt.putString(ID_NAME, id.toString());
             return nbt;
         });
+    }
+
+    public static ItemStack removeAttributeModifiers(ItemStack stack) {
+        stack.set(
+            DataComponentTypes.ATTRIBUTE_MODIFIERS,
+            new AttributeModifiersComponent(List.of(), true)
+        );
+        return stack;
     }
 }

@@ -11,6 +11,7 @@ import com.maximumg9.shadow.items.ParticipationEye;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Spectator;
 import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayerManager;

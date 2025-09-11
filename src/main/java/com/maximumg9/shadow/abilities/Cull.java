@@ -1,7 +1,10 @@
 package com.maximumg9.shadow.abilities;
 
+import com.maximumg9.shadow.abilities.filters.Filter;
+import com.maximumg9.shadow.abilities.filters.Filters;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -19,9 +22,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
-import java.util.function.Supplier;
 
-public class Cull extends Ability {
+public class Cull extends com.maximumg9.shadow.abilities.Ability {
     public static final Identifier ID = MiscUtil.shadowID("cull");
     private static final ItemStack ITEM_STACK;
     
@@ -31,6 +33,7 @@ public class Cull extends Ability {
             DataComponentTypes.ITEM_NAME,
             TextUtil.red("Cull")
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     private boolean usedThisNight = false;
@@ -39,22 +42,16 @@ public class Cull extends Ability {
         super(player);
     }
     
-    public List<Supplier<AbilityFilterResult>> getFilters() {
+    public List<Filter> getFilters() {
         return List.of(
-            () -> {
-                if (getShadow().isGracePeriod())
-                    return AbilityFilterResult.FAIL("You cannot use this ability in Grace Period.");
-                return AbilityFilterResult.PASS();
-            },
-            () -> {
-                if (!getShadow().isNight())
-                    return AbilityFilterResult.FAIL("You can only use this ability during the night!");
-                return AbilityFilterResult.PASS();
-            },
-            () -> {
-                if (usedThisNight) return AbilityFilterResult.FAIL("You've already used this ability tonight!");
-                return AbilityFilterResult.PASS();
-            }
+            new Filters.NotGracePeriod(),
+            new Filters.Night(),
+            new Filter("You've already used this ability tonight!") {
+                @Override
+                public boolean filter(Ability ability) {
+                    return usedThisNight;
+                }
+            } // TODO: This is bad
         );
     }
     

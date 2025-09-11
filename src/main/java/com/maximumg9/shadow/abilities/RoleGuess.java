@@ -1,12 +1,14 @@
 package com.maximumg9.shadow.abilities;
 
+import com.maximumg9.shadow.abilities.filters.Filter;
+import com.maximumg9.shadow.abilities.filters.Filters;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
-import com.maximumg9.shadow.util.TimeUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -24,7 +26,6 @@ import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class RoleGuess extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("role_guess");
@@ -49,9 +50,10 @@ public class RoleGuess extends Ability {
                 TextUtil.blue("⌛ 8 minute cooldown"),
                 TextUtil.red("IF YOU GUESS INCORRECTLY, YOU DIE")
                     .styled(style -> style.withBold(true)),
-                Ability.AbilityText()
+                AbilityText()
             )
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     private final List<Roles> unguessableRoles;
@@ -73,40 +75,13 @@ public class RoleGuess extends Ability {
         this.unguessableFactions = unguessableFactions;
     }
     
-    public List<Supplier<AbilityFilterResult>> getFilters() {
+    public List<Filter> getFilters() {
         return List.of(
-            () -> {
-                if (getShadow().isGracePeriod())
-                    return AbilityFilterResult.FAIL("You cannot use this ability in Grace Period.");
-                return AbilityFilterResult.PASS();
-            },
-            () -> {
-                long timeLeft = this.getCooldownTimeLeft(RoleGuess.COOLDOWN_TIME);
-                if (timeLeft > 0)
-                    return AbilityFilterResult.FAIL("This ability is on cooldown for " + TimeUtil.ticksToText(timeLeft, true));
-                return AbilityFilterResult.PASS();
-            },
-            () -> {
-                long shadows = getShadow().indirectPlayerManager
-                    .getRecentlyOnlinePlayers(getShadow().config.disconnectTime)
-                    .stream()
-                    .filter(
-                        (player) ->
-                            player.role != null &&
-                                player.role.getFaction() == Faction.SHADOW
-                    ).count();
-                long nonShadows = getShadow().indirectPlayerManager
-                    .getRecentlyOnlinePlayers(getShadow().config.disconnectTime)
-                    .stream().filter(
-                        (player) -> player.role != null &&
-                            player.role.getFaction() != Faction.SPECTATOR
-                    )
-                    .count() - shadows;
-                
-                if (shadows >= nonShadows)
-                    return AbilityFilterResult.FAIL("You cannot guess when the number of shadows alive meets or exceeds the number of non-shadows alive.");
-                return AbilityFilterResult.PASS();
-            }
+            new Filters.NotGracePeriod(),
+            new Filters.Cooldown(RoleGuess.COOLDOWN_TIME),
+            new Filters.NonShadowsGreaterThanShadows(
+                "You cannot guess when the number of shadows alive meets or exceeds the number of non-shadows alive."
+            )
         );
     }
     

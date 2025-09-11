@@ -34,6 +34,7 @@ public class SheriffBow extends Ability {
             DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
             Unit.INSTANCE
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     public SheriffBow(IndirectPlayer player) {
@@ -54,10 +55,6 @@ public class SheriffBow extends Ability {
         item.set(
             DataComponentTypes.ITEM_NAME,
             TextUtil.gold("Sheriff Bow")
-        );
-        item.set(
-            DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,
-            true
         );
         
         NBTUtil.flagRestrictMovement(item);

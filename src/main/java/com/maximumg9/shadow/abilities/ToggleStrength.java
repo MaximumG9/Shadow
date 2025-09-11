@@ -1,6 +1,7 @@
 package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -15,9 +16,6 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 public class ToggleStrength extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("toggle_strength");
@@ -46,22 +44,13 @@ public class ToggleStrength extends Ability {
             DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
             Unit.INSTANCE
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
     
     private boolean hasStrength = false;
     
     public ToggleStrength(IndirectPlayer player) {
         super(player);
-    }
-    
-    public List<Supplier<AbilityFilterResult>> getFilters() {
-        return List.of(
-            () -> {
-                if (getShadow().isGracePeriod())
-                    return AbilityFilterResult.FAIL("You cannot use this ability in Grace Period.");
-                return AbilityFilterResult.PASS();
-            }
-        );
     }
     
     @Override

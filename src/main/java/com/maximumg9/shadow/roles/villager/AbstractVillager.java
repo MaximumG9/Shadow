@@ -1,6 +1,8 @@
-package com.maximumg9.shadow.roles;
+package com.maximumg9.shadow.roles.villager;
 
 import com.maximumg9.shadow.abilities.Ability;
+import com.maximumg9.shadow.roles.Faction;
+import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;

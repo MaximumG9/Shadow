@@ -1,6 +1,7 @@
 package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.Shadow;
+import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -11,11 +12,11 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 public abstract class Ability implements ItemRepresentable {
     private static final Text PASSIVE_TEXT = TextUtil.blue("[PASSIVE]");
     private static final Text ITEM_TEXT = TextUtil.gold("[ITEM]");
+    private static final Text INVISIBLE_TEXT = TextUtil.gray("[INVISIBLE]");
     private static final Text ABILITY_TEXT = TextUtil.withColour("[ABILITY]",Formatting.DARK_PURPLE);
 
     final IndirectPlayer player;
@@ -26,18 +27,19 @@ public abstract class Ability implements ItemRepresentable {
     }
     static MutableText PassiveText() { return PASSIVE_TEXT.copy(); }
     static MutableText ItemText() { return ITEM_TEXT.copy(); }
+    static MutableText InvisibleText() { return INVISIBLE_TEXT.copy(); }
     static MutableText AbilityText() { return ABILITY_TEXT.copy(); }
-    public List<Supplier<AbilityFilterResult>> getFilters() { return List.of(); }
+    public List<Filter> getFilters() { return List.of(); }
     public long getLastActivated() { return lastActivated; }
     public void resetLastActivated() { this.lastActivated = this.getShadow().getServer().getOverworld().getTime(); }
     
-    public long getCooldownTimeLeft(int cooldown) {
+    public long getCooldownTimeLeft(long cooldown) {
         return this.getShadow().config.maxCooldownManager.getMaxCooldown(this.getID(), cooldown) +
             getLastActivated() -
             this.getShadow().getServer().getOverworld().getTime();
     }
     
-    Shadow getShadow() { return player.getShadow(); }
+    public Shadow getShadow() { return player.getShadow(); }
     
     public abstract Identifier getID();
     
@@ -46,8 +48,8 @@ public abstract class Ability implements ItemRepresentable {
     }
     
     public AbilityResult triggerApply() {
-        for (Supplier<AbilityFilterResult> filter : getFilters()) {
-            AbilityFilterResult result = filter.get();
+        for (Filter filter : getFilters()) {
+            AbilityFilterResult result = filter.test(this);
             if (!result.status.equals(AbilityFilterResult.Status.PASS)) {
                 this.player.sendMessageNow(TextUtil.red(result.message));
                 return AbilityResult.CLOSE;

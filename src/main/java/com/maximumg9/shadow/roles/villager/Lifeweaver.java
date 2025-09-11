@@ -1,7 +1,10 @@
-package com.maximumg9.shadow.roles;
+package com.maximumg9.shadow.roles.villager;
 
 import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.abilities.GetHeart;
+import com.maximumg9.shadow.roles.RoleFactory;
+import com.maximumg9.shadow.roles.Roles;
+import com.maximumg9.shadow.roles.SubFaction;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
@@ -59,5 +62,6 @@ public class Lifeweaver extends AbstractVillager {
     private static final ItemStack ITEM_STACK = new ItemStack(Items.GOLDEN_APPLE);
     static {
         ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new Lifeweaver(null).getName());
+        ITEM_STACK.remove(DataComponentTypes.FOOD);
     }
 }

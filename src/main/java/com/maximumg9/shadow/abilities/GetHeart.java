@@ -1,7 +1,9 @@
 package com.maximumg9.shadow.abilities;
 
+import com.maximumg9.shadow.abilities.filters.Filter;
+import com.maximumg9.shadow.abilities.filters.Filters;
 import com.maximumg9.shadow.items.LifeweaverHeart;
-import com.maximumg9.shadow.roles.Lifeweaver;
+import com.maximumg9.shadow.roles.villager.Lifeweaver;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
@@ -18,9 +20,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
-import java.util.function.Supplier;
 
-public class GetHeart extends Ability {
+public class GetHeart extends com.maximumg9.shadow.abilities.Ability {
     public static final Identifier ATTR_ID = MiscUtil.shadowID("lifeweaver_max_health");
     private static final ItemStack ITEM_STACK = new ItemStack(Items.GOLDEN_APPLE);
 
@@ -34,27 +35,19 @@ public class GetHeart extends Ability {
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
                 TextUtil.gray("Get a heart as an item"),
-                Ability.AbilityText()
+                com.maximumg9.shadow.abilities.Ability.AbilityText()
             )
         );
+        NBTUtil.removeAttributeModifiers(ITEM_STACK);
     }
 
     public GetHeart(IndirectPlayer player) {
         super(player);
     }
 
-    public List<Supplier<AbilityFilterResult>> getFilters() {
+    public List<Filter> getFilters() {
         return List.of(
-            () -> {
-                ServerPlayerEntity player = this.player.getPlayerOrThrow();
-                float maxHealth = player.getMaxHealth();
-
-                if (maxHealth <= 2f) {
-                    return AbilityFilterResult.FAIL("You don't have enough health to remove another heart!");
-                }
-
-                return AbilityFilterResult.PASS();
-            }
+            new Filters.RequiredMaxHealth(2f,"You don't have enough health to remove another heart!")
         );
     }
 

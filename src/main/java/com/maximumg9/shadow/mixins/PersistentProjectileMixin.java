@@ -61,6 +61,7 @@ public abstract class PersistentProjectileMixin extends ProjectileEntity {
                         CancelPredicates.cancelOnPhaseChange(shadow.state.phase)
                     );
                 }
+                pTarget.disableShield();
             }
             
             // Bow removal, if no bow in inventory, then no damage :)
@@ -118,6 +119,7 @@ public abstract class PersistentProjectileMixin extends ProjectileEntity {
                 1.0f,
                 1.0f
             );
+
             return Float.MAX_VALUE;
         }
         

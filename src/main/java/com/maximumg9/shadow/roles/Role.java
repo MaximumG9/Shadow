@@ -26,10 +26,10 @@ import java.util.Objects;
 
 public abstract class Role implements ItemRepresentable {
     
-    final IndirectPlayer player;
+    protected final IndirectPlayer player;
     private final List<Ability> abilities = new ArrayList<>();
     
-    Role(IndirectPlayer player, List<Ability.Factory> abilityFactories) {
+    protected Role(IndirectPlayer player, List<Ability.Factory> abilityFactories) {
         this.player = player;
         abilityFactories.forEach((factory) -> abilities.add(factory.create(player)));
     }
@@ -106,13 +106,16 @@ public abstract class Role implements ItemRepresentable {
         );
         
         player.giveItemNow(
-            NBTUtil.flagRestrictMovement(
-                NBTUtil.flagAsInvisible(
-                    NBTUtil.addID(
-                        abilitySelector,
-                        AbilityStar.ID
+            NBTUtil.flagDisableAttributes(
+                NBTUtil.flagRestrictMovement(
+                    NBTUtil.flagAsInvisible(
+                        NBTUtil.addID(
+                            abilitySelector,
+                            AbilityStar.ID
+                        )
                     )
-                )),
+                )
+            ),
             MiscUtil.DELETE_WARN
         );
         
