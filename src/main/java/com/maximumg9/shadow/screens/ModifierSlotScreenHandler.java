@@ -31,17 +31,17 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 public class ModifierSlotScreenHandler extends ShadowScreenHandler {
     private static final int SIZE = 9 * 6;
-    private static final Text NEXT_PAGE_TEXT = Text.literal("Next Page").styled((style) -> style.withColor(Formatting.GOLD));
-    private static final Text LAST_PAGE_TEXT = Text.literal("Last Page").styled((style) -> style.withColor(Formatting.GOLD));
+    private static final Text NEXT_PAGE_TEXT = TextUtil.gold("Next Page");
+    private static final Text LAST_PAGE_TEXT = TextUtil.gold("Last Page");
     
-    private static final Text MINUS_10_PERCENT = Text.literal("-10%").styled((style) -> style.withColor(Formatting.RED));
-    private static final Text MINUS_5_PERCENT = Text.literal("-10%").styled((style) -> style.withColor(Formatting.RED));
-    private static final Text MINUS_1_PERCENT = Text.literal("-1%").styled((style) -> style.withColor(Formatting.RED));
-    private static final Text PLUS_10_PERCENT = Text.literal("+10%").styled((style) -> style.withColor(Formatting.GREEN));
-    private static final Text PLUS_5_PERCENT = Text.literal("+5%").styled((style) -> style.withColor(Formatting.GREEN));
-    private static final Text PLUS_1_PERCENT = Text.literal("+1%").styled((style) -> style.withColor(Formatting.GREEN));
+    private static final Text MINUS_10_PERCENT = TextUtil.red("-10%");
+    private static final Text MINUS_5_PERCENT = TextUtil.red("-10%");
+    private static final Text MINUS_1_PERCENT = TextUtil.red("-1%");
+    private static final Text PLUS_10_PERCENT = TextUtil.green("+10%");
+    private static final Text PLUS_5_PERCENT = TextUtil.green("+5%");
+    private static final Text PLUS_1_PERCENT = TextUtil.green("+1%");
     
-    private static final Text EXIT_SCREEN_TEXT = Text.literal("Return to modifier menu").styled((style) -> style.withColor(Formatting.RED));
+    private static final Text EXIT_SCREEN_TEXT = TextUtil.red("Return to modifier menu");
     private final ModifierSlot slot;
     private final SimpleInventory inventory;
     private final ScreenHandlerContext context;
@@ -127,8 +127,8 @@ public class ModifierSlotScreenHandler extends ShadowScreenHandler {
         amountStack.set(DataComponentTypes.MAX_STACK_SIZE, this.slot.count);
         amountStack.setCount(this.slot.count);
         amountStack.set(DataComponentTypes.ITEM_NAME,
-            Text.literal("Amount: ").styled(style -> style.withColor(Formatting.GRAY))
-                .append(Text.literal("" + this.slot.count).styled(style -> style.withColor(Formatting.AQUA))));
+            TextUtil.gray("Amount: ")
+                .append(TextUtil.withColour(String.valueOf(this.slot.count), Formatting.AQUA)));
         amountStack.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(

@@ -1,5 +1,6 @@
 package com.maximumg9.shadow.roles;
 
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -7,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,8 +47,7 @@ public class Spectator extends Role {
     @Override
     public void onNight() {
         this.player.sendOverlay(
-            Text.literal("It is now night")
-                .styled(style -> style.withColor(Formatting.GRAY)),
+            TextUtil.gray("It is now night"),
             CancelPredicates.IS_DAY
         );
         super.onNight();
@@ -57,8 +56,7 @@ public class Spectator extends Role {
     @Override
     public void onDay() {
         this.player.sendOverlay(
-            Text.literal("It is now day")
-                .styled(style -> style.withColor(Formatting.YELLOW)),
+            TextUtil.gray("It is now day"),
             CancelPredicates.IS_NIGHT
         );
         super.onDay();

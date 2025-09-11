@@ -5,6 +5,7 @@ import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.ObfuscateRole;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Spectator;
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.damage.DamageSource;
@@ -64,7 +65,7 @@ public abstract class PlayerDeathMixin extends PlayerEntity {
                     .setStyle(Style.EMPTY.withColor(Formatting.GRAY))
                     .append(Text.of(" died. They were a "))
                     .append(
-                        Text.literal("aaaaaaa").styled(style -> style.withColor(Formatting.GRAY).withObfuscated(true))
+                        TextUtil.gray("aaaaaaa").styled(style -> style.withObfuscated(true))
                     );
                 
                 this.server.getPlayerManager().getPlayerList().forEach((player) -> {
@@ -76,21 +77,23 @@ public abstract class PlayerDeathMixin extends PlayerEntity {
                             Text.literal("").
                                 append(name)
                                 .append(
-                                    Text.literal(" (").styled(style -> style.withColor(Formatting.GRAY).withObfuscated(false))
+                                    TextUtil.gray(" (")
                                 )
                                 .append(
                                     iPlayer.role == null ?
-                                        Text.literal("Null").styled(style -> style.withColor(Formatting.RED)) :
+                                        TextUtil.red("Null") :
                                         iPlayer.role.getName()
                                 )
                                 .append(
-                                    Text.literal(")").styled(style -> style.withColor(Formatting.GRAY))
+                                    TextUtil.gray(")")
                                 )
-                                .append(Text.literal(".").styled(style -> style.withColor(Formatting.GRAY)))
+                                .append(TextUtil.gray("."))
                         );
                     } else {
-                        player.sendMessage(name.copy()
-                            .append(Text.literal(".").styled(style -> style.withColor(Formatting.GRAY))));
+                        player.sendMessage(
+                            name.copy()
+                                .append(TextUtil.gray("."))
+                        );
                     }
                 });
             } else {
@@ -99,11 +102,10 @@ public abstract class PlayerDeathMixin extends PlayerEntity {
                     .append(Text.of(" died. They were " + iPlayer.role.aOrAn() + " "))
                     .append(
                         iPlayer.role == null ?
-                            Text.literal("Null").styled(style -> style.withColor(Formatting.RED)) :
+                            TextUtil.red("Null") :
                             iPlayer.role.getName()
                     )
                     .append(Text.literal(".").setStyle(factionStyle));
-                ;
                 
                 shadow.broadcast(name);
             }

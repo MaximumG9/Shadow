@@ -4,9 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.maximumg9.shadow.commands.*;
 import com.maximumg9.shadow.config.Config;
-import com.maximumg9.shadow.items.*;
+import com.maximumg9.shadow.items.AbilityStar;
+import com.maximumg9.shadow.items.Eye;
+import com.maximumg9.shadow.items.ItemUseCallback;
+import com.maximumg9.shadow.items.ParticipationEye;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Spectator;
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayerManager;
@@ -23,7 +27,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
@@ -144,8 +147,7 @@ public class Shadow implements Tickable {
     public void ERROR(String message) {
         LOGGER.error(message);
         this.broadcast(
-            Text.literal("[ERROR] ")
-                .styled(style -> style.withColor(Formatting.RED))
+            TextUtil.red("[ERROR] ")
                 .append(message)
         );
     }
@@ -156,8 +158,8 @@ public class Shadow implements Tickable {
     
     public void ERROR(String message, Throwable t) {
         LOGGER.error(message, t);
-        this.broadcast(Text.literal(message).styled(style -> style.withColor(Formatting.RED)).append(
-            Text.literal(
+        this.broadcast(TextUtil.red(message).append(
+            TextUtil.red(
                 Arrays.stream(t.getStackTrace())
                     .collect(
                         StringBuilder::new,
@@ -167,19 +169,14 @@ public class Shadow implements Tickable {
                         },
                         (str1, str2) -> str1.append(str2.toString())
                     ).toString()
-            ).styled(style -> style.withColor(Formatting.RED))
+            )
         ));
     }
     
     public void LOG(String message) {
         LOGGER.info(message);
-        Text messageAsText = Text.literal("[LOG] ")
-            .styled(style -> style.withColor(Formatting.GRAY))
-            .append(
-                Text.literal(message)
-                    .styled(style -> style.withColor(Formatting.GRAY)
-                    )
-            );
+        Text messageAsText = TextUtil.gray("[LOG] ")
+            .append(TextUtil.gray(message));
         if (config.debug) {
             this.getOnlinePlayers()
                 .forEach(
@@ -274,7 +271,7 @@ public class Shadow implements Tickable {
             }
         });
         
-        MutableText winnersText = Text.literal("Winners are: ").styled(style -> style.withColor(Formatting.GOLD));
+        MutableText winnersText = TextUtil.gold("Winners are: ");
         
         winnersText.append(
             Texts.join(
@@ -282,7 +279,7 @@ public class Shadow implements Tickable {
                     (winner) ->
                         winner.getName().copy().setStyle(winner.role == null ? Style.EMPTY : winner.role.getStyle())
                 ).toList(),
-                Text.literal(", ").styled(style -> style.withColor(Formatting.GRAY))
+                TextUtil.gray(", ")
             )
         );
         

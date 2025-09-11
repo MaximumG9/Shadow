@@ -7,8 +7,6 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class SeeGlowing extends Ability {
@@ -19,8 +17,7 @@ public class SeeGlowing extends Ability {
         ITEM_STACK = new ItemStack(Items.ENDER_EYE);
         ITEM_STACK.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("See Glowing During Night")
-                .styled(style -> style.withColor(Formatting.GOLD))
+            TextUtil.gold("See Glowing During Night")
         );
         ITEM_STACK.set(
             DataComponentTypes.LORE,

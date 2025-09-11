@@ -6,6 +6,7 @@ import com.maximumg9.shadow.roles.RoleSlot;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.TextUtil;
 import com.mojang.logging.LogUtils;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,7 +23,6 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,9 +30,9 @@ import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 public class RoleSlotScreenHandler extends ShadowScreenHandler {
     private static final int SIZE = 9 * 6;
-    private static final Text NEXT_PAGE_TEXT = Text.literal("Next Page").styled(style -> style.withColor(Formatting.GOLD));
-    private static final Text LAST_PAGE_TEXT = Text.literal("Last Page").styled(style -> style.withColor(Formatting.GOLD));
-    private static final Text EXIT_SCREEN_TEXT = Text.literal("Return to role menu").styled(style -> style.withColor(Formatting.RED));
+    private static final Text NEXT_PAGE_TEXT = TextUtil.gold("Next Page");
+    private static final Text LAST_PAGE_TEXT = TextUtil.gold("Last Page");
+    private static final Text EXIT_SCREEN_TEXT = TextUtil.red("Return to role menu");
     private final RoleSlot slot;
     
     private final SimpleInventory inventory;
@@ -109,13 +109,11 @@ public class RoleSlotScreenHandler extends ShadowScreenHandler {
                             ),
                         Text.literal("[Left Click]")
                             .append(
-                                Text.literal(" to increase weight")
-                                    .styled(style -> style.withColor(Formatting.GRAY))
+                                TextUtil.gray(" to increase weight")
                             ),
                         Text.literal("[Right Click]")
                             .append(
-                                Text.literal(" to decrease weight")
-                                    .styled(style -> style.withColor(Formatting.GRAY))
+                                TextUtil.gray(" to decrease weight")
                             )
                     )
                 );

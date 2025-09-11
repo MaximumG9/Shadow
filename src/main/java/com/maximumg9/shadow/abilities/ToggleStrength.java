@@ -12,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
@@ -28,18 +27,17 @@ public class ToggleStrength extends Ability {
         ITEM_STACK = PotionContentsComponent.createStack(Items.POTION, Potions.LONG_STRENGTH);
         ITEM_STACK.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("Toggle Strength")
-                .styled(style -> style.withColor(Formatting.GOLD))
+            TextUtil.gold("Toggle Strength")
         );
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
                 TextUtil.gray("Toggle ")
-                    .append(Text.literal("Strength I").styled(style -> style.withColor(Formatting.RED))),
+                    .append(TextUtil.red("Strength I")),
                 TextUtil.gray("During the night you also get ")
-                    .append(Text.literal("Haste II").styled(style -> style.withColor(Formatting.GOLD)))
+                    .append(TextUtil.gold("Haste II"))
                     .append(TextUtil.gray(" and "))
-                    .append(Text.literal("Speed II").styled(style -> style.withColor(Formatting.AQUA)))
+                    .append(TextUtil.withColour("Speed II",Formatting.AQUA))
                 ,
                 AbilityText()
             )
@@ -106,7 +104,7 @@ public class ToggleStrength extends Ability {
                 );
             }
             
-            this.player.sendMessageNow(TextUtil.success("Turned strength on."));
+            this.player.sendMessageNow(TextUtil.green("Turned strength on."));
         } else {
             this.player.removeEffectNow(StatusEffects.STRENGTH);
             
@@ -131,7 +129,7 @@ public class ToggleStrength extends Ability {
                     CancelPredicates.IS_DAY
                 );
             }
-            this.player.sendMessageNow(TextUtil.success("Turned strength off."));
+            this.player.sendMessageNow(TextUtil.green("Turned strength off."));
         }
         return AbilityResult.CLOSE;
     }

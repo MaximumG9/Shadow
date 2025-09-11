@@ -3,6 +3,7 @@ package com.maximumg9.shadow.items;
 import com.maximumg9.shadow.util.ItemData;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
+import com.maximumg9.shadow.util.TextUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -10,7 +11,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -42,8 +42,8 @@ public class ParticipationEye implements ItemUseCallback {
     
     public record EnderEyeData(boolean participating) implements ItemData {
         
-        private static final Text PARTICIPATING_TEXT = Text.literal("Participating").styled(style -> style.withColor(Formatting.GREEN));
-        private static final Text NOT_PARTICIPATING_TEXT = Text.literal("Not Participating").styled(style -> style.withColor(Formatting.RED));
+        private static final Text PARTICIPATING_TEXT = TextUtil.green("Participating");
+        private static final Text NOT_PARTICIPATING_TEXT = TextUtil.red("Not Participating");
         
         public static EnderEyeData read(ItemStack stack) {
             NbtCompound customData = NBTUtil.getCustomData(stack);

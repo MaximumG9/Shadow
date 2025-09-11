@@ -1,24 +1,20 @@
 package com.maximumg9.shadow.roles;
 
+import com.maximumg9.shadow.util.TextUtil;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 public enum Faction {
     VILLAGER(
-        Text.literal("Villager")
-            .styled(style -> style.withColor(Formatting.GREEN))
+        TextUtil.green("Villager")
     ),
     NEUTRAL(
-        Text.literal("Neutral")
-            .styled(style -> style.withColor(Formatting.GRAY))
+        TextUtil.gray("Neutral")
     ),
     SHADOW(
-        Text.literal("Shadow")
-            .styled(style -> style.withColor(Formatting.RED))
+        TextUtil.red("Shadow")
     ),
     SPECTATOR(
-        Text.literal("Spectator")
-            .styled(style -> style.withColor(Formatting.GRAY))
+        TextUtil.gray("Spectator")
     );
     
     public final Text name;

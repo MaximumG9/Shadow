@@ -5,6 +5,7 @@ import com.maximumg9.shadow.items.AbilityStar;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -101,9 +102,7 @@ public abstract class Role implements ItemRepresentable {
         
         abilitySelector.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("Ability Star").styled(
-                style -> style.withColor(Formatting.YELLOW)
-            )
+            TextUtil.withColour("Ability Star",Formatting.YELLOW)
         );
         
         player.giveItemNow(

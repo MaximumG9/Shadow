@@ -14,13 +14,10 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public abstract class Ability implements ItemRepresentable {
-    private static final Text PASSIVE_TEXT = Text.literal("[PASSIVE]")
-        .styled(style -> style.withColor(Formatting.BLUE));
-    private static final Text ITEM_TEXT = Text.literal("[ITEM]")
-        .styled(style -> style.withColor(Formatting.GOLD));
-    private static final Text ABILITY_TEXT = Text.literal("[ABILITY]")
-        .styled(style -> style.withColor(Formatting.DARK_PURPLE));
-    
+    private static final Text PASSIVE_TEXT = TextUtil.blue("[PASSIVE]");
+    private static final Text ITEM_TEXT = TextUtil.gold("[ITEM]");
+    private static final Text ABILITY_TEXT = TextUtil.withColour("[ABILITY]",Formatting.DARK_PURPLE);
+
     final IndirectPlayer player;
     private long lastActivated;
     
@@ -52,7 +49,7 @@ public abstract class Ability implements ItemRepresentable {
         for (Supplier<AbilityFilterResult> filter : getFilters()) {
             AbilityFilterResult result = filter.get();
             if (!result.status.equals(AbilityFilterResult.Status.PASS)) {
-                this.player.sendMessageNow(TextUtil.error(result.message));
+                this.player.sendMessageNow(TextUtil.red(result.message));
                 return AbilityResult.CLOSE;
             }
         }

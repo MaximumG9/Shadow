@@ -3,6 +3,7 @@ package com.maximumg9.shadow.mixins;
 import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.roles.Faction;
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.TimeUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,7 +11,6 @@ import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.command.MessageCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,7 +35,10 @@ public class MessageCommandMixin {
         IndirectPlayer player = shadow.getIndirect(p);
         if ((player.role == null || player.role.getFaction() == Faction.SPECTATOR) && !p.hasPermissionLevel(3)) {
             player.sendMessageNow(
-                Text.literal("You are a spectator so you cannot message").styled(style -> style.withColor(Formatting.YELLOW))
+                TextUtil.withColour(
+                    "You are a spectator so you cannot message",
+                    Formatting.YELLOW
+                )
             );
             ci.cancel();
             return;
@@ -43,11 +46,12 @@ public class MessageCommandMixin {
         
         if (player.chatMessageCooldown > 0) {
             player.sendMessageNow(
-                Text.literal("You are still on chat cooldown for ")
-                    .styled(style -> style.withColor(Formatting.GRAY))
+                TextUtil.gray("You are still on chat cooldown for ")
                     .append(
-                        Text.literal(TimeUtil.ticksToText(player.chatMessageCooldown, false))
-                            .styled(style -> style.withColor(Formatting.YELLOW))
+                        TextUtil.withColour(
+                            TimeUtil.ticksToText(player.chatMessageCooldown, false),
+                            Formatting.YELLOW
+                        )
                     )
                     .append(" seconds.")
             );

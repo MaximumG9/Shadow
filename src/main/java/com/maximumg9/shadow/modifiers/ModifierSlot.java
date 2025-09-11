@@ -1,13 +1,13 @@
 package com.maximumg9.shadow.modifiers;
 
 import com.maximumg9.shadow.screens.ItemRepresentable;
+import com.maximumg9.shadow.util.TextUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 import java.util.List;
 
@@ -62,9 +62,9 @@ public class ModifierSlot implements ItemRepresentable {
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
         ItemStack stack = modifier.factory.makeModifier(null).getAsItem(registries);
         List<Text> loreList = List.of(
-            Text.literal(count + "x ").styled(style -> style.withColor(Formatting.BLUE))
+            TextUtil.blue(count + "x ")
                 .append(modifier.factory.makeModifier(null).getName()),
-            Text.literal("with " + String.format("%.0f%%", chance * 100) + " chance").styled(style -> style.withColor(Formatting.GRAY))
+            TextUtil.gray("with " + String.format("%.0f%%", chance * 100) + " chance")
         );
         
         stack.set(DataComponentTypes.LORE, new LoreComponent(loreList, loreList));

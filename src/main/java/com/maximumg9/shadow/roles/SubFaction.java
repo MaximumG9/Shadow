@@ -1,40 +1,30 @@
 package com.maximumg9.shadow.roles;
 
+import com.maximumg9.shadow.util.TextUtil;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 public enum SubFaction {
     VILLAGER_KILLING(
-        Text.literal("Villager")
-            .styled(style -> style.withColor(Formatting.GREEN)).append(
-                Text.literal(" Killing").styled(style -> style.withColor(Formatting.BLUE))
-            )
+        TextUtil.green("Villager")
+            .append(TextUtil.blue(" Killing"))
     ),
     VILLAGER_SUPPORT(
-        Text.literal("Villager")
-            .styled(style -> style.withColor(Formatting.GREEN)).append(
-                Text.literal(" Support").styled(style -> style.withColor(Formatting.BLUE))
-            )
+        TextUtil.green("Villager")
+            .append(TextUtil.blue(" Support"))
     ),
     VILLAGER_OUTLIER(
-        Text.literal("Villager")
-            .styled(style -> style.withColor(Formatting.GREEN)).append(
-                Text.literal(" Outlier").styled(style -> style.withColor(Formatting.BLUE))
-            )
+        TextUtil.green("Villager")
+            .append(TextUtil.blue(" Outlier"))
     ),
     NEUTRAL_CHAOS(
-        Text.literal("Neutral")
-            .styled(style -> style.withColor(Formatting.GRAY)).append(
-                Text.literal(" Chaos").styled(style -> style.withColor(Formatting.BLUE))
-            )
+        TextUtil.gray("Neutral")
+            .append(TextUtil.blue(" Chaos"))
     ),
     SHADOW(
-        Text.literal("Shadow")
-            .styled(style -> style.withColor(Formatting.RED))
+        TextUtil.red("Shadow")
     ),
     SPECTATOR(
-        Text.literal("Spectator")
-            .styled(style -> style.withColor(Formatting.GRAY))
+        TextUtil.gray("Spectator")
     );
     
     public final Text name;

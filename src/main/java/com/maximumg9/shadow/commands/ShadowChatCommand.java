@@ -2,6 +2,7 @@ package com.maximumg9.shadow.commands;
 
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.roles.Faction;
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.brigadier.CommandDispatcher;
@@ -37,14 +38,14 @@ public class ShadowChatCommand {
         MinecraftServer server = ctx.getSource().getServer();
         Shadow shadow = getShadow(server);
         if (!ctx.getSource().isExecutedByPlayer()) {
-            ctx.getSource().sendError(Text.literal("You are not a player").styled(style -> style.withColor(Formatting.RED)));
+            ctx.getSource().sendError(TextUtil.red("You are not a player"));
             return 0;
         }
         
         IndirectPlayer player = shadow.getIndirect(ctx.getSource().getPlayerOrThrow());
         
         if (player.role == null || player.role.getFaction() != Faction.SHADOW) {
-            ctx.getSource().sendError(Text.literal("You are not a shadow").styled(style -> style.withColor(Formatting.RED)));
+            ctx.getSource().sendError(TextUtil.red("You are not a shadow"));
             return 0;
         }
         
@@ -55,8 +56,7 @@ public class ShadowChatCommand {
                 p.role != null && p.role.getFaction() == Faction.SHADOW
         ).forEach((p) ->
             p.sendMessage(
-                Text.literal("[Shadow Chat]")
-                    .styled(style -> style.withColor(Formatting.DARK_RED))
+                TextUtil.withColour("[Shadow Chat]",Formatting.DARK_RED)
                     .append(Text.literal(" <"))
                     .append(player.getName().copy().setStyle(player.role.getStyle()))
                     .append(Text.literal("> "))

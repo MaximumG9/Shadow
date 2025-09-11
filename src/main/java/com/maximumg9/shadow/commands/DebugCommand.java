@@ -5,6 +5,7 @@ import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Roles;
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -13,7 +14,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.Heightmap;
@@ -120,14 +120,17 @@ public class DebugCommand {
                             
                             MutableText response = Text.literal("Roles: \n");
                             
-                            shadow.indirectPlayerManager.getAllPlayers().forEach(
+                            shadow.indirectPlayerManager.getAllPlayers()
+                                .stream()
+                                .filter(p -> p.role == null || p.role.getRole() != Roles.SPECTATOR)
+                                .forEach(
                                 player ->
                                     response
                                         .append(player.getName())
                                         .append(Text.literal(": ")).setStyle(Style.EMPTY)
                                         .append(player.role != null ?
                                             player.role.getName() :
-                                            Text.literal("null").styled(style -> style.withColor(Formatting.GRAY))
+                                            TextUtil.red("null")
                                         )
                                         .append(Text.literal("\n"))
                             );

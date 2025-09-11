@@ -7,8 +7,6 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class SeeEnderEyesGlow extends Ability {
@@ -19,8 +17,7 @@ public class SeeEnderEyesGlow extends Ability {
         ITEM_STACK = new ItemStack(Items.ENDER_EYE);
         ITEM_STACK.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("See ender eyes glow")
-                .styled(style -> style.withColor(Formatting.GREEN))
+            TextUtil.green("See ender eyes glow")
         );
         ITEM_STACK.set(
             DataComponentTypes.LORE,

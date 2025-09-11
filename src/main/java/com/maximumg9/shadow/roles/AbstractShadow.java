@@ -3,6 +3,7 @@ package com.maximumg9.shadow.roles;
 import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.abilities.SeeGlowing;
 import com.maximumg9.shadow.abilities.ToggleStrength;
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.text.Text;
@@ -43,8 +44,7 @@ public abstract class AbstractShadow extends Role {
             );
         } else {
             this.player.sendMessage(
-                Text.literal("The other shadows are: ")
-                    .styled(style -> style.withColor(Formatting.RED))
+                TextUtil.red("The other shadows are: ")
                     .append(
                         Texts.join(
                             this.player.getShadow()
@@ -58,7 +58,7 @@ public abstract class AbstractShadow extends Role {
                                 ).map(
                                     (player) -> player.getName().copy().setStyle(player.role.getStyle())
                                 ).toList(),
-                            Text.literal(", ").styled((style -> style.withColor(Formatting.GRAY)))
+                            TextUtil.gray(", ")
                         )
                     ),
                 CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
@@ -72,8 +72,7 @@ public abstract class AbstractShadow extends Role {
     @Override
     public void onNight() {
         this.player.sendOverlay(
-            Text.literal("It is now night, your opportunity to kill")
-                .styled(style -> style.withColor(Formatting.GOLD)),
+            TextUtil.gold("It is now night, your opportunity to kill"),
             CancelPredicates.IS_DAY
         );
         super.onNight();
@@ -82,8 +81,7 @@ public abstract class AbstractShadow extends Role {
     @Override
     public void onDay() {
         this.player.sendOverlay(
-            Text.literal("It's now day")
-                .styled(style -> style.withColor(Formatting.YELLOW)),
+            TextUtil.withColour("It's now day", Formatting.YELLOW),
             CancelPredicates.IS_NIGHT
         );
         super.onDay();

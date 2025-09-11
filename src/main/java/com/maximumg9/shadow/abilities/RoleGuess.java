@@ -29,8 +29,7 @@ import java.util.function.Supplier;
 public class RoleGuess extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("role_guess");
     private static final ItemStack ITEM_STACK;
-    private static final Text NAME = Text.literal("Role Guess")
-        .styled(style -> style.withColor(Formatting.RED));
+    private static final Text NAME = TextUtil.withColour("Role Guess",Formatting.DARK_PURPLE);
     
     private static final int COOLDOWN_TIME = 8 * 60 * 20;
     
@@ -47,9 +46,9 @@ public class RoleGuess extends Ability {
                 TextUtil.gray("This ability cannot be used if the"),
                 TextUtil.gray("number of non-shadows alive is less than"),
                 TextUtil.gray("or equal to the number of shadows alive."),
-                Text.literal("⌛ 8 minute cooldown").styled(style -> style.withColor(Formatting.BLUE)),
-                Text.literal("IF YOU GUESS INCORRECTLY, YOU DIE")
-                    .styled(style -> style.withColor(Formatting.RED).withBold(true)),
+                TextUtil.blue("⌛ 8 minute cooldown"),
+                TextUtil.red("IF YOU GUESS INCORRECTLY, YOU DIE")
+                    .styled(style -> style.withBold(true)),
                 Ability.AbilityText()
             )
         );
@@ -96,7 +95,7 @@ public class RoleGuess extends Ability {
                             player.role != null &&
                                 player.role.getFaction() == Faction.SHADOW
                     ).count();
-                long nonShadows = (long) getShadow().indirectPlayerManager
+                long nonShadows = getShadow().indirectPlayerManager
                     .getRecentlyOnlinePlayers(getShadow().config.disconnectTime)
                     .stream().filter(
                         (player) -> player.role != null &&
@@ -118,10 +117,7 @@ public class RoleGuess extends Ability {
                 Text.literal("Person to guess"),
                 (target, actor, _a, _b) -> {
                     if (target == null) {
-                        actor.sendMessage(
-                            Text.literal("Failed to select player to guess")
-                                .styled(style -> style.withColor(Formatting.RED))
-                        );
+                        actor.sendMessage(TextUtil.red("Failed to select player to guess"));
                         return;
                     }
                     actor.openHandledScreen(
@@ -129,18 +125,18 @@ public class RoleGuess extends Ability {
                             Text.literal("Role to guess"),
                             (guessedRole, pl, __a, __b) -> {
                                 if (guessedRole == null) {
-                                    pl.sendMessage(TextUtil.error("Failed to select role to guess"));
+                                    pl.sendMessage(TextUtil.red("Failed to select role to guess"));
                                     return;
                                 }
                                 if (target.role == null) {
-                                    pl.sendMessage(TextUtil.error("That person's role is null."));
+                                    pl.sendMessage(TextUtil.red("That person's role is null."));
                                     return;
                                 }
                                 
                                 this.resetLastActivated();
                                 
                                 if (guessedRole.getRole() == target.role.getRole()) {
-                                    pl.sendMessage(TextUtil.success("You successfully guessed your target's role."));
+                                    pl.sendMessage(TextUtil.green("You successfully guessed your target's role."));
                                     
                                     RegistryEntry<DamageType> magicDamage = target
                                         .getShadow()
@@ -156,7 +152,7 @@ public class RoleGuess extends Ability {
                                         )
                                     );
                                 } else {
-                                    pl.sendMessage(TextUtil.error("You guessed your target's role incorrectly!"));
+                                    pl.sendMessage(TextUtil.red("You guessed your target's role incorrectly!"));
                                     
                                     RegistryEntry<DamageType> magicDamage = target
                                         .getShadow()

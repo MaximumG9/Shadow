@@ -29,8 +29,7 @@ public class Cull extends Ability {
         ITEM_STACK = Items.NETHERITE_SWORD.getDefaultStack();
         ITEM_STACK.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("Cull")
-                .styled(style -> style.withColor(Formatting.RED))
+            TextUtil.red("Cull")
         );
     }
     
@@ -145,7 +144,7 @@ public class Cull extends Ability {
         );
         
         this.player.sendMessageNow(
-            TextUtil.success("Damaged ")
+            TextUtil.green("Damaged ")
                 .append(
                     Texts.join(
                         realTargets.stream()
@@ -154,10 +153,10 @@ public class Cull extends Ability {
                                 (text) -> text.copy().styled(style -> style.withColor(Formatting.YELLOW))
                             )
                             .toList(),
-                        Text.literal(", ").styled(style -> style.withColor(Formatting.GREEN))
+                        TextUtil.green(", ")
                     )
                 ).append(
-                    Text.literal(" for ").styled(style -> style.withColor(Formatting.GREEN))
+                    TextUtil.green(" for ")
                 ).append(TextUtil.hearts(damage / 2))
         );
         

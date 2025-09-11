@@ -15,7 +15,6 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -88,7 +87,7 @@ public class GetHeart extends Ability {
 
         heart.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("Lifeweaver Heart").styled(style -> style.withColor(Formatting.GOLD))
+            TextUtil.gold("Lifeweaver Heart")
         );
 
         heart.remove(DataComponentTypes.FOOD);
@@ -105,7 +104,7 @@ public class GetHeart extends Ability {
             heart,
             MiscUtil.DELETE
         )) {
-            this.player.sendMessageNow(TextUtil.error("Failed to get heart. Make sure you have enough space in your inventory!"));
+            this.player.sendMessageNow(TextUtil.red("Failed to get heart. Make sure you have enough space in your inventory!"));
             return AbilityResult.CLOSE;
         } else {
             player.currentScreenHandler.sendContentUpdates();
@@ -134,9 +133,9 @@ public class GetHeart extends Ability {
             }
 
             this.player.sendMessageNow(
-                TextUtil.success("You got a heart! Your max health is now ")
+                TextUtil.green("You got a heart! Your max health is now ")
                     .append(TextUtil.hearts(player.getMaxHealth() / 2))
-                    .append(Text.literal(".").styled(style -> style.withColor(Formatting.GREEN)))
+                    .append(TextUtil.green("."))
             );
             return AbilityResult.NO_CLOSE;
         }

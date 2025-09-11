@@ -3,6 +3,7 @@ package com.maximumg9.shadow.commands;
 import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.util.FakeStructureWorldAccess;
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.WorldUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.brigadier.CommandDispatcher;
@@ -40,7 +41,6 @@ import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
-import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -114,8 +114,7 @@ public class LocationCommand {
         if (!shadow.state.phase.canSelectLocation) {
             src.sendFeedback(
                 () ->
-                    Text.literal("Cannot select location in phase " + shadow.state.phase)
-                        .styled(style -> style.withColor(Formatting.RED)),
+                    TextUtil.red("Cannot select location in phase " + shadow.state.phase),
                 false
             );
             return -1;
@@ -292,9 +291,7 @@ public class LocationCommand {
         Instant startTime = Instant.now();
         
         src.sendMessage(
-            Text.literal(
-                "Generating portal room"
-            ).styled(style -> style.withColor(Formatting.AQUA))
+            TextUtil.withColour("Generating portal room", Formatting.AQUA)
         );
         
         portalRoom.getBoundingBox().streamChunkPos().forEach(
@@ -324,9 +321,10 @@ public class LocationCommand {
         long timeInMillis = Duration.between(startTime, Instant.now()).toMillis();
         
         src.sendMessage(
-            Text.literal(
-                "Finished generating portal rooms in (" + timeInMillis + "ms)"
-            ).styled(style -> style.withColor(Formatting.AQUA))
+            TextUtil.withColour(
+                "Finished generating portal rooms in (" + timeInMillis + "ms)",
+                Formatting.AQUA
+            )
         );
         
         LogUtils.getLogger().info("Portal generating in {}ms", timeInMillis);

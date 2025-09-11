@@ -2,14 +2,13 @@ package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
+import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 
@@ -22,16 +21,14 @@ public class SheriffBow extends Ability {
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                Text.literal("A bow that can instantly kill whoever you shoot it at.")
-                    .styled(style -> style.withColor(Formatting.GRAY).withItalic(false)),
-                Text.literal("If shot a villager, the owner and shooter die too.")
-                    .styled(style -> style.withColor(Formatting.GRAY).withItalic(false)),
+                TextUtil.gray("A bow that can instantly kill whoever you shoot it at."),
+                TextUtil.gray("If shot a villager, the owner and shooter die too."),
                 ItemText()
             )
         );
         ITEM_STACK.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("Sheriff Bow").styled(style -> style.withColor(Formatting.GOLD))
+            TextUtil.gold("Sheriff Bow")
         );
         ITEM_STACK.set(
             DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
@@ -56,7 +53,7 @@ public class SheriffBow extends Ability {
             );
         item.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("Sheriff Bow").styled(style -> style.withColor(Formatting.GOLD))
+            TextUtil.gold("Sheriff Bow")
         );
         item.set(
             DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,

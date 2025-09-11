@@ -103,8 +103,7 @@ class StartTicker implements Tickable {
         for (IndirectPlayer player : shadow.getOnlinePlayers()) {
             player.setTitleTimesNow(10, 20, 10);
             player.sendTitleNow(
-                Text.literal("Spawning Ender Eyes")
-                    .styled(style -> style.withColor(Formatting.DARK_GREEN))
+                TextUtil.withColour("Spawning Ender Eyes",Formatting.DARK_GREEN)
             );
         }
         
@@ -148,10 +147,10 @@ class StartTicker implements Tickable {
             player.role.init();
             player.modifiers.forEach(Modifier::init);
             player.sendMessage(TextUtil.gray("Your modifiers: ").append(
-                player.modifiers.isEmpty() ? TextUtil.error("None") : Texts.join(
+                player.modifiers.isEmpty() ? TextUtil.red("None") : Texts.join(
                     player.modifiers.stream().map(modifier -> modifier.getName().copy())
                         .toList(),
-                    Text.literal(", ").styled(style -> style.withColor(Formatting.GRAY))
+                    TextUtil.gray(", ")
                 )
             ), CancelPredicates.NEVER_CANCEL);
             
@@ -272,7 +271,11 @@ class GracePeriodTicker implements Tickable {
             shadow.getServer().setPvpEnabled(false);
             for (IndirectPlayer player : this.shadow.getOnlinePlayers()) {
                 player.sendMessageNow(
-                    Text.literal("There is a " + TimeUtil.ticksToText(shadow.config.gracePeriodTicks, true) + " grace period. All PVP and any killing-related abilities are disabled during this time!").styled(style -> style.withColor(Formatting.GREEN))
+                    TextUtil.green(
+                        "There is a " +
+                            TimeUtil.ticksToText(shadow.config.gracePeriodTicks, true) +
+                            " grace period. All PVP and any killing-related abilities are disabled during this time!"
+                    )
                 );
             }
         }
@@ -287,7 +290,7 @@ class GracePeriodTicker implements Tickable {
         shadow.getServer().setPvpEnabled(true);
         for (IndirectPlayer player : this.shadow.getOnlinePlayers()) {
             player.sendMessageNow(
-                Text.literal("The grace period has ended!").styled(style -> style.withColor(Formatting.GOLD))
+                TextUtil.gold("The grace period has ended!")
             );
         }
     }

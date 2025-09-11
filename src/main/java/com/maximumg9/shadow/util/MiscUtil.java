@@ -25,8 +25,7 @@ public abstract class MiscUtil {
     public static final BiConsumer<ServerPlayerEntity, ItemStack> DELETE = (p, item) -> { };
     public static final BiConsumer<ServerPlayerEntity, ItemStack> DELETE_WARN = (p, item) ->
         p.sendMessage(
-            Text.literal("Could not find space for ")
-                .styled(style -> style.withColor(Formatting.YELLOW))
+            TextUtil.withColour("Could not find space for ", Formatting.YELLOW)
                 .append(item.toHoverableText())
         );
     private static final Style DEFAULT_STYLE = Style.EMPTY.withColor(Formatting.WHITE).withItalic(false);
@@ -62,8 +61,7 @@ public abstract class MiscUtil {
         ItemStack item = Items.BARRIER.getDefaultStack();
         item.set(
             DataComponentTypes.ITEM_NAME,
-            Text.literal("ERROR")
-                .styled(style -> style.withColor(Formatting.RED))
+            TextUtil.red("ERROR")
         );
         return item;
     }
