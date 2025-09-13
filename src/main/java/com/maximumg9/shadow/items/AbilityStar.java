@@ -20,6 +20,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.util.ArrayList;
@@ -44,33 +45,8 @@ public class AbilityStar implements ItemUseCallback {
         if (role == null) {
             return TypedActionResult.fail(stack);
         }
-        
-        ArrayList<ItemRepresentable> abilities =
-            new ArrayList<>(role.getAbilities());
-        abilities.addFirst(
-            item -> {
-                ItemStack roleCard = new ItemStack(Items.WRITABLE_BOOK);
-                IndirectPlayer player = shadow.getIndirect((ServerPlayerEntity) user);
-                assert player.role != null;
-                
-                roleCard.set(
-                    DataComponentTypes.ITEM_NAME,
-                    player.role.getName()
-                );
-                roleCard.set(
-                    DataComponentTypes.LORE,
-                    MiscUtil.makeLore(
-                        TextUtil.gray("Subfaction: ").append(player.role.getSubFaction().name),
-                        TextUtil.gray("Your alignment: ").append(player.role.getFaction().name)
-                    )
-                );
-                roleCard.set(
-                    DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,
-                    true
-                );
-                
-                return roleCard;
-            });
+
+        ArrayList<ItemRepresentable> abilities = getAbilities((ServerPlayerEntity) user, role, shadow);
         user.openHandledScreen(new DecisionScreenHandler.Factory<>(
             Text.literal("Ability Menu"),
             (ability, clicker, _a, _b) -> {
@@ -87,5 +63,35 @@ public class AbilityStar implements ItemUseCallback {
         
         
         return TypedActionResult.success(stack, false);
+    }
+
+    private static @NotNull ArrayList<ItemRepresentable> getAbilities(ServerPlayerEntity user, Role role, Shadow shadow) {
+        ArrayList<ItemRepresentable> abilities =
+            new ArrayList<>(role.getAbilities());
+        abilities.addFirst(
+            item -> {
+                ItemStack roleCard = new ItemStack(Items.WRITABLE_BOOK);
+                IndirectPlayer player = shadow.getIndirect(user);
+                assert player.role != null;
+
+                roleCard.set(
+                    DataComponentTypes.ITEM_NAME,
+                    player.role.getName()
+                );
+                roleCard.set(
+                    DataComponentTypes.LORE,
+                    MiscUtil.makeLore(
+                        TextUtil.gray("Subfaction: ").append(player.role.getSubFaction().name),
+                        TextUtil.gray("Your alignment: ").append(player.role.getFaction().name)
+                    )
+                );
+                roleCard.set(
+                    DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,
+                    true
+                );
+
+                return roleCard;
+            });
+        return abilities;
     }
 }

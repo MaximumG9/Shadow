@@ -1,7 +1,6 @@
 package com.maximumg9.shadow.commands;
 
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.util.WorldUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;

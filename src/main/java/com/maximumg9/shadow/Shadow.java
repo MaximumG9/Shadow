@@ -9,9 +9,7 @@ import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.items.ItemUseCallback;
 import com.maximumg9.shadow.items.ParticipationEye;
 import com.maximumg9.shadow.roles.Faction;
-import com.maximumg9.shadow.roles.Spectator;
 import com.maximumg9.shadow.util.TextUtil;
-import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayerManager;
@@ -186,8 +184,9 @@ public class Shadow implements Tickable {
         } else {
             this.getOnlinePlayers().stream()
                 .filter(player ->
-                    player.role instanceof Spectator &&
-                        player.getPlayerOrThrow().hasPermissionLevel(3)
+                    player.role != null &&
+                    player.role.getFaction() == Faction.SPECTATOR &&
+                    player.getPlayerOrThrow().hasPermissionLevel(3)
                 )
                 .forEach(
                     (player) -> player.sendMessageNow(messageAsText)

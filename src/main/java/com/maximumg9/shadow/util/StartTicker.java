@@ -84,7 +84,7 @@ public class StartTicker implements Tickable {
             player.role.init();
             player.modifiers.forEach(Modifier::init);
             player.sendMessage(TextUtil.gray("Your modifiers: ").append(
-                player.modifiers.isEmpty() ? TextUtil.error("None") : Texts.join(
+                player.modifiers.isEmpty() ? TextUtil.red("None") : Texts.join(
                     player.modifiers.stream().map(modifier -> modifier.getName().copy())
                         .toList(),
                     Text.literal(", ").styled(style -> style.withColor(Formatting.GRAY))
