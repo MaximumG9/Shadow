@@ -1,6 +1,5 @@
 package com.maximumg9.shadow.mixins;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import com.maximumg9.shadow.abilities.PoseidonsTrident;
 import com.maximumg9.shadow.util.NBTUtil;
 import net.minecraft.component.DataComponentTypes;
@@ -26,6 +25,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Map;
+
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 
@@ -35,49 +36,21 @@ public abstract class LivingEntityMixin extends Entity {
         super(type, world);
     }
 
-    @Redirect(method = "getEquipmentChanges", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;areItemsDifferent(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z"))
-    private boolean areItemsDifferent(LivingEntity instance, ItemStack oldStack, ItemStack newStack, @Local EquipmentSlot slot) {
-        if (PoseidonsTrident.ID.equals(NBTUtil.getID(newStack))) {
-            if(slot == EquipmentSlot.MAINHAND) {
-                World world = this.getWorld();
-                if(world instanceof ServerWorld sWorld) {
-                    RegistryEntry<Enchantment> riptide = sWorld
-                        .getRegistryManager()
-                        .get(RegistryKeys.ENCHANTMENT)
-                        .getEntry(Enchantments.RIPTIDE)
-                        .orElseThrow();
-                    newStack.apply(
-                        DataComponentTypes.ENCHANTMENTS,
-                        ItemEnchantmentsComponent.DEFAULT,
-                        (enchs) ->
-                            addRemovingConflicts(enchs,riptide,1)
-                    );
-                }
-            } else if(slot == EquipmentSlot.OFFHAND) {
-                World world = this.getWorld();
-                if(world instanceof ServerWorld sWorld) {
-                    RegistryEntry<Enchantment> loyalty = sWorld
-                        .getRegistryManager()
-                        .get(RegistryKeys.ENCHANTMENT)
-                        .getEntry(Enchantments.LOYALTY)
-                        .orElseThrow();
-                    newStack.apply(
-                        DataComponentTypes.ENCHANTMENTS,
-                        ItemEnchantmentsComponent.DEFAULT,
-                        (enchs) ->
-                            addRemovingConflicts(enchs,loyalty,3)
-                    );
-                }
-            } else {
-                if(!this.getWorld().isClient) {
-                    newStack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,true);
-                }
+    @Inject(method = "getEquipmentChanges", at = @At(value = "TAIL"))
+    private void areItemsDifferent(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir) {
+
+        cir.getReturnValue().entrySet().removeIf((entry) -> {
+            ItemStack stack = entry.getValue();
+            if(NBTUtil.hasID(stack, PoseidonsTrident.ID)) {
+                entry.setValue(handleTrident(entry.getKey(),stack));
             }
-        }
-        if (NBTUtil.getCustomData(newStack).getBoolean(NBTUtil.DISABLE_ATTRIBUTES_KEY)) {
-            return false;
-        }
-        return instance.areItemsDifferent(oldStack, newStack);
+            return NBTUtil.getCustomData(stack).getBoolean(NBTUtil.INVISIBLE_KEY);
+        });
+    }
+
+    @Redirect(method = "getEquipmentChanges",at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z"))
+    public boolean dontUpdateAttributeModifiers(ItemStack oldStack) {
+        return oldStack.isEmpty() || NBTUtil.getCustomData(oldStack).getBoolean(NBTUtil.DISABLE_ATTRIBUTES_KEY);
     }
 
     @Inject(method = "disablesShield",at=@At("HEAD"), cancellable = true)
@@ -85,6 +58,47 @@ public abstract class LivingEntityMixin extends Entity {
         if(this.getWeaponStack().getItem() instanceof TridentItem) {
             cir.setReturnValue(true);
         }
+    }
+
+    @Unique
+    private ItemStack handleTrident(EquipmentSlot slot, ItemStack trident) {
+        if(slot == EquipmentSlot.MAINHAND) {
+            World world = this.getWorld();
+            if(world instanceof ServerWorld sWorld) {
+                RegistryEntry<Enchantment> riptide = sWorld
+                    .getRegistryManager()
+                    .get(RegistryKeys.ENCHANTMENT)
+                    .getEntry(Enchantments.RIPTIDE)
+                    .orElseThrow();
+                trident.apply(
+                    DataComponentTypes.ENCHANTMENTS,
+                    ItemEnchantmentsComponent.DEFAULT,
+                    (enchs) ->
+                        addRemovingConflicts(enchs,riptide,1)
+                );
+            }
+        } else if(slot == EquipmentSlot.OFFHAND) {
+            World world = this.getWorld();
+            if(world instanceof ServerWorld sWorld) {
+                RegistryEntry<Enchantment> loyalty = sWorld
+                    .getRegistryManager()
+                    .get(RegistryKeys.ENCHANTMENT)
+                    .getEntry(Enchantments.LOYALTY)
+                    .orElseThrow();
+                trident.apply(
+                    DataComponentTypes.ENCHANTMENTS,
+                    ItemEnchantmentsComponent.DEFAULT,
+                    (enchs) ->
+                        addRemovingConflicts(enchs,loyalty,3)
+                );
+            }
+        } else {
+            if(!this.getWorld().isClient) {
+                trident.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,true);
+            }
+        }
+
+        return trident;
     }
 
     @Unique
