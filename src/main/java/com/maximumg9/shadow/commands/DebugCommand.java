@@ -4,6 +4,7 @@ import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.roles.Faction;
+import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
@@ -23,8 +24,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.Heightmap;
-
-import java.util.Objects;
 
 import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
@@ -58,6 +57,8 @@ public class DebugCommand {
                                                 indirectPlayer.role.deInit();
                                             }
 
+                                            Role newRole = role.factory.makeRole(indirectPlayer);
+
                                             indirectPlayer.role = role.factory.makeRole(indirectPlayer);
 
                                             indirectPlayer.role.init();
@@ -68,11 +69,14 @@ public class DebugCommand {
                                                 Text.literal("Set ")
                                                     .append(player.getName())
                                                     .append(Text.literal("'s Role to "))
-                                                    .append(
-                                                        Objects.requireNonNull(indirectPlayer.role)
-                                                            .getName()
-                                                    ),
+                                                    .append(newRole.getName()),
                                             false
+                                            );
+
+                                            indirectPlayer.sendMessage(
+                                                Text.literal("Your role has been set to")
+                                                    .append(newRole.getName()),
+                                                (p) -> p.role != newRole
                                             );
 
                                             return 1;
