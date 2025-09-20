@@ -98,6 +98,10 @@ public class StartTicker implements Tickable {
             player.sendSubtitleNow(player.role.getSubFaction().name);
         }
 
+        for(ServerWorld world : shadow.getServer().getWorlds()) {
+            world.setTimeOfDay(0L);
+        }
+
         shadow.init();
 
         shadow.saveAsync();
