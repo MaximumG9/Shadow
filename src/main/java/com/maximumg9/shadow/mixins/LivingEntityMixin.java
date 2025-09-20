@@ -38,7 +38,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "getEquipmentChanges", at = @At(value = "TAIL"))
     private void areItemsDifferent(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir) {
-
+        if(cir.getReturnValue() == null) return;
         cir.getReturnValue().entrySet().removeIf((entry) -> {
             ItemStack stack = entry.getValue();
             if(NBTUtil.hasID(stack, PoseidonsTrident.ID)) {
