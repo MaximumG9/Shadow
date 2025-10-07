@@ -29,6 +29,7 @@ public class Config {
     public boolean disableChat = false;
     public int disconnectTime = 20 * 60 * 10;
     public int gracePeriodTicks = 20 * 60 * 3;
+    public boolean poolShadowRoles = false;
     
     public Config(Shadow shadow, Path saveFile) {
         this.roleManager = new RoleManager(shadow, this);
@@ -51,6 +52,7 @@ public class Config {
         this.disableChat = nbt.getBoolean("disableChat");
         this.disconnectTime = nbt.getInt("disconnectTime");
         this.gracePeriodTicks = nbt.getInt("gracePeriodTicks");
+        this.poolShadowRoles = nbt.getBoolean("poolShadowRoles");
         
         this.maxCooldownManager.readNbt(nbt.getCompound("maxCooldownManager"));
         this.roleManager.readNbt(nbt.getCompound("roleManager"));
@@ -71,6 +73,7 @@ public class Config {
         nbt.putBoolean("disableChat", this.disableChat);
         nbt.putInt("disconnectTime", this.disconnectTime);
         nbt.putInt("gracePeriodTicks", this.gracePeriodTicks);
+        nbt.putBoolean("poolShadowRoles", this.poolShadowRoles);
         
         nbt.put("maxCooldownManager", this.maxCooldownManager.writeNbt(new NbtCompound()));
         nbt.put("roleManager", this.roleManager.writeNbt(new NbtCompound()));

@@ -65,7 +65,7 @@ public class IndirectPlayer implements ItemRepresentable {
     private int offlineTicks = Integer.MAX_VALUE;
     private Text name = null;
     
-    public IndirectPlayer(ServerPlayerEntity base) {
+    IndirectPlayer(ServerPlayerEntity base) {
         this.playerUUID = base.getUuid();
         this.server = base.server;
         this.role = new Spectator(this);
