@@ -91,7 +91,7 @@ public class IndirectPlayer implements ItemRepresentable {
         this.chatMessageCooldown = src.chatMessageCooldown;
         this.originalRole = src.originalRole;
         this.offlineTicks = src.offlineTicks;
-        this.extraStorage = new NbtCompound();
+        this.extraStorage = src.extraStorage.copy();
     }
     static IndirectPlayer load(MinecraftServer server, NbtCompound nbt) {
         IndirectPlayer player = new IndirectPlayer(server, nbt.getUuid("playerUUID"));
