@@ -93,36 +93,50 @@ public class IndirectPlayer implements ItemRepresentable {
         this.offlineTicks = src.offlineTicks;
         this.extraStorage = src.extraStorage.copy();
     }
-    static IndirectPlayer load(MinecraftServer server, NbtCompound nbt) {
-        IndirectPlayer player = new IndirectPlayer(server, nbt.getUuid("playerUUID"));
-        player.frozen = nbt.getBoolean("frozen");
-        player.participating = nbt.getBoolean("participating");
+
+    static UUID getUUIDForData(NbtCompound nbt) {
+        return nbt.getUuid("playerUUID");
+    }
+
+    void readNbt(NbtCompound nbt) {
+        this.frozen = nbt.getBoolean("frozen");
+        this.participating = nbt.getBoolean("participating");
+
         if (nbt.contains("role", NbtElement.COMPOUND_TYPE)) {
-            player.role = Role.load(nbt.getCompound("role"), player);
+            this.role = Role.load(nbt.getCompound("role"), this);
         } else {
-            player.role = null;
+            this.role = null;
         }
+
         if (nbt.contains("original_role", NbtElement.COMPOUND_TYPE)) {
-            player.originalRole = Roles.getRole(nbt.getString("original_role"));
+            this.originalRole = Roles.getRole(nbt.getString("original_role"));
         } else {
-            player.originalRole = null;
+            this.originalRole = null;
         }
-        
+
         if (nbt.contains("modifiers", NbtElement.LIST_TYPE)) {
             for (int i = 0; i < nbt.getList("modifiers", NbtElement.COMPOUND_TYPE).size(); i++) {
-                player.modifiers.add(
-                    Modifier.load(nbt.getList("modifiers", NbtElement.COMPOUND_TYPE).getCompound(i), player)
+                this.modifiers.add(
+                    Modifier.load(
+                        nbt.getList(
+                            "modifiers",
+                            NbtElement.COMPOUND_TYPE
+                        ).getCompound(i),
+                        this
+                    )
                 );
             }
         }
-        player.offlineTicks = nbt.getInt("offline_ticks");
-        player.extraStorage = nbt.getCompound("extra_storage");
-        return player;
+
+        this.offlineTicks = nbt.getInt("offline_ticks");
+        this.extraStorage = nbt.getCompound("extra_storage");
     }
+
     public Shadow getShadow() {
         return MiscUtil.getShadow(this.server);
     }
-    NbtCompound save(NbtCompound nbt) {
+
+    NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putUuid("playerUUID", this.playerUUID);
         nbt.putBoolean("frozen", this.frozen);
         nbt.putBoolean("participating", this.participating);
