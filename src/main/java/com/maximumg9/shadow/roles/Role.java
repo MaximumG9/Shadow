@@ -53,7 +53,9 @@ public abstract class Role implements ItemRepresentable {
     
     public abstract Style getStyle();
     
-    public void onDeath() { }
+    public void onDeath() {
+
+    }
     
     public boolean hasAbility(Identifier id) {
         return this.abilities.stream().anyMatch(ability -> ability.getID().equals(id));

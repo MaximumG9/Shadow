@@ -55,8 +55,14 @@ public abstract class Ability implements ItemRepresentable {
                 return AbilityResult.CLOSE;
             }
         }
+
+        AbilityResult result = apply();
+
+        for (Filter filter : getFilters()) {
+            filter.postApply(this);
+        }
         
-        return apply();
+        return result;
     }
     public abstract AbilityResult apply();
     

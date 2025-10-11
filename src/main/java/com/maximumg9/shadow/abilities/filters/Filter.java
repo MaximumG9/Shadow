@@ -15,4 +15,6 @@ public abstract class Filter {
     public AbilityFilterResult test(Ability ability) {
         return filter(ability) ? AbilityFilterResult.PASS() : AbilityFilterResult.FAIL(this.message);
     }
+
+    public void postApply(Ability ability) { }
 }

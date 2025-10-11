@@ -111,8 +111,7 @@ public abstract class PersistentProjectileMixin extends ProjectileEntity {
                     return 0;
                 }
             }
-            
-            System.out.println("A");
+
             player.playSoundToPlayer(
                 SoundEvent.of(Identifier.of("minecraft", "entity.item.break")),
                 SoundCategory.PLAYERS,

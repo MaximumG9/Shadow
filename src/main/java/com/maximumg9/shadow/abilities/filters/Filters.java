@@ -124,4 +124,42 @@ public abstract class Filters {
             return nonShadows > shadows;
         }
     }
+
+    public static class OneTimeUse extends LimitedUses {
+        private static final String DEFAULT_MESSAGE = "You have already used this ability";
+        public OneTimeUse(String message) {
+            super(1, message);
+        }
+        public OneTimeUse() {
+            this(DEFAULT_MESSAGE);
+        }
+    }
+
+    public static class LimitedUses extends Filter {
+        private static final String DEFAULT_MESSAGE = "You cannot use this ability more than %s times";
+
+        private final int maxUses;
+        private int uses = 0;
+
+        public LimitedUses(int maxUses, String message) {
+            super(message);
+            this.maxUses = maxUses;
+        }
+
+        @Override
+        public boolean filter(Ability ability) {
+            return uses <= maxUses;
+        }
+
+        public AbilityFilterResult test(Ability ability) {
+            return this.filter(ability) ? AbilityFilterResult.PASS() :
+                AbilityFilterResult.FAIL(String.format(this.message,maxUses));
+        }
+
+        @Override
+        public void postApply(Ability ability) {
+            this.uses++;
+            super.postApply(ability);
+        }
+    }
 }

@@ -21,9 +21,14 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class GetHeart extends com.maximumg9.shadow.abilities.Ability {
+public class GetHeart extends Ability {
     public static final Identifier ATTR_ID = MiscUtil.shadowID("lifeweaver_max_health");
     private static final ItemStack ITEM_STACK = new ItemStack(Items.GOLDEN_APPLE);
+    public static final Identifier ID = MiscUtil.shadowID("get_heart");
+
+    private final List<Filter> FILTERS = List.of(
+        new Filters.RequiredMaxHealth(2f,"You don't have enough health to remove another heart!")
+    );
 
     static {
         ITEM_STACK.set(
@@ -46,15 +51,11 @@ public class GetHeart extends com.maximumg9.shadow.abilities.Ability {
     }
 
     public List<Filter> getFilters() {
-        return List.of(
-            new Filters.RequiredMaxHealth(2f,"You don't have enough health to remove another heart!")
-        );
+        return FILTERS;
     }
 
     @Override
-    public Identifier getID() {
-        return MiscUtil.shadowID("get_heart");
-    }
+    public Identifier getID() { return ID; }
 
     @Override
     public AbilityResult apply() {

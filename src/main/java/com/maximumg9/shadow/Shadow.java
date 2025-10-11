@@ -9,6 +9,7 @@ import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.items.ItemUseCallback;
 import com.maximumg9.shadow.items.ParticipationEye;
 import com.maximumg9.shadow.roles.Faction;
+import com.maximumg9.shadow.util.LinkRegistry;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -75,7 +76,8 @@ public class Shadow implements Tickable {
     private final List<Tickable> tickables = new ArrayList<>();
     public IndirectPlayerManager indirectPlayerManager;
     public GameState state = new GameState();
-    
+    public LinkRegistry linkRegistry = new LinkRegistry(this);
+
     public Shadow(MinecraftServer server) {
         this.server = server;
         this.indirectPlayerManager = new IndirectPlayerManager(INDIRECT_PLAYERS_FILE, server);

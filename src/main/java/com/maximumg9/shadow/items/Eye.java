@@ -25,7 +25,6 @@ public record Eye(RegistryKey<World> worldKey, UUID item, UUID display, BlockPos
             if (itemEntity != null) {
                 itemEntity.remove(Entity.RemovalReason.DISCARDED);
             } else {
-                // I'll do better logging later I promise
                 // shadow.LOG("Tried to remove eye item that doesn't exist @" + position.toShortString());
             }
             

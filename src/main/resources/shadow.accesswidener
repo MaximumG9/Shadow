@@ -22,3 +22,5 @@ accessible method net/minecraft/entity/projectile/ProjectileEntity <init> (Lnet/
 
 accessible field net/minecraft/entity/boss/dragon/EnderDragonFight previouslyKilled Z
 mutable field net/minecraft/entity/boss/dragon/EnderDragonFight previouslyKilled Z
+
+accessible method net/minecraft/entity/LivingEntity tryUseTotem (Lnet/minecraft/entity/damage/DamageSource;)Z
