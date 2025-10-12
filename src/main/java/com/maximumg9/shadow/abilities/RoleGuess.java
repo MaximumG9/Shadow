@@ -12,14 +12,9 @@ import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -112,15 +107,11 @@ public class RoleGuess extends Ability {
                                 
                                 if (guessedRole.getRole() == target.role.getRole()) {
                                     pl.sendMessage(TextUtil.green("You successfully guessed your target's role."));
-                                    
-                                    RegistryEntry<DamageType> magicDamage = target
-                                        .getShadow()
-                                        .getServer()
-                                        .getRegistryManager()
-                                        .get(RegistryKeys.DAMAGE_TYPE)
-                                        .entryOf(DamageTypes.MAGIC);
+
                                     target.damage(
-                                        new DamageSource(magicDamage),
+                                        pl.getServerWorld()
+                                            .getDamageSources()
+                                            .magic(),
                                         Float.MAX_VALUE,
                                         CancelPredicates.cancelOnPhaseChange(
                                             this.getShadow().state.phase
@@ -128,15 +119,11 @@ public class RoleGuess extends Ability {
                                     );
                                 } else {
                                     pl.sendMessage(TextUtil.red("You guessed your target's role incorrectly!"));
-                                    
-                                    RegistryEntry<DamageType> magicDamage = target
-                                        .getShadow()
-                                        .getServer()
-                                        .getRegistryManager()
-                                        .get(RegistryKeys.DAMAGE_TYPE)
-                                        .entryOf(DamageTypes.MAGIC);
+
                                     this.player.damage(
-                                        new DamageSource(magicDamage),
+                                        pl.getServerWorld()
+                                            .getDamageSources()
+                                            .magic(),
                                         Float.MAX_VALUE,
                                         CancelPredicates.cancelOnPhaseChange(
                                             this.getShadow().state.phase

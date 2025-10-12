@@ -66,7 +66,7 @@ public class IndirectPlayer implements ItemRepresentable {
     private int offlineTicks = Integer.MAX_VALUE;
     private Text name = null;
     @Nullable
-    public AddHealthLink link = null;
+    public AddHealthLink.Link link = null;
     
     public IndirectPlayer(ServerPlayerEntity base) {
         this.playerUUID = base.getUuid();

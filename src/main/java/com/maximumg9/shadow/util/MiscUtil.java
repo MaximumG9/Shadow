@@ -5,8 +5,12 @@ import com.maximumg9.shadow.ducks.ShadowProvider;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -64,5 +68,8 @@ public abstract class MiscUtil {
             TextUtil.red("ERROR")
         );
         return item;
+    }
+    public static RegistryEntry<DamageType> getDamageType(MinecraftServer server, RegistryKey<DamageType> damageType) {
+        return server.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(damageType);
     }
 }

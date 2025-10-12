@@ -3,6 +3,8 @@ package com.maximumg9.shadow.util;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.AddHealthLink;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -53,9 +55,9 @@ public class LinkRegistry {
                         return null;
                     })
                 .filter(Objects::nonNull)
-                .forEach((link) -> {
-
-                });
+                .forEach(this::assignToPlayers);
+        } else {
+            throw new IllegalSaveException("Links are not a list");
         }
     }
 
@@ -71,9 +73,20 @@ public class LinkRegistry {
     private void assignToPlayers(AddHealthLink.Link link) {
         for(IndirectPlayer p : link.players) {
             if(p.link == null) {
-                p.link = link.players;
+                p.link = link;
+            } else {
+                throw new IllegalSaveException("link linked to multiple players");
             }
         }
+
+        link.syncHealths(
+            new DamageSource(
+                MiscUtil.getDamageType(
+                    shadow.getServer(),
+                    DamageTypes.GENERIC
+                )
+            )
+        );
     }
 
     public void save() {

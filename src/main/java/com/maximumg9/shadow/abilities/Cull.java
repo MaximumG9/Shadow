@@ -8,12 +8,9 @@ import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -116,26 +113,18 @@ public class Cull extends com.maximumg9.shadow.abilities.Ability {
         
         realTargets.forEach((player) ->
             player.damage(
-                new DamageSource(
-                    p.getServerWorld()
-                        .getRegistryManager()
-                        .get(RegistryKeys.DAMAGE_TYPE)
-                        .getEntry(DamageTypes.MAGIC)
-                        .orElseThrow()
-                ),
+                p.getServerWorld()
+                    .getDamageSources()
+                    .magic(),
                 Math.min(damage, player.getHealth() - 1.0f)
             )
         );
         
         fakeTargets.forEach((player) ->
             player.damage(
-                new DamageSource(
-                    p.getServerWorld()
-                        .getRegistryManager()
-                        .get(RegistryKeys.DAMAGE_TYPE)
-                        .getEntry(DamageTypes.MAGIC)
-                        .orElseThrow()
-                ),
+                p.getServerWorld()
+                    .getDamageSources()
+                    .magic(),
                 0.001f
             )
         );

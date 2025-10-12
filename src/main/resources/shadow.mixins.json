@@ -29,7 +29,8 @@
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldMixin",
     "SlotMixin",
-    "TridentEntityMixin"
+    "TridentEntityMixin",
+    "lifelink.LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
