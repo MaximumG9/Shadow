@@ -24,7 +24,7 @@ public class Lifelink extends AbstractVillager {
     private static final ItemStack ITEM_STACK;
 
     static {
-        ITEM_STACK = new ItemStack(Items.ENCHANTED_GOLDEN_APPLE);
+        ITEM_STACK = new ItemStack(Items.GOLDEN_CARROT);
         ITEM_STACK.set(
             DataComponentTypes.ITEM_NAME,
             new Lifelink(null).getName()
