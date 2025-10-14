@@ -110,7 +110,7 @@ public class AddHealthLink extends Ability {
 
                     } else if(target.role.getFaction() == Faction.SHADOW) {
                         target.sendMessage(
-                            TextUtil.green("Your appears to have been linked with ")
+                            TextUtil.green("You appear to have been linked with ")
                                 .append(this.player.getName())
                                 .append(" (Your health is not actually linked as you are a shadow)"),
                             (p) ->
