@@ -370,7 +370,7 @@ public class AddHealthLink extends Ability {
                 );
         }
 
-        public void update(@Nullable DamageSource source, float newHealth, float oldHealth, ServerPlayerEntity damageTarget) {
+        public boolean update(@Nullable DamageSource source, float newHealth, float oldHealth, ServerPlayerEntity damageTarget) {
             Shadow shadow = MiscUtil.getShadow(damageTarget.server);
 
             IndirectPlayer p = shadow.getIndirect(damageTarget);
@@ -378,7 +378,7 @@ public class AddHealthLink extends Ability {
             if(
                 p.role != null &&
                 p.role.getFaction() == Faction.SHADOW
-            ) return;
+            ) return false;
 
             float fractionDamage = (newHealth - oldHealth) / damageTarget.getMaxHealth();
 
@@ -392,6 +392,8 @@ public class AddHealthLink extends Ability {
             // Should I use the magic damage type???
 
             syncHealths(source);
+
+            return true;
         }
     }
 }

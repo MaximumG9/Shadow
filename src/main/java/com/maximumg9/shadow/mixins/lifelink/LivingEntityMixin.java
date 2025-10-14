@@ -33,15 +33,15 @@ public abstract class LivingEntityMixin extends Entity {
         Shadow shadow = getShadow(this.getServer());
         IndirectPlayer iP = shadow.getIndirect(player);
         if(iP.link != null) {
-            ci.cancel();
-            iP.link.update(
+            if(iP.link.update(
                 null,
                 health,
                 player.getHealth(),
                 player
-            );
+            )) {
+                ci.cancel();
+            }
         }
-
     }
 
     // Hooked separately to get damage source
@@ -57,13 +57,14 @@ public abstract class LivingEntityMixin extends Entity {
             Shadow shadow = getShadow(this.getServer());
             IndirectPlayer iP = shadow.getIndirect(player);
             if(iP.link != null) {
-                iP.link.update(
+                if(iP.link.update(
                     source,
                     health,
                     player.getHealth(),
                     player
-                );
-                return;
+                )) {
+                    return;
+                }
             }
         }
         instance.setHealth(health);
