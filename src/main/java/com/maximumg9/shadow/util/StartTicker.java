@@ -105,6 +105,8 @@ public class StartTicker implements Tickable {
         shadow.init();
 
         shadow.saveAsync();
+
+        shadow.addTickable(new StartTicker.GracePeriodTicker(shadow));
     }
 
     private void spawnEnderEyes() {
@@ -225,6 +227,7 @@ public class StartTicker implements Tickable {
 
         @Override
         public void onEnd() {
+            if(shadow.state.phase != GamePhase.PLAYING) return;
             shadow.getServer().setPvpEnabled(true);
             for (IndirectPlayer player : this.shadow.getOnlinePlayers()) {
                 player.sendMessageNow(
@@ -235,7 +238,7 @@ public class StartTicker implements Tickable {
 
         @Override
         public boolean shouldEnd() {
-            return ticksLeft <= 0;
+            return ticksLeft <= 0 || shadow.state.phase != GamePhase.PLAYING;
         }
     }
 }

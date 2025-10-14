@@ -50,7 +50,6 @@ public class StartCommand {
         Shadow shadow = getShadow(server);
         
         shadow.addTickable(new StartTicker(shadow));
-        shadow.addTickable(new StartTicker.GracePeriodTicker(shadow));
         
         for (IndirectPlayer player : shadow.getOnlinePlayers()) {
             ServerPlayerEntity entity = player.getPlayerOrThrow();
