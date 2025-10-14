@@ -290,7 +290,7 @@ public class AddHealthLink extends Ability {
                 );
         }
 
-        private static void setHealthNoLifeLink(LivingEntity entity, float health) {
+        public static void setHealthNoLifeLink(LivingEntity entity, float health) {
             entity.getDataTracker()
                 .set(
                     LivingEntity.HEALTH,

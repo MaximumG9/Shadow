@@ -2,6 +2,7 @@ package com.maximumg9.shadow.mixins;
 
 import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
+import com.maximumg9.shadow.abilities.AddHealthLink;
 import com.maximumg9.shadow.abilities.ObfuscateRole;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.neutral.Spectator;
@@ -125,8 +126,8 @@ public abstract class PlayerDeathMixin extends PlayerEntity {
         player.role = new Spectator(player);
         
         shadow.checkWin(null);
-        
-        player.getPlayerOrThrow().setHealth(0f);
+
+        AddHealthLink.Link.setHealthNoLifeLink(this, 0.0f);
     }
     
     @Inject(method = "onSpawn", at = @At("TAIL"))
