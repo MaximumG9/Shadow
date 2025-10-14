@@ -15,6 +15,8 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -94,7 +96,8 @@ public class AddHealthLink extends Ability {
                         clicker.sendMessage(TextUtil.red("You need to select a player to link to"));
                         return;
                     }
-                    this.link(target, getShadow().getIndirect(clicker));
+                    IndirectPlayer iClicker = getShadow().getIndirect(clicker);
+                    this.link(target, iClicker);
                     clicker.sendMessage(
                         TextUtil.green("Successfully linked to ")
                             .append(target.getName())
@@ -123,6 +126,7 @@ public class AddHealthLink extends Ability {
                                  p.role.getFaction() == Faction.NEUTRAL)
                         );
                     }
+                    giveEffects(iClicker, target);
                 },
                 this.getShadow().indirectPlayerManager
                     .getAllPlayers()
@@ -133,6 +137,70 @@ public class AddHealthLink extends Ability {
         );
 
         return AbilityResult.NO_CLOSE;
+    }
+
+    private void giveEffects(IndirectPlayer player1, IndirectPlayer player2) {
+        StatusEffectInstance firstResistance = new StatusEffectInstance(
+            StatusEffects.RESISTANCE,
+            -1,
+            1 - 1,
+            false,
+            false,
+            true
+        );
+
+        StatusEffectInstance firstRegeneration = new StatusEffectInstance(
+            StatusEffects.REGENERATION,
+            -1,
+            1 - 1,
+            false,
+            false,
+            true
+        );
+
+        player1.giveEffect(
+            firstResistance,
+            (p) ->
+                p.role != null &&
+                p.role.getFaction() != Faction.SPECTATOR
+        );
+        player1.giveEffect(
+            firstRegeneration,
+            (p) ->
+                p.role != null &&
+                p.role.getFaction() != Faction.SPECTATOR
+        );
+
+        StatusEffectInstance secondResistance = new StatusEffectInstance(
+            StatusEffects.RESISTANCE,
+            -1,
+            1 - 1,
+            false,
+            false,
+            true
+        );
+
+        StatusEffectInstance secondRegeneration = new StatusEffectInstance(
+            StatusEffects.REGENERATION,
+            -1,
+            1 - 1,
+            false,
+            false,
+            true
+        );
+
+        player2.giveEffect(
+            secondResistance,
+            (p) ->
+                p.role != null &&
+                p.role.getFaction() != Faction.SPECTATOR
+        );
+        player2.giveEffect(
+            secondRegeneration,
+            (p) ->
+                p.role != null &&
+                p.role.getFaction() != Faction.SPECTATOR
+        );
     }
 
     private void link(IndirectPlayer player1, IndirectPlayer player2) {
