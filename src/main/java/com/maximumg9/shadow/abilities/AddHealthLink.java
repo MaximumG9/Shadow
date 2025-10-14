@@ -275,28 +275,43 @@ public class AddHealthLink extends Ability {
                     (player) ->
                         player.scheduleUntil(
                             (sPlayer) -> {
-                                sPlayer.getDataTracker()
-                                    .set(
-                                        LivingEntity.HEALTH,
-                                        MathHelper.clamp(
-                                            health,
-                                            0.0F,
-                                            sPlayer.getMaxHealth()
-                                        )
-                                    );
-                                sPlayer.setHealth(sPlayer.getMaxHealth() * this.health);
+                                float newHealth = sPlayer.getMaxHealth() * this.health;
+                                setHealthNoLifeLink(sPlayer,newHealth);
                                 if (sPlayer.isDead()) {
                                     if (!sPlayer.tryUseTotem(source)) {
                                         sPlayer.onDeath(source);
                                     }
                                 }
                             },
-                            CancelPredicates.cancelOnPhaseChange(player.getShadow().state.phase)
+                            CancelPredicates.cancelOnPhaseChange(
+                                player.getShadow().state.phase
+                            )
                         )
                 );
         }
 
+        private static void setHealthNoLifeLink(LivingEntity entity, float health) {
+            entity.getDataTracker()
+                .set(
+                    LivingEntity.HEALTH,
+                    MathHelper.clamp(
+                        health,
+                        0.0F,
+                        entity.getMaxHealth()
+                    )
+                );
+        }
+
         public void update(@Nullable DamageSource source, float newHealth, float oldHealth, ServerPlayerEntity damageTarget) {
+            Shadow shadow = MiscUtil.getShadow(damageTarget.server);
+
+            IndirectPlayer p = shadow.getIndirect(damageTarget);
+
+            if(
+                p.role != null &&
+                p.role.getFaction() == Faction.SHADOW
+            ) return;
+
             float fractionDamage = (newHealth - oldHealth) / damageTarget.getMaxHealth();
 
             this.health += fractionDamage;

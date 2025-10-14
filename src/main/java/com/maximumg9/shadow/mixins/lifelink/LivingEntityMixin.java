@@ -25,19 +25,23 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "setHealth",cancellable = true,at=@At("HEAD"))
     public void hookSetHealth(float health, CallbackInfo ci) {
-        if((Object) this instanceof ServerPlayerEntity player) {
-            Shadow shadow = getShadow(this.getServer());
-            IndirectPlayer iP = shadow.getIndirect(player);
-            if(iP.link != null) {
-                ci.cancel();
-                iP.link.update(
-                    null,
-                    health,
-                    player.getHealth(),
-                    player
-                );
-            }
+        // It incorrectly believe it can never be a ServerPlayerEntity
+        //noinspection ConstantValue
+        if(!((Object) this instanceof ServerPlayerEntity player)) return;
+        if(player.server == null) return;
+
+        Shadow shadow = getShadow(this.getServer());
+        IndirectPlayer iP = shadow.getIndirect(player);
+        if(iP.link != null) {
+            ci.cancel();
+            iP.link.update(
+                null,
+                health,
+                player.getHealth(),
+                player
+            );
         }
+
     }
 
     // Hooked separately to get damage source

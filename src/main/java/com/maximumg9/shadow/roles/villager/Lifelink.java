@@ -24,10 +24,10 @@ public class Lifelink extends AbstractVillager {
     private static final ItemStack ITEM_STACK;
 
     static {
-        ITEM_STACK = new ItemStack(Items.BOW);
+        ITEM_STACK = new ItemStack(Items.ENCHANTED_GOLDEN_APPLE);
         ITEM_STACK.set(
             DataComponentTypes.ITEM_NAME,
-            new Sheriff(null).getName()
+            new Lifelink(null).getName()
         );
         ITEM_STACK.set(
             DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP,
