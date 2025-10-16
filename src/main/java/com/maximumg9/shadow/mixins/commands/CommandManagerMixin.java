@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.commands;
 
 import com.maximumg9.shadow.Shadow;
 import com.mojang.brigadier.CommandDispatcher;

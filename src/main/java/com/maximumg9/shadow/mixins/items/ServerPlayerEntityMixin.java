@@ -1,8 +1,7 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.items;
 
-import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.util.Delay;
+import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.util.NBTUtil;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
@@ -11,8 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
@@ -51,35 +48,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
                 }
             }
         }
-    }
-    
-    @Inject(method = "onDisconnect", at = @At("HEAD"))
-    public void onDisconnect(CallbackInfo ci) {
-        Shadow shadow = getShadow(server);
-        Text name = this.getName();
-        shadow.addTickable(
-            Delay.of(
-                () -> {
-                    if (
-                        shadow
-                            .getIndirect((ServerPlayerEntity) (Object) this)
-                            .getOfflineTicks() >=
-                            shadow.config.disconnectTime
-                    ) {
-                        shadow.broadcast(
-                            name.copy().styled(style -> style.withColor(Formatting.YELLOW))
-                                .append(
-                                    Text.literal(
-                                        " has been disconnected for too long"
-                                    )
-                                )
-                        );
-                        shadow.checkWin(this.uuid);
-                    }
-                },
-                shadow.config.disconnectTime
-            )
-        );
     }
     
     @Inject(method = "dropItem", at = @At("HEAD"), cancellable = true)

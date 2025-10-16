@@ -1,10 +1,11 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.mechanics;
 
 import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.ObfuscateRole;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.neutral.Spectator;
+import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.authlib.GameProfile;
@@ -31,12 +32,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class PlayerDeathMixin extends PlayerEntity {
+public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     @org.spongepowered.asm.mixin.Shadow
     @Final
     public MinecraftServer server;
     
-    public PlayerDeathMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
+    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
     }
     
@@ -138,5 +139,34 @@ public abstract class PlayerDeathMixin extends PlayerEntity {
                 this.changeGameMode(GameMode.SPECTATOR);
             }
         }
+    }
+
+    @Inject(method = "onDisconnect", at = @At("HEAD"))
+    public void onDisconnect(CallbackInfo ci) {
+        Shadow shadow = getShadow(server);
+        Text name = this.getName();
+        shadow.addTickable(
+            Delay.of(
+                () -> {
+                    if (
+                        shadow
+                            .getIndirect((ServerPlayerEntity) (Object) this)
+                            .getOfflineTicks() >=
+                            shadow.config.disconnectTime
+                    ) {
+                        shadow.broadcast(
+                            name.copy().styled(style -> style.withColor(Formatting.YELLOW))
+                                .append(
+                                    Text.literal(
+                                        " has been disconnected for too long"
+                                    )
+                                )
+                        );
+                        shadow.checkWin(this.uuid);
+                    }
+                },
+                shadow.config.disconnectTime
+            )
+        );
     }
 }

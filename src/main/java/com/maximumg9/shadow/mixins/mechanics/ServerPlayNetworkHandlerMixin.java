@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.mechanics;
 
 import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
@@ -45,7 +45,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
         ),
         cancellable = true
     )
-    public void restrictMovementOnLocationSelect(PlayerMoveC2SPacket packet, CallbackInfo ci) {
+    public void restrictMovement(PlayerMoveC2SPacket packet, CallbackInfo ci) {
         Shadow shadow = getShadow(this.player.server);
         
         if (!shadow.getIndirect(this.player).frozen) return;

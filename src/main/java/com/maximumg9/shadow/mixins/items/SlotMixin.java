@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.items;
 
 import com.maximumg9.shadow.util.NBTUtil;
 import net.minecraft.entity.player.PlayerInventory;

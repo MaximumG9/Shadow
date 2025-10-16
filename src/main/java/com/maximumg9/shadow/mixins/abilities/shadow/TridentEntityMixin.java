@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.abilities.shadow;
 
 import com.maximumg9.shadow.abilities.PoseidonsTrident;
 import com.maximumg9.shadow.util.NBTUtil;
