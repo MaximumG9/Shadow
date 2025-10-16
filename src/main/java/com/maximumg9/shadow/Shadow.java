@@ -226,6 +226,8 @@ public class Shadow implements Tickable {
             });
             
             this.config.roleManager.clearRoles();
+
+            this.linkRegistry.clearLinks();
             
             this.saveAsync();
         } catch (Throwable t) {

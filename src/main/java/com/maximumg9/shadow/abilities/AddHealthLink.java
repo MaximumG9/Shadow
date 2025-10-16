@@ -261,6 +261,7 @@ public class AddHealthLink extends Ability {
                     )
                 )
             );
+            shadow.linkRegistry.addLink(this);
         }
 
         public Link(Shadow shadow) {
@@ -309,12 +310,15 @@ public class AddHealthLink extends Ability {
                     .getDamageSources()
                     .generic()
             );
+            Link.destroyLink(link1);
+            Link.destroyLink(link2);
         }
 
         private static void propagateNewLink(Link oldLink, Link newLink) {
             for(IndirectPlayer p : oldLink.players) {
                 p.link = newLink;
             }
+            oldLink.players.clear();
         }
 
         private static Link combine(Link link1, Link link2) {
@@ -330,6 +334,14 @@ public class AddHealthLink extends Ability {
             newLink.health = (link1.health + link2.health) / 2;
 
             return newLink;
+        }
+
+        public static void destroyLink(Link link) {
+            for(IndirectPlayer p : link.players) {
+                p.link = null;
+            }
+
+            link.shadow.linkRegistry.removeLink(link);
         }
 
         public void syncHealths(DamageSource source) {
@@ -356,6 +368,10 @@ public class AddHealthLink extends Ability {
                             )
                         )
                 );
+
+            if(this.health <= 0) {
+                destroyLink(this);
+            }
         }
 
         public static void setHealthNoLifeLink(LivingEntity entity, float health) {

@@ -25,14 +25,16 @@ public class LinkRegistry {
         linkRegistry.put(link,link);
     }
 
+    public void removeLink(AddHealthLink.Link link) {
+        linkRegistry.remove(link);
+    }
+
     public NbtCompound writeNBT(NbtCompound nbt) {
         NbtList list = new NbtList();
         linkRegistry.keySet()
             .stream()
             .map((link) -> link.writeNBT(new NbtCompound()))
-            .forEach(
-                c -> list.add(c)
-            );
+            .forEach(list::add);
 
         nbt.put("links",list);
 
@@ -42,8 +44,7 @@ public class LinkRegistry {
     public void readNBT(NbtCompound nbt) {
         NbtElement possibleLinks = nbt.get("links");
         if((possibleLinks instanceof NbtList links)) {
-            clearPlayerLinks();
-            linkRegistry.clear();
+            clearLinks();
             links.stream()
                 .map(
                     (linkData) -> {
@@ -61,13 +62,10 @@ public class LinkRegistry {
         }
     }
 
-    private void clearPlayerLinks() {
-        shadow
-            .indirectPlayerManager
-            .getAllPlayers()
-            .forEach((p) ->
-                p.link = null
-            );
+    public void clearLinks() {
+        for(AddHealthLink.Link link : linkRegistry.keySet()) {
+            AddHealthLink.Link.destroyLink(link);
+        }
     }
 
     private void assignToPlayers(AddHealthLink.Link link) {
