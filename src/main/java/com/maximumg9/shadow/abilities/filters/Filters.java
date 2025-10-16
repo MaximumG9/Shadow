@@ -84,8 +84,13 @@ public abstract class Filters {
         @Override
         public AbilityFilterResult test(Ability ability) {
             long timeLeft = ability.getCooldownTimeLeft(this.cooldown);
-            return ability.getCooldownTimeLeft(this.cooldown) > 0 ? AbilityFilterResult.PASS() :
-                AbilityFilterResult.FAIL(String.format(this.message, TimeUtil.ticksToText(timeLeft,false)));
+            return ability.getCooldownTimeLeft(this.cooldown) > 0 ?
+                AbilityFilterResult.FAIL(
+                    String.format(
+                        this.message,
+                        TimeUtil.ticksToText(timeLeft,false)
+                    )
+                ) : AbilityFilterResult.PASS();
         }
     }
 

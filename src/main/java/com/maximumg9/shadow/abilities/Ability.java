@@ -34,9 +34,8 @@ public abstract class Ability implements ItemRepresentable {
     public void resetLastActivated() { this.lastActivated = this.getShadow().getServer().getOverworld().getTime(); }
     
     public long getCooldownTimeLeft(long cooldown) {
-        return this.getShadow().config.maxCooldownManager.getMaxCooldown(this.getID(), cooldown) +
-            getLastActivated() -
-            this.getShadow().getServer().getOverworld().getTime();
+        return this.getShadow().config.maxCooldownManager.getMaxCooldown(this.getID(), cooldown) -
+            (this.getShadow().getServer().getOverworld().getTime() - getLastActivated());
     }
     
     public Shadow getShadow() { return player.getShadow(); }
@@ -66,7 +65,9 @@ public abstract class Ability implements ItemRepresentable {
     }
     public abstract AbilityResult apply();
     
-    public void init() { this.lastActivated = -Integer.MAX_VALUE; }
+    public void init() {
+        this.lastActivated = Integer.MIN_VALUE; // Just a very negative value AAHHH I can't use Long.MIN_VALUE because underflows
+    }
     public void deInit() { }
     
     public void onNight() { }
