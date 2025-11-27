@@ -1,5 +1,6 @@
 package com.maximumg9.shadow.roles;
 
+import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.random.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RoleSlot implements ItemRepresentable {
+public class RoleSlot implements ItemRepresentable, Saveable {
     private final int[] weights = new int[Roles.values().length];
     
     private final int index;
@@ -61,7 +62,7 @@ public class RoleSlot implements ItemRepresentable {
         return Roles.values()[i];
     }
     
-    public void readNbt(NbtCompound nbt) {
+    public void readNBT(NbtCompound nbt) {
         int index = nbt.getInt("index");
         
         if (index != this.index)
@@ -80,7 +81,7 @@ public class RoleSlot implements ItemRepresentable {
             );
     }
     
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNBT(NbtCompound nbt) {
         NbtCompound weights = new NbtCompound();
         
         for (int i = 0; i < this.weights.length; i++) {

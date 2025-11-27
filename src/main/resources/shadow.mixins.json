@@ -25,7 +25,7 @@
     "mechanics.DragonDeathMixin",
     "glowing.EntityTrackerEntryMixin",
     "glowing.EntityTrackerMixin",
-    "lifelink.LivingEntityMixin",
+    "abilities.villager.lifelink.LivingEntityMixin",
     "ncr.ChatCommandSignedC2SPacketMixin",
     "ncr.ChatMessageC2SPacketMixin",
     "ncr.DedicatedServerMixin",

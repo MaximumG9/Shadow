@@ -8,6 +8,7 @@ import com.maximumg9.shadow.modifiers.Modifier;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.neutral.Spectator;
+import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.mojang.authlib.GameProfile;
@@ -51,7 +52,7 @@ import java.util.function.Predicate;
 /**
  * This is meant to represent a player who existed at some time, even if the player does not exist now
  */
-public class IndirectPlayer implements ItemRepresentable {
+public class IndirectPlayer implements ItemRepresentable, Saveable {
     public final UUID playerUUID;
     final MinecraftServer server;
     @Nullable
@@ -83,6 +84,7 @@ public class IndirectPlayer implements ItemRepresentable {
         this.extraStorage = new NbtCompound();
     }
     
+    @SuppressWarnings("CopyConstructorMissesField")
     IndirectPlayer(IndirectPlayer src) {
         this.playerUUID = src.playerUUID;
         this.server = src.server;
@@ -101,7 +103,7 @@ public class IndirectPlayer implements ItemRepresentable {
         return nbt.getUuid("playerUUID");
     }
 
-    void readNbt(NbtCompound nbt) {
+    public void readNBT(NbtCompound nbt) {
         this.frozen = nbt.getBoolean("frozen");
         this.participating = nbt.getBoolean("participating");
 
@@ -139,20 +141,20 @@ public class IndirectPlayer implements ItemRepresentable {
         return MiscUtil.getShadow(this.server);
     }
 
-    NbtCompound writeNBT(NbtCompound nbt) {
+    public NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putUuid("playerUUID", this.playerUUID);
         nbt.putBoolean("frozen", this.frozen);
         nbt.putBoolean("participating", this.participating);
         
         if (this.role != null) {
-            nbt.put("role", this.role.writeNbt(new NbtCompound()));
+            nbt.put("role", this.role.writeNBT(new NbtCompound()));
         }
         if (this.originalRole != null) {
             nbt.putString("original_role", this.originalRole.name);
         }
         
         NbtList list = new NbtList();
-        list.addAll(this.modifiers.stream().map(modifier -> modifier.writeNbt(new NbtCompound())).toList());
+        list.addAll(this.modifiers.stream().map(modifier -> modifier.writeNBT(new NbtCompound())).toList());
         nbt.put("modifiers", list);
         
         nbt.putInt("offline_ticks", this.offlineTicks);

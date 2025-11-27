@@ -1,6 +1,8 @@
 package com.maximumg9.shadow.config;
 
 import com.maximumg9.shadow.Shadow;
+import com.maximumg9.shadow.saving.Saveable;
+import com.maximumg9.shadow.util.IllegalSaveException;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
@@ -9,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class Config {
+public class Config implements Saveable {
     public final RoleManager roleManager;
     public final ModifierManager modifierManager;
     public final MaxCooldownManager maxCooldownManager;
@@ -36,7 +38,9 @@ public class Config {
         this.maxCooldownManager = new MaxCooldownManager();
         this.saveFile = saveFile;
     }
-    private void readNbt(NbtCompound nbt) {
+
+    @Override
+    public void readNBT(NbtCompound nbt) throws IllegalSaveException {
         this.worldBorderSize = nbt.getInt("worldBorderSize");
         this.roleSlotCount = nbt.getInt("roleSlotCount");
         this.overworldEyes = nbt.getInt("overworldEyes");
@@ -52,11 +56,13 @@ public class Config {
         this.disconnectTime = nbt.getInt("disconnectTime");
         this.gracePeriodTicks = nbt.getInt("gracePeriodTicks");
         
-        this.maxCooldownManager.readNbt(nbt.getCompound("maxCooldownManager"));
-        this.roleManager.readNbt(nbt.getCompound("roleManager"));
-        this.modifierManager.readNbt(nbt.getCompound("modifierManager"));
+        this.maxCooldownManager.readNBT(nbt.getCompound("maxCooldownManager"));
+        this.roleManager.readNBT(nbt.getCompound("roleManager"));
+        this.modifierManager.readNBT(nbt.getCompound("modifierManager"));
     }
-    private NbtCompound writeNbt(NbtCompound nbt) {
+
+    @Override
+    public NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putInt("worldBorderSize", this.worldBorderSize);
         nbt.putInt("roleSlotCount", this.roleSlotCount);
         nbt.putInt("overworldEyes", this.overworldEyes);
@@ -72,25 +78,25 @@ public class Config {
         nbt.putInt("disconnectTime", this.disconnectTime);
         nbt.putInt("gracePeriodTicks", this.gracePeriodTicks);
         
-        nbt.put("maxCooldownManager", this.maxCooldownManager.writeNbt(new NbtCompound()));
-        nbt.put("roleManager", this.roleManager.writeNbt(new NbtCompound()));
-        nbt.put("modifierManager", this.modifierManager.writeNbt(new NbtCompound()));
+        nbt.put("maxCooldownManager", this.maxCooldownManager.writeNBT(new NbtCompound()));
+        nbt.put("roleManager", this.roleManager.writeNBT(new NbtCompound()));
+        nbt.put("modifierManager", this.modifierManager.writeNBT(new NbtCompound()));
         return nbt;
     }
     public Config copy(Shadow shadow) {
         Config newConfig = new Config(shadow, this.saveFile);
         
-        newConfig.readNbt(this.writeNbt(new NbtCompound()));
+        newConfig.readNBT(this.writeNBT(new NbtCompound()));
         
         return newConfig;
     }
     public void load() throws IOException {
         NbtCompound compound = NbtIo.readCompressed(saveFile, new NbtSizeTracker(0xffffffffffffL, 256));
         if (compound == null) throw new FileNotFoundException("Could not find config file");
-        this.readNbt(compound);
+        this.readNBT(compound);
     }
     public void save() throws IOException {
-        NbtCompound data = this.writeNbt(new NbtCompound());
+        NbtCompound data = this.writeNBT(new NbtCompound());
         NbtIo.writeCompressed(data, this.saveFile);
     }
 }

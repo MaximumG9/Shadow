@@ -3,6 +3,7 @@ package com.maximumg9.shadow.config;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.roles.RoleSlot;
 import com.maximumg9.shadow.roles.Roles;
+import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.screens.RoleSlotScreenHandler;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -19,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class RoleManager {
+public class RoleManager implements Saveable {
     private final RoleSlot[] roleSlots;
     
     private final Shadow shadow;
@@ -33,25 +34,25 @@ public class RoleManager {
         this.shadow = shadow;
     }
     
-    void readNbt(NbtCompound nbt) {
+    public void readNBT(NbtCompound nbt) {
         NbtList list = nbt.getList("roleSlots", NbtElement.COMPOUND_TYPE);
         
         int length = Math.min(list.size(), roleSlots.length);
         
         for (int i = 0; i < length; i++) {
-            this.roleSlots[i].readNbt(list.getCompound(i));
+            this.roleSlots[i].readNBT(list.getCompound(i));
         }
         for (int i = length; i < roleSlots.length; i++) {
             this.roleSlots[i].reset();
         }
     }
     
-    NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNBT(NbtCompound nbt) {
         NbtList list = new NbtList();
         list.addAll(
             Arrays.stream(this.roleSlots)
                 .map(
-                    (slot) -> slot.writeNbt(new NbtCompound())
+                    (slot) -> slot.writeNBT(new NbtCompound())
                 ).toList()
         );
         

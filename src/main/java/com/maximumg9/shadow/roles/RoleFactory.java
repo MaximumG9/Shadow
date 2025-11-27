@@ -9,7 +9,7 @@ public interface RoleFactory<T extends Role> {
     
     default T fromNBT(NbtCompound nbt, @Nullable IndirectPlayer player) {
         T role = makeRole(player);
-        role.readNbt(nbt);
+        role.readNBT(nbt);
         return role;
     }
 }

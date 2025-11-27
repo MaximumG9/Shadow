@@ -2,6 +2,7 @@ package com.maximumg9.shadow.roles;
 
 import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.items.AbilityStar;
+import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class Role implements ItemRepresentable {
+public abstract class Role implements ItemRepresentable, Saveable {
     
     protected final IndirectPlayer player;
     private final List<Ability> abilities = new ArrayList<>();
@@ -61,7 +62,7 @@ public abstract class Role implements ItemRepresentable {
         return this.abilities.stream().anyMatch(ability -> ability.getID().equals(id));
     }
     
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putString("role", this.getRawName());
         return nbt;
     }
@@ -90,7 +91,7 @@ public abstract class Role implements ItemRepresentable {
         this.abilities.forEach(Ability::onDay);
     }
     
-    public void readNbt(NbtCompound nbt) { }
+    public void readNBT(NbtCompound nbt) { }
     
     public void init() {
         player.giveItemNow(

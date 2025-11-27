@@ -3,6 +3,7 @@ package com.maximumg9.shadow.util.indirectplayer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.maximumg9.shadow.Tickable;
+import com.maximumg9.shadow.saving.Saveable;
 import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +19,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class IndirectPlayerManager implements Tickable {
+public class IndirectPlayerManager implements Tickable, Saveable {
     public static final Gson GSON;
     
     static {
@@ -47,10 +48,10 @@ public class IndirectPlayerManager implements Tickable {
 
     public void load() throws IOException {
         NbtCompound nbt = NbtIo.readCompressed(this.saveFile, new NbtSizeTracker(0xffffffffffffL, 256));
-        this.readNbt(nbt);
+        this.readNBT(nbt);
     }
 
-    private void readNbt(NbtCompound nbt) {
+    public void readNBT(NbtCompound nbt) {
         NbtList list = nbt.getList("indirectPlayers", NbtElement.COMPOUND_TYPE);
         
         for (int i = 0; i < list.size(); i++) {
@@ -58,7 +59,7 @@ public class IndirectPlayerManager implements Tickable {
             UUID uuid = IndirectPlayer.getUUIDForData(indirectPlayerData);
             IndirectPlayer existingPlayer = this.indirectPlayers.get(uuid);
             if(existingPlayer != null) {
-                existingPlayer.readNbt(indirectPlayerData);
+                existingPlayer.readNBT(indirectPlayerData);
             } else {
                 IndirectPlayer player = new IndirectPlayer(this.server, uuid);
                 this.indirectPlayers.put(player.playerUUID, player);
@@ -67,11 +68,11 @@ public class IndirectPlayerManager implements Tickable {
     }
 
     public void save() throws IOException {
-        NbtCompound data = this.writeNbt(new NbtCompound());
+        NbtCompound data = this.writeNBT(new NbtCompound());
         NbtIo.writeCompressed(data, this.saveFile);
     }
 
-    private NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNBT(NbtCompound nbt) {
         NbtList lv = new NbtList();
         for (IndirectPlayer player : indirectPlayers.values()) {
             lv.add(player.writeNBT(new NbtCompound()));
