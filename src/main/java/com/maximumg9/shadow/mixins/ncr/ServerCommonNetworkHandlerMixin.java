@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.ncr;
 
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.Packet;

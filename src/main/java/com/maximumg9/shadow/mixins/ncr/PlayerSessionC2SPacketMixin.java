@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.ncr;
 
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.PlayerSessionC2SPacket;

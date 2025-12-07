@@ -1,5 +1,6 @@
 package com.maximumg9.shadow.modifiers;
 
+import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.nbt.NbtCompound;
@@ -8,7 +9,7 @@ import net.minecraft.text.Text;
 
 import java.util.Objects;
 
-public abstract class Modifier implements ItemRepresentable {
+public abstract class Modifier implements ItemRepresentable, Saveable {
     
     final IndirectPlayer player;
     
@@ -30,12 +31,12 @@ public abstract class Modifier implements ItemRepresentable {
     
     public abstract Style getStyle();
     
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putString("name", this.getRawName());
         return nbt;
     }
     
-    public void readNbt(NbtCompound nbt) { }
+    public void readNBT(NbtCompound nbt) { }
     
     public void init() { }
     public void deInit() { }

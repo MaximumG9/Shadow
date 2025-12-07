@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.abilities.shadow;
 
 import com.maximumg9.shadow.abilities.PoseidonsTrident;
 import com.maximumg9.shadow.util.NBTUtil;
@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
@@ -30,28 +29,11 @@ import java.util.Map;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 
-    @Shadow public abstract @NotNull ItemStack getWeaponStack();
-
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
-    @Inject(method = "getEquipmentChanges", at = @At(value = "TAIL"))
-    private void areItemsDifferent(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir) {
-        if(cir.getReturnValue() == null) return;
-        cir.getReturnValue().entrySet().removeIf((entry) -> {
-            ItemStack stack = entry.getValue();
-            if(NBTUtil.hasID(stack, PoseidonsTrident.ID)) {
-                entry.setValue(handleTrident(entry.getKey(),stack));
-            }
-            return NBTUtil.getCustomData(stack).getBoolean(NBTUtil.INVISIBLE_KEY);
-        });
-    }
-
-    @Redirect(method = "getEquipmentChanges",at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z"))
-    public boolean dontUpdateAttributeModifiers(ItemStack oldStack) {
-        return oldStack.isEmpty() || NBTUtil.getCustomData(oldStack).getBoolean(NBTUtil.DISABLE_ATTRIBUTES_KEY);
-    }
+    @Shadow @NotNull public abstract ItemStack getWeaponStack();
 
     @Inject(method = "disablesShield",at=@At("HEAD"), cancellable = true)
     public void disablesShield(CallbackInfoReturnable<Boolean> cir) {
@@ -59,6 +41,19 @@ public abstract class LivingEntityMixin extends Entity {
             cir.setReturnValue(true);
         }
     }
+
+    @Inject(method = "getEquipmentChanges", at = @At(value = "TAIL"))
+    private void changeTrident(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir) {
+        if(cir.getReturnValue() == null) return;
+        cir.getReturnValue().entrySet().forEach((entry) -> {
+            ItemStack stack = entry.getValue();
+            if(NBTUtil.hasID(stack, PoseidonsTrident.ID)) {
+                entry.setValue(handleTrident(entry.getKey(),stack));
+            }
+        });
+    }
+
+
 
     @Unique
     private ItemStack handleTrident(EquipmentSlot slot, ItemStack trident) {

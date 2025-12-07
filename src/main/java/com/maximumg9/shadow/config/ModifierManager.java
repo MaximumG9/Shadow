@@ -4,6 +4,7 @@ import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.modifiers.AddModifier;
 import com.maximumg9.shadow.modifiers.ModifierSlot;
 import com.maximumg9.shadow.modifiers.Modifiers;
+import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.screens.ModifierSlotScreenHandler;
@@ -20,7 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class ModifierManager {
+public class ModifierManager implements Saveable {
     private final List<ModifierSlot> modifierSlots;
     
     private final Shadow shadow;
@@ -30,18 +31,18 @@ public class ModifierManager {
         this.shadow = shadow;
     }
     
-    void readNbt(NbtCompound nbt) {
+    public void readNBT(NbtCompound nbt) {
         NbtList list = nbt.getList("modifierSlots", NbtElement.COMPOUND_TYPE);
         
         for (int i = 0; i < list.size(); i++) {
             if (modifierSlots.size() <= i) modifierSlots.add(new ModifierSlot(i));
-            this.modifierSlots.get(i).readNbt(list.getCompound(i));
+            this.modifierSlots.get(i).readNBT(list.getCompound(i));
         }
     }
     
-    NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNBT(NbtCompound nbt) {
         NbtList list = new NbtList();
-        modifierSlots.forEach(slot -> list.add(slot.writeNbt(new NbtCompound())));
+        modifierSlots.forEach(slot -> list.add(slot.writeNBT(new NbtCompound())));
         
         nbt.put("modifierSlots", list);
         

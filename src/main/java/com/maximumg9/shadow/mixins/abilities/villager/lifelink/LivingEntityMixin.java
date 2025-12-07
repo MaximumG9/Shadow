@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins.lifelink;
+package com.maximumg9.shadow.mixins.abilities.villager.lifelink;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.maximumg9.shadow.Shadow;

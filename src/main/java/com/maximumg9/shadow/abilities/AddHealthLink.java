@@ -5,6 +5,7 @@ import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.filters.Filters;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.villager.Lifeweaver;
+import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
@@ -245,7 +246,7 @@ public class AddHealthLink extends Ability {
         return filters;
     }
 
-    public static class Link {
+    public static class Link implements Saveable {
         private float health = 1;
         public final List<IndirectPlayer> players;
         private final Shadow shadow;

@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.ncr;
 
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;

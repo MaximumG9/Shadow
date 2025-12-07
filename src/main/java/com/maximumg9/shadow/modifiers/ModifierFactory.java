@@ -9,7 +9,7 @@ public interface ModifierFactory<T extends Modifier> {
     
     default T fromNBT(NbtCompound nbt, @Nullable IndirectPlayer player) {
         T modifier = makeModifier(player);
-        modifier.readNbt(nbt);
+        modifier.readNBT(nbt);
         return modifier;
     }
 }

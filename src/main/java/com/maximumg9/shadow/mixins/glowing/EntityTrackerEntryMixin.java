@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins;
+package com.maximumg9.shadow.mixins.glowing;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.maximumg9.shadow.Shadow;

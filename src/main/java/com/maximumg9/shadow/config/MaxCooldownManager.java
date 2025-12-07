@@ -1,17 +1,18 @@
 package com.maximumg9.shadow.config;
 
+import com.maximumg9.shadow.saving.Saveable;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 
-public class MaxCooldownManager {
+public class MaxCooldownManager implements Saveable {
     
     private final Object2LongOpenHashMap<Identifier> cooldownMap = new Object2LongOpenHashMap<>();
     
     public MaxCooldownManager() { }
     
-    void readNbt(NbtCompound nbt) {
+    public void readNBT(NbtCompound nbt) {
         for (String key : nbt.getKeys()) {
             Identifier id = Identifier.tryParse(key);
             if (id == null) continue;
@@ -24,7 +25,7 @@ public class MaxCooldownManager {
         return cooldownMap.putIfAbsent(id, defaultMaxCooldown);
     }
     
-    NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNBT(NbtCompound nbt) {
         cooldownMap.object2LongEntrySet().fastForEach((entry) ->
             nbt.putLong(entry.getKey().toString(), entry.getLongValue())
         );

@@ -2,6 +2,7 @@ package com.maximumg9.shadow.util;
 
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.AddHealthLink;
+import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
@@ -12,7 +13,7 @@ import net.minecraft.nbt.NbtList;
 import java.util.Objects;
 import java.util.WeakHashMap;
 
-public class LinkRegistry {
+public class LinkRegistry implements Saveable {
     private final WeakHashMap<AddHealthLink.Link, AddHealthLink.Link> linkRegistry = new WeakHashMap<>();
 
     private final Shadow shadow;
@@ -85,9 +86,5 @@ public class LinkRegistry {
                 )
             )
         );
-    }
-
-    public void save() {
-
     }
 }

@@ -1,5 +1,6 @@
 package com.maximumg9.shadow.modifiers;
 
+import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.TextUtil;
 import net.minecraft.component.DataComponentTypes;
@@ -11,7 +12,7 @@ import net.minecraft.text.Text;
 
 import java.util.List;
 
-public class ModifierSlot implements ItemRepresentable {
+public class ModifierSlot implements ItemRepresentable, Saveable {
     private int index;
     public Modifiers modifier;
     public int count;
@@ -34,7 +35,7 @@ public class ModifierSlot implements ItemRepresentable {
         this.index = newIndex;
     }
     
-    public void readNbt(NbtCompound nbt) {
+    public void readNBT(NbtCompound nbt) {
         int index = nbt.getInt("index");
         
         if (index != this.index)
@@ -45,7 +46,7 @@ public class ModifierSlot implements ItemRepresentable {
         this.chance = nbt.getFloat("chance");
     }
     
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putInt("index", this.index);
         nbt.putString("modifier", this.modifier.name);
         nbt.putInt("count", this.count);
