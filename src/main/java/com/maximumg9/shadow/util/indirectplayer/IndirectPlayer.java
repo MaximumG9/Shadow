@@ -1,7 +1,6 @@
 package com.maximumg9.shadow.util.indirectplayer;
 
 
-import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.AddHealthLink;
 import com.maximumg9.shadow.modifiers.Modifier;
@@ -60,7 +59,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     @Nullable
     public Roles originalRole;
     public ArrayList<Modifier> modifiers = new ArrayList<>();
-    public boolean participating;
+    public boolean participating = true;
     public boolean frozen;
     public int chatMessageCooldown;
     public NbtCompound extraStorage;
@@ -73,7 +72,6 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.playerUUID = base.getUuid();
         this.server = base.server;
         this.role = new Spectator(this);
-        this.participating = getShadow().state.phase != GamePhase.PLAYING;
         this.name = base.getName();
         this.extraStorage = new NbtCompound();
     }
