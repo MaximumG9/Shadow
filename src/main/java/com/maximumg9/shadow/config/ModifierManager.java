@@ -71,6 +71,7 @@ public class ModifierManager implements Saveable {
             
             boolean stackable = modifierSlot.modifier.factory.makeModifier(null).isStackable();
             List<IndirectPlayer> candidates = new ArrayList<>(shadow.getOnlinePlayers().stream()
+                .filter(player -> player.participating)
                 .filter((player -> stackable || !modifierTypes.get(player).contains(modifierSlot.modifier)))
                 .unordered()
                 .toList());
