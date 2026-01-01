@@ -26,6 +26,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.Heightmap;
 
 import static com.maximumg9.shadow.util.MiscUtil.getShadow;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.argument.EntityArgumentType.player;
 import static net.minecraft.command.argument.NbtCompoundArgumentType.getNbtCompound;
@@ -44,7 +45,7 @@ public class DebugCommand {
                         .then(
                             argument("player", player())
                                 .then(
-                                    argument("role", string())
+                                    argument("role", greedyString())
                                         .suggests(Roles::suggest)
                                         .executes((ctx) -> {
                                             ServerPlayerEntity player = EntityArgumentType.getPlayer(ctx, "player");
@@ -62,7 +63,6 @@ public class DebugCommand {
                                             indirectPlayer.role = role.factory.makeRole(indirectPlayer);
 
                                             indirectPlayer.role.init();
-
 
                                             ctx.getSource().sendFeedback(
                                                 () ->
