@@ -26,7 +26,8 @@ public abstract class LivingEntityMixin extends Entity {
         super(type, world);
     }
 
-    @Inject(method = "getEquipmentChanges", at = @At(value = "TAIL"))
+    // Increase order so trident mixin applies first
+    @Inject(method = "getEquipmentChanges", at = @At(value = "TAIL"), order = 1100)
     private void areItemsDifferent(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir) {
         if(cir.getReturnValue() == null) return;
         cir.getReturnValue().entrySet().removeIf((entry) -> {
@@ -35,7 +36,7 @@ public abstract class LivingEntityMixin extends Entity {
         });
     }
 
-    @Redirect(method = "getEquipmentChanges",at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z"))
+    @Redirect(method = "getEquipmentChanges",at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z",ordinal = 1))
     public boolean dontUpdateAttributeModifiers(ItemStack oldStack) {
         return oldStack.isEmpty() || NBTUtil.getCustomData(oldStack).getBoolean(NBTUtil.DISABLE_ATTRIBUTES_KEY);
     }
