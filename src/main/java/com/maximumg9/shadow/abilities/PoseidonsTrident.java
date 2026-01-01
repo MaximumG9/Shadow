@@ -18,11 +18,11 @@ public class PoseidonsTrident extends Ability {
     private static final ItemStack ITEM_STACK;
 
     static {
-        ITEM_STACK = new ItemStack(Items.BOW, 1);
+        ITEM_STACK = new ItemStack(Items.TRIDENT, 1);
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                Text.literal("In main hand:")
+                Text.literal("In main hand: ")
                     .styled(style -> style.withColor(Formatting.GRAY).withItalic(false))
                     .append(
                         Text.literal("Riptide I")
@@ -61,7 +61,7 @@ public class PoseidonsTrident extends Ability {
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                Text.literal("In main hand:")
+                Text.literal("In main hand: ")
                     .styled(style -> style.withColor(Formatting.GRAY).withItalic(false))
                     .append(
                         Text.literal("Riptide I")
