@@ -25,7 +25,7 @@ public abstract class Filters {
     }
 
     public static class Night extends Filter {
-        private static final String DEFAULT_MESSAGE = "You cannot use this ability during night";
+        private static final String DEFAULT_MESSAGE = "You can only use this ability during night";
 
         public Night() {
             super(DEFAULT_MESSAGE);
@@ -37,7 +37,7 @@ public abstract class Filters {
 
         @Override
         public boolean filter(Ability ability) {
-            return false;
+            return ability.getShadow().isNight();
         }
     }
 
