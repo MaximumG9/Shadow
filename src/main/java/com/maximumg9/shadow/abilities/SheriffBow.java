@@ -6,6 +6,7 @@ import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
@@ -55,6 +56,10 @@ public class SheriffBow extends Ability {
         item.set(
             DataComponentTypes.ITEM_NAME,
             TextUtil.gold("Sheriff Bow")
+        );
+        item.set(
+            DataComponentTypes.UNBREAKABLE,
+            new UnbreakableComponent(false)
         );
         
         NBTUtil.flagRestrictMovement(item);
