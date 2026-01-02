@@ -36,7 +36,7 @@ public abstract class LivingEntityMixin extends Entity {
         });
     }
 
-    @Redirect(method = "getEquipmentChanges",at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z",ordinal = 1))
+    @Redirect(method = "getEquipmentChanges",at= @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z"))
     public boolean dontUpdateAttributeModifiers(ItemStack oldStack) {
         return oldStack.isEmpty() || NBTUtil.getCustomData(oldStack).getBoolean(NBTUtil.DISABLE_ATTRIBUTES_KEY);
     }

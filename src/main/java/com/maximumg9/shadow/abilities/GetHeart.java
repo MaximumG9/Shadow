@@ -94,7 +94,7 @@ public class GetHeart extends Ability {
             }
         );
 
-        if (this.player.giveItemNow(
+        if (!this.player.giveItemNow(
             heart,
             MiscUtil.DELETE
         )) {
