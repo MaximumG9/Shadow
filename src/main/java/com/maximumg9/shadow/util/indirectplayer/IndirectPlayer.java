@@ -258,17 +258,15 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     public boolean giveItemNow(ItemStack stack, BiConsumer<ServerPlayerEntity, ItemStack> ifFail) {
         ServerPlayerEntity player = this.getPlayerOrThrow();
         
-        boolean result = player
+        boolean succeeded = player
             .getInventory()
             .insertStack(stack);
         
-        if (!result) {
+        if (!succeeded) {
             ifFail.accept(player, stack);
         }
-        
-        return this.getPlayerOrThrow()
-            .getInventory()
-            .insertStack(stack);
+
+        return succeeded;
     }
     
     public void setTitleTimes(int fadeInTicks, int stayTicks, int fadeOutTicks, Predicate<IndirectPlayer> cancelPredicate) {
