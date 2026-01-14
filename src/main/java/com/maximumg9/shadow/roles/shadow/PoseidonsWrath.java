@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class PoseidonsWrath extends AbstractShadow {
-    public static final RoleFactory<PoseidonsWrath> FACTORY = new PoseidonsWrath.Factory();
+    public static final RoleFactory<PoseidonsWrath> FACTORY = new Factory();
     private static final ItemStack ITEM_STACK = new ItemStack(Items.TRIDENT);
     private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(PoseidonsTrident::new);
     private static final Style STYLE = Style.EMPTY.withColor(Formatting.BLUE);

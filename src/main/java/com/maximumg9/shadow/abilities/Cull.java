@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class Cull extends com.maximumg9.shadow.abilities.Ability {
+public class Cull extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("cull");
     private static final ItemStack ITEM_STACK;
     

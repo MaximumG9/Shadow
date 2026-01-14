@@ -46,18 +46,7 @@ public class ModifierSlotScreenHandler extends ShadowScreenHandler {
     private final SimpleInventory inventory;
     private final ScreenHandlerContext context;
     private int page = 0;
-    // What does the UI look like? Well here it is:
-    // ,--------------------------------------------,
-    // |Role| Up | Up | Up | Up | Up | Up | Up |Next|
-    // |Role|Role|Role|Role|Role|Role|Role|Role|    |
-    // |Down|Down|Down|Down|Down|Down|Down|Down|    |
-    // | Up | Up | Up | Up | Up | Up | Up | Up |    |
-    // |Role|Role|Role|Role|Role|Role|Role|Role|    |
-    // |Down|Down|Down|Down|Down|Down|+1x |-1x |Exit|
-    // '--------------------------------------------'
-    
-    // The role weight items are made by buildPage
-    // The Next and Exit items are made by buildUI
+
     private ModifierSlotScreenHandler(int syncID, ModifierSlot slot, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(ScreenHandlerType.GENERIC_9X6, syncID, playerInventory);
         this.context = context;

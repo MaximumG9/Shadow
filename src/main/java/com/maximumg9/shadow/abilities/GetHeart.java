@@ -40,7 +40,7 @@ public class GetHeart extends Ability {
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
                 TextUtil.gray("Get a heart as an item"),
-                com.maximumg9.shadow.abilities.Ability.AbilityText()
+                Ability.AbilityText()
             )
         );
         NBTUtil.removeAttributeModifiers(ITEM_STACK);

@@ -2,10 +2,13 @@ package com.maximumg9.shadow.config;
 
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.saving.Saveable;
+import com.maximumg9.shadow.screens.ConfigScreenHandler;
 import com.maximumg9.shadow.util.IllegalSaveException;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -83,6 +86,11 @@ public class Config implements Saveable {
         nbt.put("modifierManager", this.modifierManager.writeNBT(new NbtCompound()));
         return nbt;
     }
+
+    public void showConfig(ServerPlayerEntity player, boolean editable) {
+        player.openHandledScreen(new ConfigScreenHandler.Factory(Text.literal("Config"), this, editable));
+    }
+
     public Config copy(Shadow shadow) {
         Config newConfig = new Config(shadow, this.saveFile);
         

@@ -72,7 +72,7 @@ public class AddHealthLink extends Ability {
                     ).append(
                         " but your health is not linked"
                     ),
-                com.maximumg9.shadow.abilities.Ability.AbilityText()
+                Ability.AbilityText()
             )
         );
         NBTUtil.removeAttributeModifiers(ITEM_STACK);
