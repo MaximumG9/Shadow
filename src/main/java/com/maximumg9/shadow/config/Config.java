@@ -32,6 +32,7 @@ public class Config implements Saveable {
     public int chatMessageCooldown = 30 * 20;
     public double cullRadius = 18.0;
     public boolean disableChat = false;
+    public boolean pinataHittable = false;
     public int disconnectTime = 20 * 60 * 10;
     public int gracePeriodTicks = 20 * 60 * 3;
     
@@ -56,6 +57,7 @@ public class Config implements Saveable {
         this.chatMessageCooldown = nbt.getInt("chatMessageCooldown");
         this.cullRadius = nbt.getDouble("cullRadius");
         this.disableChat = nbt.getBoolean("disableChat");
+        this.pinataHittable = nbt.getBoolean("pinataHittable");
         this.disconnectTime = nbt.getInt("disconnectTime");
         this.gracePeriodTicks = nbt.getInt("gracePeriodTicks");
         
@@ -78,6 +80,7 @@ public class Config implements Saveable {
         nbt.putInt("chatMessageCooldown", this.chatMessageCooldown);
         nbt.putDouble("cullRadius", this.cullRadius);
         nbt.putBoolean("disableChat", this.disableChat);
+        nbt.putBoolean("pinataHittable", this.pinataHittable);
         nbt.putInt("disconnectTime", this.disconnectTime);
         nbt.putInt("gracePeriodTicks", this.gracePeriodTicks);
         

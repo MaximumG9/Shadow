@@ -122,7 +122,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         
         IndirectPlayer player = shadow.getIndirect((ServerPlayerEntity) ((Object) this));
         
-        if (player.role != null) player.role.onDeath();
+        if (player.role != null) player.role.onDeath(damageSource);
         
         player.role = new Spectator(player);
         

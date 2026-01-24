@@ -11,6 +11,7 @@ import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
@@ -54,7 +55,7 @@ public abstract class Role implements ItemRepresentable, Saveable {
     
     public abstract Style getStyle();
     
-    public void onDeath() {
+    public void onDeath(DamageSource damageSource) {
 
     }
     
