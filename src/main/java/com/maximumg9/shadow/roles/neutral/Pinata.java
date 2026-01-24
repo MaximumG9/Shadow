@@ -44,7 +44,7 @@ public class Pinata extends AbstractNeutral {
 
     public Pinata(@Nullable IndirectPlayer player) {
         // Fuck you too :)
-        super(player, player == null ? List.of(PinataGift::new) : player.getShadow().config.pinataHittable ? List.of(PinataGift::new) : List.of(PinataGift::new, PinataHit::new));
+        super(player, player == null ? List.of(PinataGift::new) : !player.getShadow().config.pinataHittable ? List.of(PinataGift::new) : List.of(PinataGift::new, PinataHit::new));
     }
 
     @Override
