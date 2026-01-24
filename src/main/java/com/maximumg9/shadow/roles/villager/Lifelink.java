@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class Lifelink extends AbstractVillager {
-    public static final RoleFactory<Lifelink> FACTORY = new Lifelink.Factory();
+    public static final RoleFactory<Lifelink> FACTORY = new Factory();
     private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(AddHealthLink::new);
     private static final Style STYLE = Style.EMPTY.withColor(Formatting.DARK_GREEN);
     private static final ItemStack ITEM_STACK;

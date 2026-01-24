@@ -51,7 +51,7 @@ public class Lifeweaver extends AbstractVillager {
         return ITEM_STACK.copy();
     }
 
-    public static final RoleFactory<Lifeweaver> FACTORY = new Lifeweaver.Factory();
+    public static final RoleFactory<Lifeweaver> FACTORY = new Factory();
     private static class Factory implements RoleFactory<Lifeweaver> {
         @Override
         public Lifeweaver makeRole(@Nullable IndirectPlayer player) {

@@ -106,7 +106,7 @@ public class StartTicker implements Tickable {
 
         shadow.saveAsync();
 
-        shadow.addTickable(new StartTicker.GracePeriodTicker(shadow));
+        shadow.addTickable(new GracePeriodTicker(shadow));
     }
 
     private void spawnEnderEyes() {

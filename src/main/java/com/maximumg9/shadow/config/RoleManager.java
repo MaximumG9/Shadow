@@ -24,7 +24,7 @@ public class RoleManager implements Saveable {
     private final RoleSlot[] roleSlots;
     
     private final Shadow shadow;
-    
+
     public RoleManager(Shadow shadow, Config config) {
         roleSlots = new RoleSlot[config.roleSlotCount];
         
