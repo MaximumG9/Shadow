@@ -144,6 +144,7 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
     @Override
     @SuppressWarnings("PointlessArithmeticExpression")
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
+        if (!editable) return;
 
         if (actionType == SlotActionType.SWAP ||
             actionType == SlotActionType.PICKUP_ALL ||
