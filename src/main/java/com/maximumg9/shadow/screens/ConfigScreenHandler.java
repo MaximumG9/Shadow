@@ -108,6 +108,7 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
 
         ItemStack graceStack = Items.IRON_SWORD.getDefaultStack();
         graceStack.set(DataComponentTypes.ITEM_NAME, Text.literal("Grace Period Timer: ").append(Text.literal(String.valueOf(config.gracePeriodTicks/20))).append(Text.literal("s")));
+        graceStack.set(DataComponentTypes.LORE, MiscUtil.makeLore(Text.literal("[Middle Click]").append(TextUtil.gray(" to Toggle"))));
         this.inventory.setStack(2+(1*9),graceStack);
 
 
@@ -191,6 +192,7 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
         if(slotIndex == 2+(1*9)) {
             if (actionType == SlotActionType.THROW) config.gracePeriodTicks = 180 * 20;
             else if (clickType == ClickType.LEFT) config.gracePeriodTicks += 20;
+            else if (actionType == SlotActionType.CLONE) config.gracePeriodTicks = config.gracePeriodTicks == 0 ? 180 * 20 : 0;
             else if (config.gracePeriodTicks > 20) config.gracePeriodTicks -= 20;
         }
 
