@@ -19,13 +19,11 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -117,6 +115,14 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
         cullStack.set(DataComponentTypes.ITEM_NAME, Text.literal("Cull Radius: ").append(Text.literal(String.valueOf(config.cullRadius))).append(Text.literal(" blocks")));
         this.inventory.setStack(3+(0*9),cullStack);
 
+        ItemStack fearStack = Items.RECOVERY_COMPASS.getDefaultStack();
+        fearStack.set(DataComponentTypes.ITEM_NAME, TextUtil.withColour("Paranoia Radius: ", Formatting.WHITE).append(Text.literal((String.valueOf(config.fearRadius)))));
+        this.inventory.setStack(3+(1*9),fearStack);
+
+        ItemStack markStack = Items.SPECTRAL_ARROW.getDefaultStack();
+        markStack.set(DataComponentTypes.ITEM_NAME, TextUtil.withColour("Moonlit Mark Radius: ", Formatting.WHITE).append(Text.literal((String.valueOf(config.markRadius)))));
+        this.inventory.setStack(3+(2*9),markStack);
+
 
         ItemStack borderStack = Items.STRUCTURE_VOID.getDefaultStack();
         borderStack.set(DataComponentTypes.ITEM_NAME, TextUtil.withColour("Worldborder Size: ", Formatting.WHITE).append(Text.literal(String.valueOf(config.worldBorderSize))).append(Text.literal(" blocks (Diameter)")));
@@ -126,7 +132,7 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
         ItemStack pinataHitStack = Items.TARGET.getDefaultStack();
         if(config.pinataHittable) pinataHitStack.set(DataComponentTypes.ITEM_NAME, TextUtil.withColour("Piñata gifts on hit", Formatting.WHITE));
         else pinataHitStack.set(DataComponentTypes.ITEM_NAME, TextUtil.withColour("[DISABLED] Piñata gifts on hit", Formatting.GRAY));
-        this.inventory.setStack(5+(0*9),pinataHitStack);
+        //this.inventory.setStack(5+(0*9),pinataHitStack);
 
 
         ItemStack infoStack = Items.PAPER.getDefaultStack();
@@ -191,6 +197,16 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
             if (actionType == SlotActionType.THROW) config.cullRadius = 18;
             else if (clickType == ClickType.LEFT) config.cullRadius+=0.5;
             else if (config.chatMessageCooldown > 1) config.cullRadius-=0.5;
+        }
+        if(slotIndex == 3+(1*9)) {
+            if (actionType == SlotActionType.THROW) config.fearRadius = 18;
+            else if (clickType == ClickType.LEFT) config.fearRadius+=0.5;
+            else if (config.chatMessageCooldown > 1) config.fearRadius-=0.5;
+        }
+        if(slotIndex == 3+(2*9)) {
+            if (actionType == SlotActionType.THROW) config.markRadius = 20;
+            else if (clickType == ClickType.LEFT) config.markRadius+=0.5;
+            else if (config.chatMessageCooldown > 1) config.markRadius-=0.5;
         }
 
         if(slotIndex == 4) {

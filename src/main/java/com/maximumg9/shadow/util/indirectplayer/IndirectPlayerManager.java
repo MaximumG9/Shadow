@@ -63,6 +63,7 @@ public class IndirectPlayerManager implements Tickable, Saveable {
             } else {
                 IndirectPlayer player = new IndirectPlayer(this.server, uuid);
                 this.indirectPlayers.put(player.playerUUID, player);
+                player.readNBT(indirectPlayerData);
             }
         }
     }
@@ -85,13 +86,14 @@ public class IndirectPlayerManager implements Tickable, Saveable {
 
     @Override
     public void tick() {
-        for (IndirectPlayerTask task : tasks) {
-            boolean shouldEndTask = task.shouldEnd();
-            if (shouldEndTask) {
-                tasks.remove(task);
+        tasks.removeIf((task) -> {
+            task.tick();
+            if(task.shouldEnd()) {
                 task.onEnd();
+                return true;
             }
-        }
+            return false;
+        });
         for (IndirectPlayer player : indirectPlayers.values()) {
             player.tick();
         }
@@ -135,12 +137,13 @@ public class IndirectPlayerManager implements Tickable, Saveable {
             if (this.disableCondition.test(player)) return true;
             
             Optional<ServerPlayerEntity> sPlayer = player.getPlayer();
-            if (sPlayer.isPresent()) {
-                this.task.accept(sPlayer.get());
-                return true;
-            }
-            
-            return false;
+            return sPlayer.isPresent();
+        }
+
+        @Override
+        public void onEnd() {
+            Optional<ServerPlayerEntity> sPlayer = player.getPlayer();
+            sPlayer.ifPresent(this.task);
         }
         
         @Override

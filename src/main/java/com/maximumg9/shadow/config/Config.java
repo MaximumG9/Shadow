@@ -31,6 +31,8 @@ public class Config implements Saveable {
     public boolean debug = false;
     public int chatMessageCooldown = 30 * 20;
     public double cullRadius = 18.0;
+    public double fearRadius = 18.0;
+    public double markRadius = 18.0;
     public boolean disableChat = false;
     public boolean pinataHittable = false;
     public int disconnectTime = 20 * 60 * 10;
@@ -56,6 +58,8 @@ public class Config implements Saveable {
         this.debug = nbt.getBoolean("debug");
         this.chatMessageCooldown = nbt.getInt("chatMessageCooldown");
         this.cullRadius = nbt.getDouble("cullRadius");
+        this.fearRadius = nbt.getDouble("fearRadius");
+        this.markRadius = nbt.getDouble("markRadius");
         this.disableChat = nbt.getBoolean("disableChat");
         this.pinataHittable = nbt.getBoolean("pinataHittable");
         this.disconnectTime = nbt.getInt("disconnectTime");
@@ -79,6 +83,8 @@ public class Config implements Saveable {
         nbt.putBoolean("debug", this.debug);
         nbt.putInt("chatMessageCooldown", this.chatMessageCooldown);
         nbt.putDouble("cullRadius", this.cullRadius);
+        nbt.putDouble("fearRadius", this.fearRadius);
+        nbt.putDouble("markRadius", this.markRadius);
         nbt.putBoolean("disableChat", this.disableChat);
         nbt.putBoolean("pinataHittable", this.pinataHittable);
         nbt.putInt("disconnectTime", this.disconnectTime);

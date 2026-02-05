@@ -67,12 +67,6 @@ public class StartTicker implements Tickable {
         if (!shadow.config.modifierManager.pickModifiers()) return;
 
         for (IndirectPlayer player : shadow.getOnlinePlayers()) {
-            if (player.role == null) {
-                shadow.ERROR("Null role chosen");
-                shadow.resetState();
-                return;
-            }
-
             if (player.role.getFaction() == Faction.SPECTATOR) {
                 player.getPlayerOrThrow().changeGameMode(GameMode.SPECTATOR);
             } else {

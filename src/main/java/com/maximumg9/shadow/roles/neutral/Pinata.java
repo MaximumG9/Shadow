@@ -64,11 +64,6 @@ public class Pinata extends AbstractNeutral {
     @Override
     public Roles getRole() { return Roles.PINATA; }
 
-    @Override
-    public void onDeath(DamageSource damageSource) {
-        PinataGift.onDeath(damageSource);
-    }
-
     private static class Factory implements RoleFactory<Pinata> {
 
         @Override

@@ -89,8 +89,8 @@ public class Cull extends Ability {
         List<ServerPlayerEntity> realTargets = p.getServerWorld().getPlayers(
             (player) -> {
                 IndirectPlayer indirect = getShadow().getIndirect(player);
-                return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius
-                    && (indirect.role == null || indirect.role.getFaction() != Faction.SHADOW);
+                return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius &&
+                    indirect.role.getFaction() != Faction.SHADOW;
             }
         );
         
@@ -104,8 +104,8 @@ public class Cull extends Ability {
         List<ServerPlayerEntity> fakeTargets = p.getServerWorld().getPlayers(
             (player) -> {
                 IndirectPlayer indirect = getShadow().getIndirect(player);
-                return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius
-                    && indirect.role != null && indirect.role.getFaction() == Faction.SHADOW;
+                return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius &&
+                    indirect.role.getFaction() == Faction.SHADOW;
             }
         );
         

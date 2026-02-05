@@ -10,12 +10,15 @@ import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -45,7 +48,26 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     @SuppressWarnings("UnusedReturnValue")
     @org.spongepowered.asm.mixin.Shadow
     public abstract boolean changeGameMode(GameMode gameMode);
-    
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    public void init(MinecraftServer server, ServerWorld world, GameProfile profile, SyncedClientOptions clientOptions, CallbackInfo ci) {
+        Shadow shadow = getShadow(this.server);
+
+        IndirectPlayer p = shadow.getIndirect((ServerPlayerEntity) (Object) this);
+        if (p.role.getFaction() == Faction.SPECTATOR) server.getScoreboard().addScoreHolderToTeam(getNameForScoreboard(), shadow.playerTeam);
+        shadow.addTickable(Delay.instant(() -> p.role.onJoin()));
+    }
+
+    @Inject(method = "updateKilledAdvancementCriterion", at = @At(
+        value = "INVOKE",
+        target = "Lnet/minecraft/server/network/ServerPlayerEntity;incrementStat(Lnet/minecraft/util/Identifier;)V",
+        ordinal = 0
+    ))
+    public void onPlayerKill(Entity entityKilled, int score, DamageSource damageSource, CallbackInfo ci) {
+        IndirectPlayer p = getShadow(server).getIndirect((ServerPlayerEntity) (Object) this);
+        p.role.onPlayerKill();
+    }
+
     @SuppressWarnings("DataFlowIssue")
     @Inject(method = "onDeath", at = @At("HEAD"))
     public void modifyDeathMessage(DamageSource damageSource, CallbackInfo ci) {
@@ -59,7 +81,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
             
             IndirectPlayer iPlayer = shadow.getIndirect((ServerPlayerEntity) (Object) this);
             
-            Style factionStyle = iPlayer.role == null ? Style.EMPTY : iPlayer.role.getFaction().name.getStyle();
+            Style factionStyle = iPlayer.role.getFaction().name.getStyle();
             
             // @TODO test this code with a working ability that applies the hide role flag
             if (iPlayer.extraStorage.contains(ObfuscateRole.HIDE_ROLE_KEY, NbtElement.INT_TYPE)) {
@@ -82,9 +104,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
                                     TextUtil.gray(" (")
                                 )
                                 .append(
-                                    iPlayer.role == null ?
-                                        TextUtil.red("Null") :
-                                        iPlayer.role.getName()
+                                    iPlayer.role.getName()
                                 )
                                 .append(
                                     TextUtil.gray(")")
@@ -103,9 +123,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
                     .setStyle(factionStyle)
                     .append(Text.of(" died. They were " + iPlayer.role.aOrAn() + " "))
                     .append(
-                        iPlayer.role == null ?
-                            TextUtil.red("Null") :
-                            iPlayer.role.getName()
+                        iPlayer.role.getName()
                     )
                     .append(Text.literal(".").setStyle(factionStyle));
                 
@@ -121,8 +139,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         Shadow shadow = getShadow(this.server);
         
         IndirectPlayer player = shadow.getIndirect((ServerPlayerEntity) ((Object) this));
-        
-        if (player.role != null) player.role.onDeath(damageSource);
+
+        player.role.onDeath(damageSource);
         
         player.role = new Spectator(player);
         
@@ -135,39 +153,17 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     public void onSpawn(CallbackInfo ci) {
         Shadow shadow = getShadow(this.server);
         IndirectPlayer iPlayer = shadow.getIndirect((ServerPlayerEntity) (Object) this);
-        if (iPlayer.role != null) {
-            if (iPlayer.role.getFaction() == Faction.SPECTATOR) {
-                this.changeGameMode(GameMode.SPECTATOR);
-            }
+        if (iPlayer.role.getFaction() == Faction.SPECTATOR) {
+            this.changeGameMode(GameMode.SPECTATOR);
         }
+
     }
 
     @Inject(method = "onDisconnect", at = @At("HEAD"))
     public void onDisconnect(CallbackInfo ci) {
-        Shadow shadow = getShadow(server);
-        Text name = this.getName();
-        shadow.addTickable(
-            Delay.of(
-                () -> {
-                    if (
-                        shadow
-                            .getIndirect((ServerPlayerEntity) (Object) this)
-                            .getOfflineTicks() >=
-                            shadow.config.disconnectTime
-                    ) {
-                        shadow.broadcast(
-                            name.copy().styled(style -> style.withColor(Formatting.YELLOW))
-                                .append(
-                                    Text.literal(
-                                        " has been disconnected for too long"
-                                    )
-                                )
-                        );
-                        shadow.checkWin(this.uuid);
-                    }
-                },
-                shadow.config.disconnectTime
-            )
-        );
+        Shadow shadow = getShadow(this.server);
+        IndirectPlayer player = shadow.getIndirect((ServerPlayerEntity) ((Object) this));
+
+        player.role.onLeave();
     }
 }

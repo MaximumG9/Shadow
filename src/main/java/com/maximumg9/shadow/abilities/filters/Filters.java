@@ -115,14 +115,12 @@ public abstract class Filters {
                 .stream()
                 .filter(
                     (player) ->
-                        player.role != null &&
-                            player.role.getFaction() == Faction.SHADOW
+                        player.role.getFaction() == Faction.SHADOW
                 ).count();
             long nonShadows = shadow.indirectPlayerManager
                 .getRecentlyOnlinePlayers(shadow.config.disconnectTime)
                 .stream().filter(
-                    (player) -> player.role != null &&
-                        player.role.getFaction() != Faction.SPECTATOR
+                    (player) -> player.role.getFaction() != Faction.SPECTATOR
                 )
                 .count() - shadows;
 

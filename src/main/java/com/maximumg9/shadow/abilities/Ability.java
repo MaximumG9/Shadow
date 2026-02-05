@@ -1,10 +1,12 @@
 package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.Shadow;
+import com.maximumg9.shadow.Tickable;
 import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -13,11 +15,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public abstract class Ability implements ItemRepresentable {
+public abstract class Ability implements ItemRepresentable, Tickable {
     private static final Text PASSIVE_TEXT = TextUtil.blue("[PASSIVE]");
     private static final Text ITEM_TEXT = TextUtil.gold("[ITEM]");
     private static final Text INVISIBLE_TEXT = TextUtil.gray("[INVISIBLE]");
     private static final Text ABILITY_TEXT = TextUtil.withColour("[ABILITY]",Formatting.DARK_PURPLE);
+    private boolean isOffline = false;
 
     final IndirectPlayer player;
     private long lastActivated;
@@ -45,7 +48,9 @@ public abstract class Ability implements ItemRepresentable {
     public IndirectPlayer getPlayer() {
         return this.player;
     }
-    
+
+    public boolean getToggled() { return false; }
+
     public AbilityResult triggerApply() {
         for (Filter filter : getFilters()) {
             AbilityFilterResult result = filter.test(this);
@@ -60,7 +65,19 @@ public abstract class Ability implements ItemRepresentable {
         for (Filter filter : getFilters()) {
             filter.postApply(this);
         }
-        
+
+        getShadow().getOnlinePlayers()
+            .stream()
+            .filter(p ->
+                this.player.getSquaredDistance(p) <=
+                    this.player.getShadow().config.fearRadius * this.player.getShadow().config.fearRadius
+                    && this.player.role.hasAbility(Paranoia.ID)
+            ).map((p) ->
+                ((Paranoia) p.role.getAbility(Paranoia.ID).get())
+            ).forEach(
+                (p) -> p.addPing(this.player)
+            );
+
         return result;
     }
     public abstract AbilityResult apply();
@@ -72,7 +89,18 @@ public abstract class Ability implements ItemRepresentable {
     
     public void onNight() { }
     public void onDay() { }
-    
+
+    public void onJoin() { }
+    public void onLeave() { }
+
+    public void onDeath(DamageSource damageSource) { }
+
+    public void onAnyDeath(DamageSource damageSource, IndirectPlayer deadPlayer) { }
+
+    public void onPlayerKill() { }
+
+    public void tick() { }
+
     @FunctionalInterface
     public interface Factory {
         Ability create(@Nullable IndirectPlayer player);

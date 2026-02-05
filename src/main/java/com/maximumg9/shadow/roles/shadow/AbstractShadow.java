@@ -32,16 +32,14 @@ public abstract class AbstractShadow extends Role {
     public void init() {
         super.init();
         if (this.player.getShadow()
-            .getAllPlayers()
-            .stream()
+            .getAllLivingPlayers()
             .noneMatch(
                 (player) ->
-                    player.role != null &&
-                        player.role.getFaction() == Faction.SHADOW &&
+                    player.role.getFaction() == Faction.SHADOW &&
                         player.playerUUID != this.player.playerUUID
             )) {
             this.player.sendMessage(
-                Text.literal("The are no other shadows (good luck!)"),
+                Text.literal("There are no other shadows (good luck!)"),
                 CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
             );
         } else {
@@ -54,9 +52,8 @@ public abstract class AbstractShadow extends Role {
                                 .stream()
                                 .filter(
                                     (player) ->
-                                        player.role != null &&
-                                            player.role.getFaction() == Faction.SHADOW &&
-                                            player.playerUUID != this.player.playerUUID
+                                        player.role.getFaction() == Faction.SHADOW &&
+                                            player != this.player
                                 ).map(
                                     (player) -> player.getName().copy().setStyle(player.role.getStyle())
                                 ).toList(),

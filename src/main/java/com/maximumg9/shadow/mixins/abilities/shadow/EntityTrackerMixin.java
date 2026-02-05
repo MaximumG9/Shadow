@@ -34,7 +34,7 @@ public class EntityTrackerMixin {
         Shadow shadow = getShadow(this.entity.getServer());
         IndirectPlayer iPlayer = shadow.getIndirect(player);
 
-        if(iPlayer.role == null || iPlayer.role.getFaction() != Faction.SHADOW) {
+        if(iPlayer.role.getFaction() != Faction.SHADOW) {
             ci.cancel();
         }
     }

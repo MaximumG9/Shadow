@@ -30,7 +30,8 @@
     "ncr.ChatMessageC2SPacketMixin",
     "ncr.DedicatedServerMixin",
     "items.ScreenHandlerMixin",
-    "items.SlotMixin"
+    "items.SlotMixin",
+    "mechanics.ServerPlayerInteractionManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

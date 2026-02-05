@@ -41,10 +41,6 @@ public class AbilityStar implements ItemUseCallback {
         Shadow shadow = getShadow(world.getServer());
         
         Role role = shadow.getIndirect((ServerPlayerEntity) user).role;
-        
-        if (role == null) {
-            return TypedActionResult.fail(stack);
-        }
 
         ArrayList<ItemRepresentable> abilities = getAbilities((ServerPlayerEntity) user, role, shadow);
         user.openHandledScreen(new DecisionScreenHandler.Factory<>(
@@ -72,7 +68,6 @@ public class AbilityStar implements ItemUseCallback {
             item -> {
                 ItemStack roleCard = new ItemStack(Items.WRITABLE_BOOK);
                 IndirectPlayer player = shadow.getIndirect(user);
-                assert player.role != null;
 
                 roleCard.set(
                     DataComponentTypes.ITEM_NAME,

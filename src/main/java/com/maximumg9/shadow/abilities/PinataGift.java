@@ -46,12 +46,12 @@ public class PinataGift extends Ability {
 
     public PinataGift(IndirectPlayer player) { super(player); };
 
-    public static void onDeath(DamageSource damageSource) {
+    public void onDeath(DamageSource damageSource) {
         ServerPlayerEntity attacker = (ServerPlayerEntity) damageSource.getAttacker();
         if (attacker == null) return;
 
-        final List<IndirectPlayer> SHADOWS = MiscUtil.getShadow(attacker.server).indirectPlayerManager.getAllPlayers().stream().filter((p) -> p.role != null && p.role.getFaction() == Faction.SHADOW).toList();
-        final List<IndirectPlayer> VILLAGERS = MiscUtil.getShadow(attacker.server).indirectPlayerManager.getAllPlayers().stream().filter((p) -> p.role != null && p.role.getFaction() == Faction.VILLAGER).toList();
+        final List<IndirectPlayer> SHADOWS = MiscUtil.getShadow(attacker.server).indirectPlayerManager.getAllPlayers().stream().filter((p) -> p.role.getFaction() == Faction.SHADOW).toList();
+        final List<IndirectPlayer> VILLAGERS = MiscUtil.getShadow(attacker.server).indirectPlayerManager.getAllPlayers().stream().filter((p) -> p.role.getFaction() == Faction.VILLAGER).toList();
 
         EntityAttributeInstance instance = attacker.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
         if (instance == null) return;
@@ -109,5 +109,5 @@ public class PinataGift extends Ability {
     public Identifier getID() { return ID; }
 
     @Override
-    public AbilityResult apply() { return null; }
+    public AbilityResult apply() { return AbilityResult.NO_CLOSE; }
 }

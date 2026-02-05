@@ -103,28 +103,20 @@ public class AddHealthLink extends Ability {
                         TextUtil.green("Successfully linked to ")
                             .append(target.getName())
                     );
-                    if(target.role == null) {
-                        target.sendMessage(
-                            TextUtil.red("bro your role is null you're kinda cooked but someone tried to lifelink you"),
-                            CancelPredicates.cancelOnPhaseChange(getShadow().state.phase)
-                        );
-
-                    } else if(target.role.getFaction() == Faction.SHADOW) {
+                    if(target.role.getFaction() == Faction.SHADOW) {
                         target.sendMessage(
                             TextUtil.green("You appear to have been linked with ")
                                 .append(this.player.getName())
                                 .append(" (Your health is not actually linked as you are a shadow)"),
                             (p) ->
-                                p.role != null && p.role.getFaction() == Faction.SHADOW
+                                p.role.getFaction() == Faction.SHADOW
                         );
                     } else {
                         target.sendMessage(
                             TextUtil.green("Your health has been linked with ")
                                 .append(this.player.getName()),
                             (p) ->
-                                p.role != null &&
-                                (p.role.getFaction() == Faction.VILLAGER ||
-                                 p.role.getFaction() == Faction.NEUTRAL)
+                                p.role.getFaction() == Faction.VILLAGER || p.role.getFaction() == Faction.NEUTRAL
                         );
                     }
                     giveEffects(iClicker, target);
@@ -132,7 +124,7 @@ public class AddHealthLink extends Ability {
                 this.getShadow().indirectPlayerManager
                     .getAllPlayers()
                     .stream()
-                    .filter(p -> p.role != null && p.role.getFaction() != Faction.SPECTATOR)
+                    .filter(p -> p.role.getFaction() != Faction.SPECTATOR)
                     .toList()
             )
         );
@@ -162,13 +154,11 @@ public class AddHealthLink extends Ability {
         player1.giveEffect(
             firstResistance,
             (p) ->
-                p.role != null &&
                 p.role.getFaction() != Faction.SPECTATOR
         );
         player1.giveEffect(
             firstRegeneration,
             (p) ->
-                p.role != null &&
                 p.role.getFaction() != Faction.SPECTATOR
         );
 
@@ -349,8 +339,7 @@ public class AddHealthLink extends Ability {
             players.stream()
                 .filter(
                     (p) ->
-                        p.role == null ||
-                            p.role.getFaction() != Faction.SHADOW
+                        p.role.getFaction() != Faction.SHADOW
                 )
                 .forEach(
                     (player) ->
@@ -392,10 +381,7 @@ public class AddHealthLink extends Ability {
 
             IndirectPlayer p = shadow.getIndirect(damageTarget);
 
-            if(
-                p.role != null &&
-                p.role.getFaction() == Faction.SHADOW
-            ) return false;
+            if(p.role.getFaction() == Faction.SHADOW) return false;
 
             float fractionDamage = (newHealth - oldHealth) / damageTarget.getMaxHealth();
 

@@ -44,16 +44,15 @@ public class ShadowChatCommand {
         
         IndirectPlayer player = shadow.getIndirect(ctx.getSource().getPlayerOrThrow());
         
-        if (player.role == null || player.role.getFaction() != Faction.SHADOW) {
+        if (player.role.getFaction() != Faction.SHADOW) {
             ctx.getSource().sendError(TextUtil.red("You are not a shadow"));
             return 0;
         }
         
         Text msg = MessageArgumentType.getMessage(ctx, "message");
         
-        shadow.getAllPlayers().stream().filter(
-            (p) ->
-                p.role != null && p.role.getFaction() == Faction.SHADOW
+        shadow.getAllLivingPlayers().filter(
+            (p) -> p.role.getFaction() == Faction.SHADOW
         ).forEach((p) ->
             p.sendMessage(
                 TextUtil.withColour("[Shadow Chat]",Formatting.DARK_RED)
