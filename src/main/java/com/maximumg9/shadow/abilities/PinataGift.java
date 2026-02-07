@@ -83,7 +83,8 @@ public class PinataGift extends Ability {
 
 
         IndirectPlayer randomVillager = VILLAGERS.get((int) (Math.random()*VILLAGERS.size()));
-        IndirectPlayer randomShadow = Objects.requireNonNull(MiscUtil.getShadow(attacker.server).indirectPlayerManager.getIndirect(attacker).role).getFaction() == Faction.SHADOW ? SHADOWS.get((int) (Math.random() * SHADOWS.size())) : VILLAGERS.get((int) (Math.random()*VILLAGERS.size()));
+        VILLAGERS.remove(randomVillager);
+        IndirectPlayer randomShadow = this.player.getShadow().indirectPlayerManager.getIndirect(attacker).role.getFaction() == Faction.SHADOW ? SHADOWS.get((int) (Math.random() * SHADOWS.size())) : VILLAGERS.get((int) (Math.random()*VILLAGERS.size()));
         List<IndirectPlayer> giftedPlayers;
         if (Math.random() < 0.5) giftedPlayers = List.of(randomShadow, randomVillager);
         else giftedPlayers = List.of(randomVillager, randomShadow);
