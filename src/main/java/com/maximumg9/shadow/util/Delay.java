@@ -2,15 +2,15 @@ package com.maximumg9.shadow.util;
 
 import com.maximumg9.shadow.Tickable;
 
-public class  Delay implements Tickable {
+public class Delay implements Tickable {
     private final Runnable task;
     private int timer;
     
-    private Delay(Runnable task, int tickDelay) {
+    protected Delay(Runnable task, int tickDelay) {
         this.task = task;
         this.timer = tickDelay;
     }
-    
+
     public static Delay of(Runnable task, int tickDelay) {
         return new Delay(task, tickDelay);
     }

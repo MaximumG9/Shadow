@@ -1,10 +1,7 @@
 package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.LifeweaverHeart;
-import com.maximumg9.shadow.util.Delay;
-import com.maximumg9.shadow.util.MiscUtil;
-import com.maximumg9.shadow.util.NBTUtil;
-import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.*;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -43,42 +40,49 @@ public class Paranoia extends Ability {
     }
 
     private void ping() {
-        this.player.getShadow().addTickable(Delay.of(() -> {
-            currentPing = !playersToPing.isEmpty();
-            if (currentPing) {
-                this.player.sendOverlay(
-                    TextUtil.green("Ability seen in last ")
-                        .append(String.valueOf((int) (pingDelay/(20*60))))
-                        .append(" minutes."),
-                    CancelPredicates.cancelOnLostAbility(this)
-                );
-                this.player.sendMessage(
-                    TextUtil.green("Ability seen in last ")
-                        .append(String.valueOf((int) (pingDelay/(20*60))))
-                        .append(" minutes."),
-                    CancelPredicates.cancelOnLostAbility(this)
-                );
-                this.player.playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 1, 1, CancelPredicates.cancelOnLostAbility(this));
-            } else {
-                this.player.sendOverlay(
-                    TextUtil.red("No ability seen in last ")
-                        .append(String.valueOf((int) (pingDelay/(20*60))))
-                        .append(" minutes."),
-                    CancelPredicates.cancelOnLostAbility(this)
-                );
-                this.player.playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 1, 0, CancelPredicates.cancelOnLostAbility(this));
-                this.player.sendMessage(
-                    TextUtil.red("No ability seen in last ")
-                        .append(String.valueOf((int) (pingDelay/(20*60))))
-                        .append(" minutes."),
-                    CancelPredicates.cancelOnLostAbility(this)
-                );
-            }
+        this.player.getShadow().addTickable(
+            ConditionalDelay.of(() -> {
+                currentPing = !playersToPing.isEmpty();
+                if (currentPing) {
+                    this.player.sendOverlay(
+                        TextUtil.green("Ability seen in last ")
+                            .append(String.valueOf(pingDelay/(20*60)))
+                            .append(" minutes."),
+                        CancelPredicates.cancelOnLostAbility(this)
+                    );
+                    this.player.sendMessage(
+                        TextUtil.green("Ability seen in last ")
+                            .append(String.valueOf(pingDelay/(20*60)))
+                            .append(" minutes."),
+                        CancelPredicates.cancelOnLostAbility(this)
+                    );
+                    this.player.playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 1, 1, CancelPredicates.cancelOnLostAbility(this));
+                } else {
+                    this.player.sendOverlay(
+                        TextUtil.red("No ability seen in last ")
+                            .append(String.valueOf(pingDelay/(20*60)))
+                            .append(" minutes."),
+                        CancelPredicates.cancelOnLostAbility(this)
+                    );
+                    this.player.playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 1, 0, CancelPredicates.cancelOnLostAbility(this));
+                    this.player.sendMessage(
+                        TextUtil.red("No ability seen in last ")
+                            .append(String.valueOf(pingDelay/(20*60)))
+                            .append(" minutes."),
+                        CancelPredicates.cancelOnLostAbility(this)
+                    );
+                }
 
-            pingDelay = (int) (20 * 3 * 60 + Math.random() * 20 * 2 * 60);
-            playersToPing = new HashSet<>();
-            ping();
-        }, pingDelay));
+                pingDelay = (int) (20 * 3 * 60 + Math.random() * 20 * 2 * 60);
+                playersToPing = new HashSet<>();
+                ping();
+            },
+            pingDelay,
+            ConditionalDelay.wrapCancelCondition(
+                CancelPredicates.cancelOnLostAbility(this),
+                this.player
+            )
+        ));
     }
 
 
