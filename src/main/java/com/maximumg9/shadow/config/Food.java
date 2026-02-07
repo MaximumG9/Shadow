@@ -22,7 +22,7 @@ public enum Food implements ItemRepresentable {
     CHICKEN((count) -> new ItemStack(Items.CHICKEN, count)),
     RANDOM((count) -> {
         List<Food> nonRandomFoods = Arrays.stream(Food.values()).filter((food) -> !food.name().equals("RANDOM")).toList();
-        return nonRandomFoods.get(Random.createLocal().nextBetween(0, nonRandomFoods.size())).foodGiver.apply(count);
+        return nonRandomFoods.get(Random.createLocal().nextBetween(0, nonRandomFoods.size()-1)).foodGiver.apply(count);
     });
     
     public final Function<Integer, ItemStack> foodGiver;
