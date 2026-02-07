@@ -50,8 +50,10 @@ public class PinataGift extends Ability {
         ServerPlayerEntity attacker = (ServerPlayerEntity) damageSource.getAttacker();
         if (attacker == null) return;
 
-        final List<IndirectPlayer> SHADOWS = MiscUtil.getShadow(attacker.server).indirectPlayerManager.getAllPlayers().stream().filter((p) -> p.role.getFaction() == Faction.SHADOW).toList();
-        final List<IndirectPlayer> VILLAGERS = MiscUtil.getShadow(attacker.server).indirectPlayerManager.getAllPlayers().stream().filter((p) -> p.role.getFaction() == Faction.VILLAGER).toList();
+        final List<IndirectPlayer> PLAYERS = this.player.getShadow().getAllLivingPlayers().toList();
+
+        final List<IndirectPlayer> SHADOWS = PLAYERS.stream().filter((p) -> p.role.getFaction() == Faction.SHADOW).toList();
+        final List<IndirectPlayer> VILLAGERS = PLAYERS.stream().filter((p) -> p.role.getFaction() == Faction.VILLAGER).toList();
 
         EntityAttributeInstance instance = attacker.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
         if (instance == null) return;
