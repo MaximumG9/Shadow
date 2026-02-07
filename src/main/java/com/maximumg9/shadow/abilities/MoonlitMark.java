@@ -50,6 +50,7 @@ public class MoonlitMark extends Ability {
         stack.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
+                TextUtil.withColour("AT ANY TIME", Formatting.WHITE),
                 TextUtil.gray("Mark the Nearest Player (Within ")
                     .append(String.valueOf(getShadow().config.markRadius))
                     .append(" blocks) to mark as a ")

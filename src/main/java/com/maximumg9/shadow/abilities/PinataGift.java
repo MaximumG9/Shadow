@@ -15,6 +15,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -86,7 +87,7 @@ public class PinataGift extends Ability {
 
         IndirectPlayer randomVillager = VILLAGERS.get((int) (Math.random()*VILLAGERS.size()));
         VILLAGERS.remove(randomVillager);
-        IndirectPlayer randomShadow = this.player.getShadow().indirectPlayerManager.getIndirect(attacker).role.getFaction() == Faction.SHADOW ? SHADOWS.get((int) (Math.random() * SHADOWS.size())) : VILLAGERS.get((int) (Math.random()*VILLAGERS.size()));
+        IndirectPlayer randomShadow = this.player.getShadow().indirectPlayerManager.getIndirect(attacker).role.getFaction() != Faction.SHADOW ? SHADOWS.get((int) (Math.random() * SHADOWS.size())) : VILLAGERS.get((int) (Math.random()*VILLAGERS.size()));
         List<IndirectPlayer> giftedPlayers;
         if (Math.random() < 0.5) giftedPlayers = List.of(randomShadow, randomVillager);
         else giftedPlayers = List.of(randomVillager, randomShadow);
@@ -94,7 +95,7 @@ public class PinataGift extends Ability {
 
         attacker.server.getPlayerManager().getPlayerList().forEach((player) -> {
             player.sendMessage(
-                Text.literal("The Piñata has gifted that one of ")
+                TextUtil.withColour("The Piñata has gifted that one of ", Formatting.DARK_AQUA)
                     .append(giftedPlayers.getFirst().getName())
                     .append(" and ")
                     .append(giftedPlayers.getLast().getName())
