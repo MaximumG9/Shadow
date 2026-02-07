@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Dusk extends AbstractShadow {
     public static final RoleFactory<Dusk> FACTORY = new Dusk.Factory();
-    private static final Style STYLE = Style.EMPTY.withColor(Formatting.BLACK);
+    private static final Style STYLE = Style.EMPTY.withColor(0xff4B4A92);
     private static final ItemStack ITEM_STACK = new ItemStack(Items.BLACK_DYE);
     private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(MoonlitMark::new, BloodMoon::new, SunCurse::new);
 

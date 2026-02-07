@@ -42,6 +42,7 @@ public class Paranoia extends Ability {
     private void ping() {
         this.player.getShadow().addTickable(
             ConditionalDelay.of(() -> {
+
                 currentPing = !playersToPing.isEmpty();
                 if (currentPing) {
                     this.player.sendOverlay(
@@ -75,7 +76,7 @@ public class Paranoia extends Ability {
 
                 pingDelay = (int) (20 * 3 * 60 + Math.random() * 20 * 2 * 60);
                 playersToPing = new HashSet<>();
-                ping();
+                if (!CancelPredicates.cancelOnLostAbility(this).test(this.player)) ping();
             },
             pingDelay,
             ConditionalDelay.wrapCancelCondition(
