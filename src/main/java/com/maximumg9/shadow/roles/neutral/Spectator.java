@@ -26,6 +26,11 @@ public class Spectator extends Role {
     public Spectator(@Nullable IndirectPlayer player) {
         super(player, List.of());
     }
+
+    @Override
+    public void init() {
+        player.addToTeam(player.getShadow().playerTeam, CancelPredicates.cancelOnLostRole(this));
+    }
     
     @Override
     public Faction getFaction() {

@@ -3,6 +3,7 @@ package com.maximumg9.shadow.config;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.roles.RoleSlot;
 import com.maximumg9.shadow.roles.Roles;
+import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.screens.RoleSlotScreenHandler;
@@ -24,7 +25,7 @@ public class RoleManager implements Saveable {
     private final RoleSlot[] roleSlots;
     
     private final Shadow shadow;
-    
+
     public RoleManager(Shadow shadow, Config config) {
         roleSlots = new RoleSlot[config.roleSlotCount];
         
@@ -63,8 +64,11 @@ public class RoleManager implements Saveable {
     
     public void clearRoles() {
         shadow.getAllPlayers().forEach(
-            (player) ->
-                player.role = null
+            (player) -> {
+                player.role.deInit();
+                player.role = new Spectator(player);
+                player.role.init();
+            }
         );
     }
     

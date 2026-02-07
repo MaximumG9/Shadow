@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class Sheriff extends AbstractVillager {
-    public static final RoleFactory<Sheriff> FACTORY = new Sheriff.Factory();
+    public static final RoleFactory<Sheriff> FACTORY = new Factory();
     private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(SheriffBow::new);
     private static final Style STYLE = Style.EMPTY.withColor(Formatting.GOLD);
     private static final ItemStack ITEM_STACK;

@@ -9,6 +9,7 @@ import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.ItemRepresentable;
+import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
@@ -27,17 +28,22 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -54,7 +60,7 @@ import java.util.function.Predicate;
 public class IndirectPlayer implements ItemRepresentable, Saveable {
     public final UUID playerUUID;
     final MinecraftServer server;
-    @Nullable
+    @NotNull
     public Role role;
     @Nullable
     public Roles originalRole;
@@ -74,12 +80,17 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.role = new Spectator(this);
         this.name = base.getName();
         this.extraStorage = new NbtCompound();
+
+        getShadow().addTickable(Delay.instant(this.role::init));
     }
     
     IndirectPlayer(MinecraftServer server, UUID uuid) {
         this.server = server;
         this.playerUUID = uuid;
         this.extraStorage = new NbtCompound();
+        this.role = new Spectator(this);
+
+        getShadow().addTickable(Delay.instant(this.role::init));
     }
     
     @SuppressWarnings("CopyConstructorMissesField")
@@ -104,11 +115,10 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     public void readNBT(NbtCompound nbt) {
         this.frozen = nbt.getBoolean("frozen");
         this.participating = nbt.getBoolean("participating");
+        Role tempRole = null;
 
         if (nbt.contains("role", NbtElement.COMPOUND_TYPE)) {
-            this.role = Role.load(nbt.getCompound("role"), this);
-        } else {
-            this.role = null;
+            tempRole = Role.load(nbt.getCompound("role"), this);
         }
 
         if (nbt.contains("original_role", NbtElement.COMPOUND_TYPE)) {
@@ -133,6 +143,13 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
 
         this.offlineTicks = nbt.getInt("offline_ticks");
         this.extraStorage = nbt.getCompound("extra_storage");
+
+        if(tempRole != null) {
+            this.role = tempRole;
+        } else {
+            this.role = new Spectator(this);
+            getShadow().addTickable(Delay.instant(this.role::init));
+        }
     }
 
     public Shadow getShadow() {
@@ -143,10 +160,9 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         nbt.putUuid("playerUUID", this.playerUUID);
         nbt.putBoolean("frozen", this.frozen);
         nbt.putBoolean("participating", this.participating);
-        
-        if (this.role != null) {
-            nbt.put("role", this.role.writeNBT(new NbtCompound()));
-        }
+
+        nbt.put("role", this.role.writeNBT(new NbtCompound()));
+
         if (this.originalRole != null) {
             nbt.putString("original_role", this.originalRole.name);
         }
@@ -168,6 +184,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         } else if (offlineTicks < Integer.MAX_VALUE) {
             this.offlineTicks++;
         }
+        this.role.tick();
     }
     
     public int getOfflineTicks() {
@@ -213,6 +230,13 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             (player) -> player.damage(source, amount),
             cancelPredicate
         );
+    }
+
+    public double getSquaredDistance(IndirectPlayer other) {
+        Optional<ServerPlayerEntity> thisPlayer = this.getPlayer();
+        Optional<ServerPlayerEntity> otherPlayer = other.getPlayer();
+        if(thisPlayer.isEmpty() || otherPlayer.isEmpty()) return Double.NaN;
+        return thisPlayer.get().squaredDistanceTo(otherPlayer.get());
     }
     
     public void damageNow(DamageSource source, float amount) {
@@ -333,6 +357,52 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             , cancelCondition);
     }
     
+    public void playSoundNow(RegistryEntry.Reference<SoundEvent> event, SoundCategory category, float volume, float pitch) throws OfflinePlayerException {
+        ServerPlayerEntity player = this.getPlayerOrThrow();
+        player.networkHandler.sendPacket(
+                new PlaySoundFromEntityS2CPacket(
+                    event,
+                    category,
+                    player,
+                    volume,
+                    pitch,
+                    player.getServerWorld().random.nextLong()
+                )
+            );
+    }
+
+    public void playSound(RegistryEntry.Reference<SoundEvent> event, SoundCategory category, float volume, float pitch, Predicate<IndirectPlayer> cancelCondition) {
+        scheduleUntil(
+            (player) -> player.networkHandler.sendPacket(
+                new PlaySoundFromEntityS2CPacket(
+                    event,
+                    category,
+                    player,
+                    volume,
+                    pitch,
+                    player.getServerWorld().random.nextLong()
+                )
+            )
+            , cancelCondition);
+    }
+
+    public void addToTeam(Team team, Predicate<IndirectPlayer> cancelCondition) {
+        scheduleUntil(
+            (p) -> this.server.getScoreboard().addScoreHolderToTeam(
+                p.getNameForScoreboard(),
+                team
+            ),
+            cancelCondition
+        );
+    }
+
+    public void addToTeamNow(Team team) {
+        this.server.getScoreboard().addScoreHolderToTeam(
+            getPlayerOrThrow().getNameForScoreboard(),
+            team
+        );
+    }
+
     public void sendOverlayNow(Text chatMessage) throws OfflinePlayerException {
         this.getPlayerOrThrow()
             .sendMessage(chatMessage, true);
@@ -344,7 +414,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         if (sPlayer.isPresent()) {
             task.accept(sPlayer.get());
             
-        } else if (cancelCondition.test(this)) { // Don't bother scheduling if it should already be cancelled
+        } else if (!cancelCondition.test(this)) { // Don't bother scheduling if it should already be cancelled
             getShadow()
                 .indirectPlayerManager
                 .schedule(

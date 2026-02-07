@@ -54,9 +54,7 @@ public class DebugCommand {
 
                                             IndirectPlayer indirectPlayer = shadow.getIndirect(player);
 
-                                            if (indirectPlayer.role != null) {
-                                                indirectPlayer.role.deInit();
-                                            }
+                                            indirectPlayer.role.deInit();
 
                                             Role newRole = role.factory.makeRole(indirectPlayer);
 
@@ -126,7 +124,7 @@ public class DebugCommand {
                                 return true;
                             }
                             IndirectPlayer player = getShadow(source.getServer()).getIndirect(source.getPlayer());
-                            return player.role != null && player.role.getFaction() == Faction.SPECTATOR;
+                            return player.role.getFaction() == Faction.SPECTATOR;
                         })
                         .executes((ctx) -> {
                             Shadow shadow = getShadow(ctx.getSource().getServer());
@@ -135,16 +133,13 @@ public class DebugCommand {
                             
                             shadow.indirectPlayerManager.getAllPlayers()
                                 .stream()
-                                .filter(p -> p.role == null || p.role.getRole() != Roles.SPECTATOR)
+                                .filter(p -> p.role.getRole() != Roles.SPECTATOR)
                                 .forEach(
                                 player ->
                                     response
                                         .append(player.getName())
                                         .append(Text.literal(": ")).setStyle(Style.EMPTY)
-                                        .append(player.role != null ?
-                                            player.role.getName() :
-                                            TextUtil.red("null")
-                                        )
+                                        .append(player.role.getName())
                                         .append(Text.literal("\n"))
                             );
                             

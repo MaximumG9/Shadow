@@ -19,14 +19,17 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
+import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
@@ -38,6 +41,7 @@ import org.spongepowered.asm.mixin.Unique;
 import java.io.*;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class Shadow implements Tickable {
     
@@ -49,6 +53,9 @@ public class Shadow implements Tickable {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final File STATE_FILE = new File("shadow-state.json");
     private static final Gson DATA_GSON;
+
+    public Team playerTeam = null;
+    public Team markedTeam = null;
     
     static {
         ITEM_USE_CALLBACK_MAP.put(
@@ -82,7 +89,9 @@ public class Shadow implements Tickable {
         this.server = server;
         this.indirectPlayerManager = new IndirectPlayerManager(INDIRECT_PLAYERS_FILE, server);
         this.addTickable(this.indirectPlayerManager);
-        
+    }
+
+    public void startup() {
         try {
             this.loadSync();
         } catch (FileNotFoundException e) {
@@ -91,12 +100,24 @@ public class Shadow implements Tickable {
         } catch (IOException e) {
             LOGGER.warn("Exception while loading data");
         }
-        
+
         try {
             this.saveSync();
         } catch (IOException e) {
             LOGGER.warn("Failed to save data");
         }
+    }
+
+    public void onWorldLoad() {
+        Scoreboard scoreboard = server.getScoreboard();
+
+        if(scoreboard.getTeam("Players") == null) scoreboard.addTeam("Players");
+        if(scoreboard.getTeam("DuskMarked") == null) scoreboard.addTeam("DuskMarked");
+        playerTeam = scoreboard.getTeam("Players");
+        markedTeam = scoreboard.getTeam("DuskMarked");
+        playerTeam.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
+        markedTeam.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
+        markedTeam.setColor(Formatting.RED);
     }
     
     public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -107,6 +128,7 @@ public class Shadow implements Tickable {
         ModifiersCommand.register(dispatcher);
         CancelCommand.register(dispatcher);
         ShadowChatCommand.register(dispatcher);
+        ConfigCommand.register(dispatcher);
     }
     
     private static void save(GameState state, IndirectPlayerManager playerManager, Config config) throws IOException {
@@ -130,14 +152,14 @@ public class Shadow implements Tickable {
     public void setNight() {
         this.state.isNight = true;
         this.indirectPlayerManager.getAllPlayers().forEach((player) -> {
-            if (player.role != null) player.role.onNight();
+            player.role.onNight();
         });
     }
     
     public void setDay() {
         this.state.isNight = false;
         this.indirectPlayerManager.getAllPlayers().forEach((player) -> {
-            if (player.role != null) player.role.onDay();
+            player.role.onDay();
         });
     }
     
@@ -186,7 +208,6 @@ public class Shadow implements Tickable {
         } else {
             this.getOnlinePlayers().stream()
                 .filter(player ->
-                    player.role != null &&
                     player.role.getFaction() == Faction.SPECTATOR &&
                     player.getPlayerOrThrow().hasPermissionLevel(3)
                 )
@@ -199,6 +220,10 @@ public class Shadow implements Tickable {
     public Collection<IndirectPlayer> getAllPlayers() {
         getOnlinePlayers();
         return this.indirectPlayerManager.getAllPlayers();
+    }
+
+    public Stream<IndirectPlayer> getAllLivingPlayers() {
+        return this.getAllPlayers().stream().filter(iP -> iP.role.getFaction() != Faction.SPECTATOR);
     }
     
     public void clearEyes() {
@@ -220,8 +245,6 @@ public class Shadow implements Tickable {
             
             this.indirectPlayerManager.getAllPlayers().forEach((player) -> {
                 player.clearPlayerData(CancelPredicates.NEVER_CANCEL);
-                if (player.role != null) player.role.deInit();
-                player.role = null;
                 player.frozen = false;
             });
             
@@ -281,7 +304,7 @@ public class Shadow implements Tickable {
             Texts.join(
                 winners.stream().map(
                     (winner) ->
-                        winner.getName().copy().setStyle(winner.role == null ? Style.EMPTY : winner.role.getStyle())
+                        winner.getName().copy().setStyle(winner.role.getStyle())
                 ).toList(),
                 TextUtil.gray(", ")
             )
@@ -340,7 +363,6 @@ public class Shadow implements Tickable {
             .stream()
             .filter(
                 (player) ->
-                    player.role != null &&
                         player.role.getFaction() == Faction.VILLAGER &&
                         (playerToIgnore == null || !playerToIgnore.equals(player.playerUUID))
             ).count();
@@ -349,7 +371,6 @@ public class Shadow implements Tickable {
             .stream()
             .filter(
                 (player) ->
-                    player.role != null &&
                         player.role.getFaction() == Faction.SHADOW &&
                         (playerToIgnore == null || !playerToIgnore.equals(player.playerUUID))
             ).count();

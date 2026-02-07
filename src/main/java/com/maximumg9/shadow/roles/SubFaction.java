@@ -16,6 +16,10 @@ public enum SubFaction {
         TextUtil.green("Villager")
             .append(TextUtil.blue(" Outlier"))
     ),
+    VILLAGER_INFORMATION(
+        TextUtil.green("Villager")
+            .append(TextUtil.blue(" Support"))
+    ),
     NEUTRAL_CHAOS(
         TextUtil.gray("Neutral")
             .append(TextUtil.blue(" Chaos"))

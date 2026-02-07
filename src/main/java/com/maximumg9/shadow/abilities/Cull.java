@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class Cull extends com.maximumg9.shadow.abilities.Ability {
+public class Cull extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("cull");
     private static final ItemStack ITEM_STACK;
     
@@ -89,8 +89,8 @@ public class Cull extends com.maximumg9.shadow.abilities.Ability {
         List<ServerPlayerEntity> realTargets = p.getServerWorld().getPlayers(
             (player) -> {
                 IndirectPlayer indirect = getShadow().getIndirect(player);
-                return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius
-                    && (indirect.role == null || indirect.role.getFaction() != Faction.SHADOW);
+                return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius &&
+                    indirect.role.getFaction() != Faction.SHADOW;
             }
         );
         
@@ -104,8 +104,8 @@ public class Cull extends com.maximumg9.shadow.abilities.Ability {
         List<ServerPlayerEntity> fakeTargets = p.getServerWorld().getPlayers(
             (player) -> {
                 IndirectPlayer indirect = getShadow().getIndirect(player);
-                return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius
-                    && indirect.role != null && indirect.role.getFaction() == Faction.SHADOW;
+                return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius &&
+                    indirect.role.getFaction() == Faction.SHADOW;
             }
         );
         

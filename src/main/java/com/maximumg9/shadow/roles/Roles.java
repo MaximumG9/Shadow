@@ -1,9 +1,8 @@
 package com.maximumg9.shadow.roles;
 
+import com.maximumg9.shadow.roles.neutral.Pinata;
 import com.maximumg9.shadow.roles.neutral.Spectator;
-import com.maximumg9.shadow.roles.shadow.Oracle;
-import com.maximumg9.shadow.roles.shadow.PoseidonsWrath;
-import com.maximumg9.shadow.roles.shadow.ShadowRole;
+import com.maximumg9.shadow.roles.shadow.*;
 import com.maximumg9.shadow.roles.villager.*;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -25,10 +24,15 @@ public enum Roles {
     LOOKER(Looker.FACTORY),
     LIFEWEAVER(Lifeweaver.FACTORY),
     LIFELINK(Lifelink.FACTORY),
+    PARANOID(Paranoid.FACTORY),
 
     POSEIDONS_WRATH(PoseidonsWrath.FACTORY),
     SHADOW(ShadowRole.FACTORY),
-    ORACLE(Oracle.FACTORY);
+    ORACLE(Oracle.FACTORY),
+    SPECTRE(Spectre.FACTORY),
+    DUSK(Dusk.FACTORY),
+
+    PINATA(Pinata.FACTORY);
     
     
     public final String name;

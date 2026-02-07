@@ -89,7 +89,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
         if (shadow.config.disableChat) ci.cancel();
         
         IndirectPlayer p = shadow.getIndirect(this.player);
-        if ((p.role == null || p.role.getFaction() == Faction.SPECTATOR) && !this.player.hasPermissionLevel(3)) {
+        if (p.role.getFaction() == Faction.SPECTATOR && !this.player.hasPermissionLevel(3)) {
             p.sendMessageNow(
                 TextUtil.withColour("You are a spectator so you cannot chat", Formatting.YELLOW)
             );

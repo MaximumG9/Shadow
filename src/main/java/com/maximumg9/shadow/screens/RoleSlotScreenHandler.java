@@ -142,17 +142,17 @@ public class RoleSlotScreenHandler extends ShadowScreenHandler {
         if (player instanceof ServerPlayerEntity sPlayer) {
             // Yeah, I'm a bit of a math guy
             if (slotIndex % 9 < 8) {
-                if (
-                    actionType == SlotActionType.SWAP ||
-                        actionType == SlotActionType.CLONE ||
-                        actionType == SlotActionType.THROW ||
-                        actionType == SlotActionType.PICKUP_ALL ||
-                        actionType == SlotActionType.QUICK_CRAFT
+                if (actionType == SlotActionType.SWAP ||
+                    actionType == SlotActionType.CLONE ||
+                    actionType == SlotActionType.THROW ||
+                    actionType == SlotActionType.PICKUP_ALL ||
+                    actionType == SlotActionType.QUICK_CRAFT
                 ) return;
                 
                 ClickType clickType = button == 0 ? ClickType.LEFT : ClickType.RIGHT;
                 
                 // Oh, also sorry to whoever works with this next, but I just wanted to do it this way :P
+                // what the fuck
                 
                 int roleRow = (slotIndex / 9);
                 

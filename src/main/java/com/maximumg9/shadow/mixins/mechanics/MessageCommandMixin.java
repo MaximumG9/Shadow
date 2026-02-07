@@ -33,7 +33,7 @@ public class MessageCommandMixin {
         if (shadow.config.disableChat) ci.cancel();
         
         IndirectPlayer player = shadow.getIndirect(p);
-        if ((player.role == null || player.role.getFaction() == Faction.SPECTATOR) && !p.hasPermissionLevel(3)) {
+        if (player.role.getFaction() == Faction.SPECTATOR && !p.hasPermissionLevel(3)) {
             player.sendMessageNow(
                 TextUtil.withColour(
                     "You are a spectator so you cannot message",

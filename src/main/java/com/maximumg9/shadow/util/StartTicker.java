@@ -67,12 +67,6 @@ public class StartTicker implements Tickable {
         if (!shadow.config.modifierManager.pickModifiers()) return;
 
         for (IndirectPlayer player : shadow.getOnlinePlayers()) {
-            if (player.role == null) {
-                shadow.ERROR("Null role chosen");
-                shadow.resetState();
-                return;
-            }
-
             if (player.role.getFaction() == Faction.SPECTATOR) {
                 player.getPlayerOrThrow().changeGameMode(GameMode.SPECTATOR);
             } else {
@@ -106,7 +100,7 @@ public class StartTicker implements Tickable {
 
         shadow.saveAsync();
 
-        shadow.addTickable(new StartTicker.GracePeriodTicker(shadow));
+        shadow.addTickable(new GracePeriodTicker(shadow));
     }
 
     private void spawnEnderEyes() {

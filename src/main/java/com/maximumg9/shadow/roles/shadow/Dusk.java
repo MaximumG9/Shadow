@@ -1,11 +1,12 @@
 package com.maximumg9.shadow.roles.shadow;
 
 import com.maximumg9.shadow.abilities.Ability;
-import com.maximumg9.shadow.abilities.PoseidonsTrident;
+import com.maximumg9.shadow.abilities.BloodMoon;
+import com.maximumg9.shadow.abilities.MoonlitMark;
+import com.maximumg9.shadow.abilities.SunCurse;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;
-import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
@@ -17,21 +18,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class PoseidonsWrath extends AbstractShadow {
-    public static final RoleFactory<PoseidonsWrath> FACTORY = new Factory();
-    private static final ItemStack ITEM_STACK = new ItemStack(Items.TRIDENT);
-    private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(PoseidonsTrident::new);
-    private static final Style STYLE = Style.EMPTY.withColor(Formatting.BLUE);
+public class Dusk extends AbstractShadow {
+    public static final RoleFactory<Dusk> FACTORY = new Dusk.Factory();
+    private static final Style STYLE = Style.EMPTY.withColor(Formatting.BLACK);
+    private static final ItemStack ITEM_STACK = new ItemStack(Items.BLACK_DYE);
+    private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(MoonlitMark::new, BloodMoon::new, SunCurse::new);
 
     static {
-        ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new PoseidonsWrath(null).getName());
-        NBTUtil.removeAttributeModifiers(ITEM_STACK);
+        ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new Dusk(null).getName());
     }
 
-    public PoseidonsWrath(IndirectPlayer player) {
+    public Dusk(@Nullable IndirectPlayer player) {
         super(player, ABILITY_FACTORIES);
     }
-
     @Override
     public SubFaction getSubFaction() {
         return SubFaction.SHADOW;
@@ -39,7 +38,7 @@ public class PoseidonsWrath extends AbstractShadow {
 
     @Override
     public String getRawName() {
-        return "Poseidon's Wrath";
+        return "Dusk";
     }
 
     @Override
@@ -49,7 +48,7 @@ public class PoseidonsWrath extends AbstractShadow {
 
     @Override
     public Roles getRole() {
-        return Roles.POSEIDONS_WRATH;
+        return Roles.DUSK;
     }
 
     @Override
@@ -57,10 +56,10 @@ public class PoseidonsWrath extends AbstractShadow {
         return ITEM_STACK.copy();
     }
 
-    private static class Factory implements RoleFactory<PoseidonsWrath> {
+    private static class Factory implements RoleFactory<Dusk> {
         @Override
-        public PoseidonsWrath makeRole(@Nullable IndirectPlayer player) {
-            return new PoseidonsWrath(player);
+        public Dusk makeRole(@Nullable IndirectPlayer player) {
+            return new Dusk(player);
         }
     }
 }

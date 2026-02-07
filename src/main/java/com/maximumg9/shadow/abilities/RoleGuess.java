@@ -56,11 +56,7 @@ public class RoleGuess extends Ability {
     
     public RoleGuess(IndirectPlayer player) {
         super(player);
-        if (player.role != null) {
-            this.unguessableRoles = List.of(player.role.getRole());
-        } else {
-            this.unguessableRoles = List.of();
-        }
+        this.unguessableRoles = List.of(player.role.getRole());
         this.unguessableFactions = List.of(Faction.SPECTATOR);
     }
     
@@ -98,11 +94,7 @@ public class RoleGuess extends Ability {
                                     pl.sendMessage(TextUtil.red("Failed to select role to guess"));
                                     return;
                                 }
-                                if (target.role == null) {
-                                    pl.sendMessage(TextUtil.red("That person's role is null."));
-                                    return;
-                                }
-                                
+
                                 this.resetLastActivated();
                                 
                                 if (guessedRole.getRole() == target.role.getRole()) {
@@ -141,7 +133,7 @@ public class RoleGuess extends Ability {
                 this.getShadow().indirectPlayerManager
                     .getAllPlayers()
                     .stream()
-                    .filter((p) -> p.role != null && !unguessableFactions.contains(p.role.getFaction()))
+                    .filter((p) -> !unguessableFactions.contains(p.role.getFaction()))
                     .toList()
             )
         );
