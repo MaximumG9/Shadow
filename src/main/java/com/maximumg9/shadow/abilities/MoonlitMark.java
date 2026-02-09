@@ -113,7 +113,6 @@ public class MoonlitMark extends Ability {
             this.markedTarget.scheduleUntil(
                 (p) -> {
                     p.setGlowing(true);
-                    getShadow().broadcast(TextUtil.red("Hello? Hello, hello?"));
                     p.getDataTracker().set(
                         Entity.FLAGS,
                         (byte) (p.getDataTracker().get(Entity.FLAGS) |
@@ -192,7 +191,9 @@ public class MoonlitMark extends Ability {
         for (ServerPlayerEntity serverPlayerEntity : p.getServerWorld().getPlayers(
             (player) -> {
                 IndirectPlayer indirect = getShadow().getIndirect(player);
-                return player.squaredDistanceTo(p) <= maxDistance * maxDistance && indirect != this.player;
+                return player.squaredDistanceTo(p) <= maxDistance * maxDistance
+                    && indirect != this.player
+                    && indirect.role.getFaction() != Faction.SPECTATOR;
             }
         )) {
             if (serverPlayerEntity.squaredDistanceTo(p) < targetDistance * targetDistance) {
