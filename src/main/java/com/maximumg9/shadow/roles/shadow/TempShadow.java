@@ -1,5 +1,6 @@
 package com.maximumg9.shadow.roles.shadow;
 
+import com.maximumg9.shadow.abilities.PickRole;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;
@@ -24,7 +25,7 @@ public class TempShadow extends AbstractShadow {
     }
 
     public TempShadow(@Nullable IndirectPlayer player) {
-        super(player, List.of());
+        super(player, List.of(PickRole::new));
     }
     @Override
     public SubFaction getSubFaction() { return SubFaction.SHADOW; }

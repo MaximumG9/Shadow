@@ -69,7 +69,7 @@ public class AbilityStar implements ItemUseCallback {
         ArrayList<ItemRepresentable> abilities =
             new ArrayList<>(role.getAbilities());
         abilities.addFirst(
-            item -> {
+            wrapper -> {
                 ItemStack roleCard = new ItemStack(Items.WRITABLE_BOOK);
                 IndirectPlayer player = shadow.getIndirect(user);
                 assert player.role != null;
