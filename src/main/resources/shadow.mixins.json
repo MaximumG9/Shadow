@@ -31,7 +31,8 @@
     "ncr.DedicatedServerMixin",
     "items.ScreenHandlerMixin",
     "items.SlotMixin",
-    "mechanics.ServerPlayerInteractionManagerMixin"
+    "mechanics.ServerPlayerInteractionManagerMixin",
+    "abilities.villager.lifeweaver_rework.LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

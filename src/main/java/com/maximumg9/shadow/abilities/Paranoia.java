@@ -109,7 +109,7 @@ public class Paranoia extends Ability {
         pingStack.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                TextUtil.gray("Every 3-5 minutes, learn if you encountered an Active ability (within ")
+                TextUtil.gray("Every 3-5 minutes, learn if you encountered an ability (within ")
                     .append(String.valueOf(getShadow().config.fearRadius))
                     .append(" blocks)."),
                 TextUtil.gray("Last Ping ")

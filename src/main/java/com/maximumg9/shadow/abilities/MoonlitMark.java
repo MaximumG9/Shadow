@@ -128,19 +128,8 @@ public class MoonlitMark extends Ability {
     @Override
     public void onAnyDeath(DamageSource damageSource, IndirectPlayer deadPlayer) {
         if (deadPlayer == markedTarget) {
-            this.player.getPlayer().ifPresent(
-                (p) ->
-                    p.networkHandler.sendPacket(
-                        TeamS2CPacket.changePlayerTeam(
-                            this.player.getShadow().playerTeam,
-                            markedTarget.getName().getString(),
-                            TeamS2CPacket.Operation.ADD
-                        )
-                    )
-            );
-            markedTarget.addToTeamNow(this.getShadow().playerTeam);
-
             if (getShadow().isNight()) {
+                markedTarget.addToTeamNow(this.getShadow().playerTeam);
                 if(damageSource.getAttacker() == null || !damageSource.getAttacker().isPlayer()) {
                     confirmTargetKill(true);
                 } else {
@@ -148,6 +137,8 @@ public class MoonlitMark extends Ability {
                     // note to self to make not Faction.VILLAGER forced
                     confirmTargetKill(indirectSource.role.getFaction() != Faction.VILLAGER);
                 }
+            } else {
+                this.player.spoofAddPlayersToTeam(List.of(deadPlayer),getShadow().playerTeam,CancelPredicates.cancelOnLostAbility(this));
             }
         }
     }

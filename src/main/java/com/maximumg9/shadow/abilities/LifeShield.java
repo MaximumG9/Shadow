@@ -6,11 +6,13 @@ import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
@@ -20,6 +22,7 @@ import net.minecraft.util.Identifier;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class LifeShield extends Ability {
     public static final Identifier ATTR_ID = MiscUtil.shadowID("lifeweaver_rework_max_health");
@@ -48,7 +51,7 @@ public class LifeShield extends Ability {
     }
 
     private void colorShieldedPlayers(List<IndirectPlayer> p) {
-        this.player.spoofAddPlayersToTeamNow(p, getShadow().markedTeam);
+        this.player.spoofAddPlayersToTeamNow(p, getShadow().shieldedTeam);
     }
 
     public LifeShield(IndirectPlayer player) { super(player); }
@@ -59,6 +62,15 @@ public class LifeShield extends Ability {
 
     public List<Filter> getFilters() {
         return FILTERS;
+    }
+
+    public boolean isPlayerShielded(IndirectPlayer player) {
+        if (shieldedPlayers.contains(player)) {
+            this.player.spoofAddPlayersToTeam(List.of(player),getShadow().playerTeam, CancelPredicates.cancelOnLostAbility(this));
+            shieldedPlayers.remove(player);
+            return true;
+        }
+        return false;
     }
 
     @Override
