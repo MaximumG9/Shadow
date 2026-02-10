@@ -23,6 +23,7 @@ public enum Roles {
     SHERIFF(Sheriff.FACTORY),
     LOOKER(Looker.FACTORY),
     LIFEWEAVER(Lifeweaver.FACTORY),
+    LIFEWEAVER_REWORK(LifeweaverRework.FACTORY),
     LIFELINK(Lifelink.FACTORY),
     PARANOID(Paranoid.FACTORY),
 
