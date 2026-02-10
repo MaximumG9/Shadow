@@ -5,20 +5,20 @@ import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class ConditionalDelay extends Delay {
+public class CancellableDelay extends Delay {
     private final Runnable task;
     private int timer;
-    private final Supplier<Boolean> endCondition;
+    private final Supplier<Boolean> cancelCondition;
 
-    private ConditionalDelay(Runnable task, int tickDelay, Supplier<Boolean> endCondition) {
+    private CancellableDelay(Runnable task, int tickDelay, Supplier<Boolean> cancelCondition) {
         super(task, tickDelay);
         this.task = task;
         this.timer = tickDelay;
-        this.endCondition = endCondition;
+        this.cancelCondition = cancelCondition;
     }
 
-    public static ConditionalDelay of(Runnable task, int tickDelay, Supplier<Boolean> endCondition) {
-        return new ConditionalDelay(task, tickDelay, endCondition);
+    public static CancellableDelay of(Runnable task, int tickDelay, Supplier<Boolean> cancelCondition) {
+        return new CancellableDelay(task, tickDelay, cancelCondition);
     }
 
     @Override
@@ -27,12 +27,10 @@ public class ConditionalDelay extends Delay {
     }
 
     @Override
-    public boolean shouldEnd() { return timer <= 0 || endCondition.get(); }
+    public boolean shouldEnd() { return timer <= 0 || cancelCondition.get(); }
 
     @Override
-    public void onEnd() {
-        task.run();
-    }
+    public void onEnd() { if (!cancelCondition.get()) task.run(); }
 
     public static Supplier<Boolean> wrapCancelCondition(Predicate<IndirectPlayer> s, IndirectPlayer iP) {
         return () -> s.test(iP);

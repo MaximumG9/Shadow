@@ -41,7 +41,7 @@ public class Paranoia extends Ability {
 
     private void ping() {
         this.player.getShadow().addTickable(
-            ConditionalDelay.of(() -> {
+            CancellableDelay.of(() -> {
 
                 currentPing = !playersToPing.isEmpty();
                 if (currentPing) {
@@ -57,7 +57,7 @@ public class Paranoia extends Ability {
                             .append(" minutes."),
                         CancelPredicates.cancelOnLostAbility(this)
                     );
-                    this.player.playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 1, 1, CancelPredicates.cancelOnLostAbility(this));
+                    this.player.playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.AMBIENT, 1, 1, CancelPredicates.cancelOnLostAbility(this));
                 } else {
                     this.player.sendOverlay(
                         TextUtil.red("No ability seen in last ")
@@ -65,7 +65,7 @@ public class Paranoia extends Ability {
                             .append(" minutes."),
                         CancelPredicates.cancelOnLostAbility(this)
                     );
-                    this.player.playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 1, 0, CancelPredicates.cancelOnLostAbility(this));
+                    this.player.playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.AMBIENT, 1, 0, CancelPredicates.cancelOnLostAbility(this));
                     this.player.sendMessage(
                         TextUtil.red("No ability seen in last ")
                             .append(String.valueOf(pingDelay/(20*60)))
@@ -76,7 +76,7 @@ public class Paranoia extends Ability {
 
                 pingDelay = (int) (20 * 3 * 60 + Math.random() * 20 * 2 * 60);
                 playersToPing = new HashSet<>();
-                if (!CancelPredicates.cancelOnLostAbility(this).test(this.player)) ping();
+                ping();
             },
             pingDelay,
             ConditionalDelay.wrapCancelCondition(
