@@ -3,6 +3,7 @@ package com.maximumg9.shadow.abilities;
 import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.filters.Filters;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
+import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -46,6 +47,10 @@ public class LifeShield extends Ability {
         );
     }
 
+    private void colorShieldedPlayers(List<IndirectPlayer> p) {
+        this.player.spoofAddPlayersToTeamNow(p, getShadow().markedTeam);
+    }
+
     public LifeShield(IndirectPlayer player) { super(player); }
     @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
@@ -58,6 +63,15 @@ public class LifeShield extends Ability {
 
     @Override
     public Identifier getID() { return ID; }
+
+    @Override
+    public void onDay() {
+        getShadow().addTickable(Delay.instant(() -> colorShieldedPlayers(shieldedPlayers.stream().toList())));
+    }
+
+    public void onJoin() {
+        colorShieldedPlayers(shieldedPlayers.stream().toList());
+    }
 
     @Override
     public AbilityResult apply() {
@@ -112,6 +126,7 @@ public class LifeShield extends Ability {
                             .append(TextUtil.hearts(actor.getMaxHealth() / 2))
                             .append(TextUtil.green("."))
                     );
+                    colorShieldedPlayers(shieldedPlayers.stream().toList());
                 },
             this.getShadow()
                 .getAllLivingPlayers()

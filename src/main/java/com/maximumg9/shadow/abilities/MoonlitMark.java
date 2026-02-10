@@ -1,6 +1,5 @@
 package com.maximumg9.shadow.abilities;
 
-import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.filters.Filters;
 import com.maximumg9.shadow.roles.Faction;
@@ -17,14 +16,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class MoonlitMark extends Ability {
@@ -70,19 +67,8 @@ public class MoonlitMark extends Ability {
         return Optional.ofNullable(markedTarget);
     }
 
-    private void glowMarkedPlayer(IndirectPlayer p) {
-        this.player.getPlayerOrThrow().networkHandler.sendPacket(
-            TeamS2CPacket.changePlayerTeam(
-                Objects.requireNonNull(
-                    getShadow()
-                        .getServer()
-                        .getScoreboard()
-                        .getTeam("DuskMarked")
-                ),
-                p.getName().getString(),
-                TeamS2CPacket.Operation.ADD
-            )
-        );
+    private void colorMarkedPlayer(IndirectPlayer p) {
+        this.player.spoofAddPlayersToTeamNow(List.of(p), getShadow().markedTeam);
     }
 
     public void confirmTargetKill(boolean validKill) {
@@ -226,7 +212,7 @@ public class MoonlitMark extends Ability {
 
         IndirectPlayer indirectTarget = this.getShadow().getIndirect(target);
         markedTarget = indirectTarget;
-        glowMarkedPlayer(indirectTarget);
+        colorMarkedPlayer(indirectTarget);
 
         this.player.sendMessageNow(TextUtil.green(markedTarget.getName().getString()).append(" was successfully marked."));
         usedToday = true;
@@ -236,20 +222,7 @@ public class MoonlitMark extends Ability {
     @Override
     public void onJoin() {
         super.onJoin();
-        if (markedTarget != null) {
-            this.player.getPlayerOrThrow().networkHandler.sendPacket(
-                TeamS2CPacket.changePlayerTeam(
-                    Objects.requireNonNull(
-                        getShadow()
-                            .getServer()
-                            .getScoreboard()
-                            .getTeam("DuskMarked")
-                    ),
-                    markedTarget.getName().getString(),
-                    TeamS2CPacket.Operation.ADD
-                )
-            );
-        };
+        if (markedTarget != null) colorMarkedPlayer(markedTarget);
     }
 
     @Override
