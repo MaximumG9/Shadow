@@ -18,10 +18,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.util.Optional;
+
 import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
+
+    @org.spongepowered.asm.mixin.Shadow
+    public abstract boolean damage(DamageSource source, float amount);
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -36,16 +41,22 @@ public abstract class LivingEntityMixin extends Entity {
         if (instance.isPlayer()) {
             Shadow shadow = getShadow(instance.getServer());
             IndirectPlayer indirect = shadow.getIndirect((ServerPlayerEntity) instance);
+            Entity attacker = damageSource.getAttacker();
+            IndirectPlayer indirectAttacker =
+                attacker != null && attacker.isPlayer() ?
+                    shadow.getIndirect((ServerPlayerEntity) attacker)
+                    :
+                    null;
 
             if (
                 shadow.getAllLivingPlayers()
                 .filter(p -> p.role.hasAbility(LifeShield.ID))
                 .flatMap(
                     (p) -> p.role.getAbility(LifeShield.ID)
-                        .map(a -> ((LifeShield) a).isPlayerShielded(indirect))
+                        .map(a -> ((LifeShield) a).isPlayerShielded(indirect, indirectAttacker))
                         .stream())
                 .anyMatch((b) -> b)
-                ) {
+            ) {
                 instance.setHealth(1.0f);
                 instance.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 900, 1));
                 instance.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1));

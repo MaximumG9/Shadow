@@ -20,7 +20,6 @@ public abstract class Ability implements ItemRepresentable, Tickable {
     private static final Text ITEM_TEXT = TextUtil.gold("[ITEM]");
     private static final Text INVISIBLE_TEXT = TextUtil.gray("[INVISIBLE]");
     private static final Text ABILITY_TEXT = TextUtil.withColour("[ABILITY]",Formatting.DARK_PURPLE);
-    private boolean isOffline = false;
 
     final IndirectPlayer player;
     private long lastActivated;

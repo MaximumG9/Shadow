@@ -16,7 +16,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.HashSet;
@@ -28,10 +30,12 @@ public class LifeShield extends Ability {
     public static final Identifier ATTR_ID = MiscUtil.shadowID("lifeweaver_rework_max_health");
     public static final Identifier ID = MiscUtil.shadowID("life_shield");
     private static final ItemStack ITEM_STACK;
-    private Set<IndirectPlayer> shieldedPlayers = new HashSet<>();
+    private IndirectPlayer shieldedPlayer = null;
+
+    private static final int COOLDOWN_TIME = 5 * 60 * 20;
 
     private final List<Filter> FILTERS = List.of(
-        new Filters.RequiredMaxHealth(10f,"You don't have enough health to shield another player!")
+        new Filters.Cooldown(COOLDOWN_TIME)
     );
 
     static {
@@ -41,6 +45,7 @@ public class LifeShield extends Ability {
             MiscUtil.makeLore(
                 TextUtil.gray("Shield a selected player from death once, at the cost of ")
                     .append(TextUtil.hearts(5)),
+                TextUtil.red("If you die, your shield is removed."),
                 AbilityText()
             )
         );
@@ -64,13 +69,27 @@ public class LifeShield extends Ability {
         return FILTERS;
     }
 
-    public boolean isPlayerShielded(IndirectPlayer player) {
-        if (shieldedPlayers.contains(player)) {
+    public boolean isPlayerShielded(IndirectPlayer player, IndirectPlayer attacker) {
+        if (shieldedPlayer == player) {
+            this.player.sendMessage(TextUtil.withColour(
+                shieldedPlayer.getName().getString(), Formatting.WHITE)
+                    .append(" has lost their ")
+                    .append(TextUtil.blue("shield"))
+                    .append(TextUtil.withColour("!",Formatting.WHITE))
+                ,CancelPredicates.cancelOnLostAbility(this));
+            // this.player.sendMessage(
+            //     TextUtil.red("Using your ability again will kill you if you have less than 5 max hearts.")
+            //     ,CancelPredicates.cancelOnLostAbility(this));
             this.player.spoofAddPlayersToTeam(List.of(player),getShadow().playerTeam, CancelPredicates.cancelOnLostAbility(this));
-            shieldedPlayers.remove(player);
-            return true;
+            shieldedPlayer = null;
+            return attacker != this.player;
         }
         return false;
+    }
+
+    @Override
+    public void onDeath(DamageSource damageSource) {
+        this.player.spoofAddPlayersToTeamNow(List.of(player),getShadow().playerTeam);
     }
 
     @Override
@@ -78,73 +97,92 @@ public class LifeShield extends Ability {
 
     @Override
     public void onDay() {
-        getShadow().addTickable(Delay.instant(() -> colorShieldedPlayers(shieldedPlayers.stream().toList())));
+        getShadow().addTickable(Delay.instant(() -> colorShieldedPlayers(List.of(shieldedPlayer))));
     }
 
     public void onJoin() {
-        colorShieldedPlayers(shieldedPlayers.stream().toList());
+        colorShieldedPlayers(List.of(shieldedPlayer));
     }
 
     @Override
     public AbilityResult apply() {
-        this.player.getPlayerOrThrow().openHandledScreen(
+        ServerPlayerEntity player = this.player.getPlayerOrThrow();
+        player.openHandledScreen(
             new DecisionScreenHandler.Factory<>(
                 Text.literal("Person to shield"),
                 (target, actor, _a, _b) -> {
                     if (target == null) {
-                        actor.sendMessage(TextUtil.red("Failed to select player to guess"));
+                        actor.sendMessage(TextUtil.red("Failed to select player to shield"));
                         return;
                     }
 
-                    this.shieldedPlayers.add(target);
+                    this.resetLastActivated();
 
-                    EntityAttributeInstance attr = actor
-                        .getAttributes()
-                        .getCustomInstance(
-                            EntityAttributes.GENERIC_MAX_HEALTH
-                        );
-
-                    if (attr == null) {
-                        getShadow().ERROR("Players don't have a max health attribute (we're so cooked).");
-                        return;
-                    }
-
-                    EntityAttributeModifier modifier = attr.getModifier(ATTR_ID);
-                    if (modifier == null) {
-                        attr.addPersistentModifier(new EntityAttributeModifier(
-                            ATTR_ID,
-                            -10.0,
-                            EntityAttributeModifier.Operation.ADD_VALUE
-                        ));
-
-                    } else {
-                        double oldValue = modifier.value();
-                        if (
-                            modifier.operation() !=
-                                EntityAttributeModifier.Operation.ADD_VALUE
-                        ) {
-                            getShadow().ERROR("Existing Lifeweaver Rework attribute modifier is not add value");
+                    if (shieldedPlayer == null) {
+                        if (player.getMaxHealth() - 10 <= 0) {
+                            actor.sendMessage(TextUtil.red("Cannot shield new player when you have less than ")
+                                .append(TextUtil.hearts(5)));
+                            return;
                         }
-                        attr.overwritePersistentModifier(new EntityAttributeModifier(
-                            ATTR_ID,
-                            oldValue - 10.0,
-                            EntityAttributeModifier.Operation.ADD_VALUE
-                        ));
-                    }
 
-                    this.player.sendMessageNow(
-                        TextUtil.green(target.getName().getString())
-                            .append(" was shielded. Your max health is now ")
-                            .append(TextUtil.hearts(actor.getMaxHealth() / 2))
-                            .append(TextUtil.green("."))
-                    );
-                    colorShieldedPlayers(shieldedPlayers.stream().toList());
+                        EntityAttributeInstance attr = actor
+                            .getAttributes()
+                            .getCustomInstance(
+                                EntityAttributes.GENERIC_MAX_HEALTH
+                            );
+
+                        if (attr == null) {
+                            getShadow().ERROR("Players don't have a max health attribute (we're so cooked).");
+                            return;
+                        }
+
+                        EntityAttributeModifier modifier = attr.getModifier(ATTR_ID);
+                        if (modifier == null) {
+                            attr.addPersistentModifier(new EntityAttributeModifier(
+                                ATTR_ID,
+                                -10.0,
+                                EntityAttributeModifier.Operation.ADD_VALUE
+                            ));
+
+                        } else {
+                            double oldValue = modifier.value();
+                            if (
+                                modifier.operation() !=
+                                    EntityAttributeModifier.Operation.ADD_VALUE
+                            ) {
+                                getShadow().ERROR("Existing Lifeweaver Rework attribute modifier is not add value");
+                            }
+                            attr.overwritePersistentModifier(new EntityAttributeModifier(
+                                ATTR_ID,
+                                oldValue - 10.0,
+                                EntityAttributeModifier.Operation.ADD_VALUE
+                            ));
+                        }
+
+                        this.player.sendMessageNow(
+                            TextUtil.green(target.getName().getString())
+                                .append(" was shielded. Your max health is now ")
+                                .append(TextUtil.hearts((float) Math.floor(actor.getMaxHealth() / 2)))
+                                .append(TextUtil.green("."))
+                        );
+                    } else {
+                        this.player.spoofAddPlayersToTeamNow(List.of(shieldedPlayer), getShadow().playerTeam);
+                        this.player.sendMessageNow(
+                            TextUtil.green("Changed shield target from ")
+                                .append(shieldedPlayer.getName().getString())
+                                .append(" to ")
+                                .append(target.getName().getString())
+                                .append(".")
+                        );
+                    }
+                    shieldedPlayer = target;
+                    colorShieldedPlayers(List.of(shieldedPlayer));
                 },
             this.getShadow()
                 .getAllLivingPlayers()
-                .filter(player ->
-                    player != this.player
-                    && !this.shieldedPlayers.contains(player))
+                .filter(p ->
+                    p != this.player
+                    && shieldedPlayer != p)
                 .toList()
             )
         );
