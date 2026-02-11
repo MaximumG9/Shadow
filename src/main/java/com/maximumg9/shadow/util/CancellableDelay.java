@@ -7,18 +7,24 @@ import java.util.function.Supplier;
 
 public class CancellableDelay extends Delay {
     private final Runnable task;
+    private final Runnable cancelTask;
     private int timer;
     private final Supplier<Boolean> cancelCondition;
 
-    private CancellableDelay(Runnable task, int tickDelay, Supplier<Boolean> cancelCondition) {
+    private CancellableDelay(Runnable task, Runnable cancelTask, int tickDelay, Supplier<Boolean> cancelCondition) {
         super(task, tickDelay);
         this.task = task;
+        this.cancelTask = cancelTask;
         this.timer = tickDelay;
         this.cancelCondition = cancelCondition;
     }
 
     public static CancellableDelay of(Runnable task, int tickDelay, Supplier<Boolean> cancelCondition) {
-        return new CancellableDelay(task, tickDelay, cancelCondition);
+        return new CancellableDelay(task, () -> {} ,tickDelay, cancelCondition);
+    }
+
+    public static CancellableDelay of(Runnable task, int tickDelay, Supplier<Boolean> cancelCondition, Runnable cancelTask) {
+        return new CancellableDelay(task, cancelTask, tickDelay, cancelCondition);
     }
 
     @Override

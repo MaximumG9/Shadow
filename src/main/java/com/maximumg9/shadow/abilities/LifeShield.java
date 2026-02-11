@@ -67,7 +67,7 @@ public class LifeShield extends Ability {
     }
 
     public Optional<IndirectPlayer> getShieldedPlayer () {
-        return Optional.of(shieldedPlayer);
+        return Optional.ofNullable(shieldedPlayer);
     }
 
     public boolean isPlayerShielded(IndirectPlayer player, IndirectPlayer attacker) {
