@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class Paranoia extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("paranoia");
@@ -79,7 +80,7 @@ public class Paranoia extends Ability {
                 ping();
             },
             pingDelay,
-            ConditionalDelay.wrapCancelCondition(
+            CancellableDelay.wrapCancelCondition(
                 CancelPredicates.cancelOnLostAbility(this),
                 this.player
             )
@@ -127,11 +128,22 @@ public class Paranoia extends Ability {
 
     @Override
     public void tick() {
-        getShadow().getAllLivingPlayers()
+        List<IndirectPlayer> livingPlayers = getShadow().getAllLivingPlayers().toList();
+
+        livingPlayers.stream()
             .filter(p -> p.role.hasAbility(MoonlitMark.ID))
             .flatMap(
                 (p) -> p.role.getAbility(MoonlitMark.ID)
                     .flatMap(a -> ((MoonlitMark) a).getMarkedTarget())
+                    .stream()
+            ).forEach(
+                p -> suspiciousPlayers.add(p)
+            );
+        livingPlayers.stream()
+            .filter(p -> p.role.hasAbility(LifeShield.ID))
+            .flatMap(
+                (p) -> p.role.getAbility(LifeShield.ID)
+                    .flatMap(a -> ((LifeShield) a).getShieldedPlayer())
                     .stream()
             ).forEach(
                 p -> suspiciousPlayers.add(p)

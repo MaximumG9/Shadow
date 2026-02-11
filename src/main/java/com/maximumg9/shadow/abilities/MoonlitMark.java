@@ -3,6 +3,7 @@ package com.maximumg9.shadow.abilities;
 import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.filters.Filters;
 import com.maximumg9.shadow.roles.Faction;
+import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
@@ -47,12 +48,12 @@ public class MoonlitMark extends Ability {
         stack.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                TextUtil.withColour("AT ANY TIME", Formatting.WHITE),
+                TextUtil.withColour("DURING THE DAY", Formatting.WHITE),
                 TextUtil.gray("Mark the Nearest Player (Within ")
                     .append(String.valueOf(getShadow().config.markRadius))
                     .append(" blocks) to mark as a ")
                     .append(TextUtil.withColour("Target", Formatting.WHITE)),
-                TextUtil.gray("During Night Time, if a target is killed by shadow or natural causes,"),
+                TextUtil.gray("During Night, if a target is killed by shadow or natural causes,"),
                 TextUtil.gray("you gain ")
                     .append(TextUtil.red("Strength 2"))
                     .append(" for the remainder of the night."),
@@ -110,18 +111,13 @@ public class MoonlitMark extends Ability {
                 //being lost.
                 CancelPredicates.cancelOnLostRole(markedTarget.role).or(CancelPredicates.IS_DAY)
             );
-            this.player.getPlayer().ifPresent(
-                (p) ->
-                    p.networkHandler.sendPacket(
-                    TeamS2CPacket.changePlayerTeam(
-                        this.player.getShadow().playerTeam,
-                        markedTarget.getName().getString(),
-                        TeamS2CPacket.Operation.ADD
-                    )
-                )
+            this.player.spoofAddPlayersToTeam(List.of(markedTarget),
+                getShadow().playerTeam,
+                CancelPredicates.cancelOnLostRole(markedTarget.role)
+                    .or(CancelPredicates.IS_DAY)
             );
-            markedTarget.addToTeam(this.getShadow().markedTeam,
-                CancelPredicates.cancelOnLostRole(markedTarget.role).or(CancelPredicates.IS_DAY));
+            getShadow().addTickable(Delay.instant(() -> markedTarget.addToTeam(this.getShadow().markedTeam,
+                CancelPredicates.cancelOnLostRole(markedTarget.role).or(CancelPredicates.IS_DAY))));
         }
     }
 
@@ -149,7 +145,8 @@ public class MoonlitMark extends Ability {
     @Override
     public List<Filter> getFilters() {
         return List.of(
-            new Filters.NotGracePeriod()
+            new Filters.NotGracePeriod(),
+            new Filters.Day()
         );
     }
 
@@ -161,6 +158,7 @@ public class MoonlitMark extends Ability {
             this.player.sendMessageNow(TextUtil.red("Cannot mark more than one player per day."));
             return AbilityResult.CLOSE;
         }
+
         ServerPlayerEntity target = null;
 
         double maxDistance = this.player.getShadow().config.markRadius;
@@ -184,22 +182,6 @@ public class MoonlitMark extends Ability {
             return AbilityResult.CLOSE;
         }
 
-        if (getShadow().isNight()) {
-            this.markedTarget.addToTeam(this.getShadow().markedTeam, CancelPredicates.cancelOnLostAbility(this).or(CancelPredicates.IS_DAY));
-
-            this.markedTarget.scheduleUntil(
-                (player) -> {
-                    player.setGlowing(true);
-                    player.getDataTracker().set(
-                        Entity.FLAGS,
-                        (byte) (player.getDataTracker().get(Entity.FLAGS) |
-                            (1 << Entity.GLOWING_FLAG_INDEX)),
-                        true
-                    );
-                },
-                CancelPredicates.cancelOnLostAbility(this).or(CancelPredicates.IS_DAY)
-            );
-        }
 
         IndirectPlayer indirectTarget = this.getShadow().getIndirect(target);
         markedTarget = indirectTarget;

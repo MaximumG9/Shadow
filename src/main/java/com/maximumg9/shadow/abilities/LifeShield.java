@@ -12,7 +12,6 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
@@ -21,10 +20,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 public class LifeShield extends Ability {
     public static final Identifier ATTR_ID = MiscUtil.shadowID("lifeweaver_rework_max_health");
@@ -69,6 +66,10 @@ public class LifeShield extends Ability {
         return FILTERS;
     }
 
+    public Optional<IndirectPlayer> getShieldedPlayer () {
+        return Optional.of(shieldedPlayer);
+    }
+
     public boolean isPlayerShielded(IndirectPlayer player, IndirectPlayer attacker) {
         if (shieldedPlayer == player) {
             this.player.sendMessage(TextUtil.withColour(
@@ -88,8 +89,8 @@ public class LifeShield extends Ability {
     }
 
     @Override
-    public void onDeath(DamageSource damageSource) {
-        this.player.spoofAddPlayersToTeamNow(List.of(player),getShadow().playerTeam);
+    public void deInit() {
+        if (shieldedPlayer != null) this.player.spoofAddPlayersToTeam(List.of(shieldedPlayer),getShadow().playerTeam, CancelPredicates.NEVER_CANCEL);
     }
 
     @Override
@@ -97,11 +98,37 @@ public class LifeShield extends Ability {
 
     @Override
     public void onDay() {
-        getShadow().addTickable(Delay.instant(() -> colorShieldedPlayers(List.of(shieldedPlayer))));
+        if (this.player.getPlayer().isPresent() && shieldedPlayer != null) getShadow().addTickable(Delay.instant(() -> colorShieldedPlayers(List.of(shieldedPlayer))));
     }
 
     public void onJoin() {
-        colorShieldedPlayers(List.of(shieldedPlayer));
+        if (shieldedPlayer != null
+            && (!getShadow().isNight()
+            || getShadow().getAllLivingPlayers()
+                .filter(p -> p.role.hasAbility(MoonlitMark.ID))
+                .flatMap(
+                    (p) -> p.role.getAbility(MoonlitMark.ID)
+                        .flatMap(a -> ((MoonlitMark) a).getMarkedTarget())
+                        .stream()
+                ).anyMatch((p) -> p != shieldedPlayer))
+        ) colorShieldedPlayers(List.of(shieldedPlayer));
+    }
+
+    public void onNight() {
+        if (shieldedPlayer != null && player.getPlayer().isPresent()
+            && (!getShadow().isNight()
+            || getShadow().getAllLivingPlayers()
+            .filter(p -> p.role.hasAbility(MoonlitMark.ID))
+            .flatMap(
+                (p) -> p.role.getAbility(MoonlitMark.ID)
+                    .flatMap(a -> ((MoonlitMark) a).getMarkedTarget())
+                    .stream()
+            ).anyMatch((p) -> p != shieldedPlayer))
+        ) this.player.spoofAddPlayersToTeam(List.of(shieldedPlayer),
+            getShadow().playerTeam,
+            CancelPredicates.cancelOnLostRole(shieldedPlayer.role)
+                .or(CancelPredicates.IS_DAY)
+        );
     }
 
     @Override
@@ -115,8 +142,6 @@ public class LifeShield extends Ability {
                         actor.sendMessage(TextUtil.red("Failed to select player to shield"));
                         return;
                     }
-
-                    this.resetLastActivated();
 
                     if (shieldedPlayer == null) {
                         if (player.getMaxHealth() - 10 <= 0) {
@@ -175,6 +200,7 @@ public class LifeShield extends Ability {
                                 .append(".")
                         );
                     }
+                    this.resetLastActivated();
                     shieldedPlayer = target;
                     colorShieldedPlayers(List.of(shieldedPlayer));
                 },
