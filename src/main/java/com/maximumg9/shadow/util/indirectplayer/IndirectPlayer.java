@@ -28,10 +28,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
-import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -46,10 +43,7 @@ import net.minecraft.util.UserCache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -400,6 +394,32 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.server.getScoreboard().addScoreHolderToTeam(
             getPlayerOrThrow().getNameForScoreboard(),
             team
+        );
+    }
+
+    public void spoofAddPlayersToTeam(List<IndirectPlayer> targets, Team team, Predicate<IndirectPlayer> cancelCondition) {
+        scheduleUntil(
+            (p) ->
+                targets.forEach((t) ->
+                    p.networkHandler.sendPacket(
+                        TeamS2CPacket.changePlayerTeam(team,
+                            t.getName().getString(),
+                            TeamS2CPacket.Operation.ADD
+                    )
+                )
+            ),
+            cancelCondition
+        );
+    }
+
+    public void spoofAddPlayersToTeamNow(List<IndirectPlayer> targets, Team team) {
+        targets.forEach((t) ->
+           getPlayerOrThrow().networkHandler.sendPacket(
+                TeamS2CPacket.changePlayerTeam(team,
+                    t.getName().getString(),
+                    TeamS2CPacket.Operation.ADD
+                )
+            )
         );
     }
 

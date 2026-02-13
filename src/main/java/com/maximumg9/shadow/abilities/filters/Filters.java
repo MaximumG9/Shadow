@@ -41,6 +41,23 @@ public abstract class Filters {
         }
     }
 
+    public static class Day extends Filter {
+        private static final String DEFAULT_MESSAGE = "You can only use this ability during day";
+
+        public Day() {
+            super(DEFAULT_MESSAGE);
+        }
+
+        public Day(String message) {
+            super(message);
+        }
+
+        @Override
+        public boolean filter(Ability ability) {
+            return !ability.getShadow().isNight();
+        }
+    }
+
     public static class RequiredMaxHealth extends Filter {
         private static final String DEFAULT_MESSAGE = "You do not have enough health";
 

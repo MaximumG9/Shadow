@@ -40,6 +40,7 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
     private final Config config;
     private final boolean editable;
     private final ScreenHandlerContext context;
+    private int page = 0;
 
     private ConfigScreenHandler(int syncID, PlayerInventory playerInventory, ScreenHandlerContext context, Config config, boolean editable) {
         super(ScreenHandlerType.GENERIC_9X3, syncID, playerInventory);

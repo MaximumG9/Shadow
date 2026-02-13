@@ -18,6 +18,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,8 +54,8 @@ public class PinataGift extends Ability {
 
         final List<IndirectPlayer> PLAYERS = this.player.getShadow().getAllLivingPlayers().toList();
 
-        final List<IndirectPlayer> SHADOWS = PLAYERS.stream().filter((p) -> p.role.getFaction() == Faction.SHADOW).toList();
-        final List<IndirectPlayer> VILLAGERS = PLAYERS.stream().filter((p) -> p.role.getFaction() == Faction.VILLAGER).toList();
+        final List<IndirectPlayer> SHADOWS = new ArrayList<>(PLAYERS.stream().filter((p) -> p.role.getFaction() == Faction.SHADOW).toList());
+        final List<IndirectPlayer> VILLAGERS = new ArrayList<>(PLAYERS.stream().filter((p) -> p.role.getFaction() == Faction.VILLAGER).toList());
 
         EntityAttributeInstance instance = attacker.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
         if (instance == null) return;

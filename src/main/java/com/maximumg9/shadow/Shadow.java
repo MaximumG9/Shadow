@@ -56,6 +56,7 @@ public class Shadow implements Tickable {
 
     public Team playerTeam = null;
     public Team markedTeam = null;
+    public Team shieldedTeam = null;
     
     static {
         ITEM_USE_CALLBACK_MAP.put(
@@ -113,11 +114,15 @@ public class Shadow implements Tickable {
 
         if(scoreboard.getTeam("Players") == null) scoreboard.addTeam("Players");
         if(scoreboard.getTeam("DuskMarked") == null) scoreboard.addTeam("DuskMarked");
+        if(scoreboard.getTeam("Shielded") == null) scoreboard.addTeam("Shielded");
         playerTeam = scoreboard.getTeam("Players");
         markedTeam = scoreboard.getTeam("DuskMarked");
+        shieldedTeam = scoreboard.getTeam("Shielded");
         playerTeam.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
         markedTeam.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
+        shieldedTeam.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
         markedTeam.setColor(Formatting.RED);
+        shieldedTeam.setColor(Formatting.AQUA);
     }
     
     public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
