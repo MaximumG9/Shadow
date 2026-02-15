@@ -91,6 +91,7 @@ public abstract class Ability implements ItemRepresentable, Tickable {
     
     public void onNight() { }
     public void onDay() { }
+    public void onGraceEnd() { }
 
     public void onJoin() { }
     public void onLeave() { }
