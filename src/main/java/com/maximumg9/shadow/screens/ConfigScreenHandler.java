@@ -134,7 +134,7 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
         ItemStack shadowChooseStack = Items.TARGET.getDefaultStack();
         if(config.shadowsChooseRole) shadowChooseStack.set(DataComponentTypes.ITEM_NAME, TextUtil.withColour("Shadows choose roles during grace period", Formatting.WHITE));
         else shadowChooseStack.set(DataComponentTypes.ITEM_NAME, TextUtil.withColour("[DISABLED] Shadows choose roles during grace period", Formatting.GRAY));
-        this.inventory.setStack(5+(1*9),shadowChooseStack);
+        this.inventory.setStack(5+(0*9),shadowChooseStack);
 
         ItemStack pinataHitStack = Items.TARGET.getDefaultStack();
         if(config.pinataHittable) pinataHitStack.set(DataComponentTypes.ITEM_NAME, TextUtil.withColour("Piñata gifts on hit", Formatting.WHITE));
@@ -225,6 +225,10 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
         }
 
         if(slotIndex == 5) {
+            if (actionType == SlotActionType.THROW) config.shadowsChooseRole = false;
+            else config.shadowsChooseRole = !config.shadowsChooseRole;
+        }
+        if(slotIndex == 5+(1*9)) {
             if (actionType == SlotActionType.THROW) config.pinataHittable = false;
             else config.pinataHittable = !config.pinataHittable;
         }

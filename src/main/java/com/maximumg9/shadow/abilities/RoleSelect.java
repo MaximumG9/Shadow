@@ -1,6 +1,5 @@
 package com.maximumg9.shadow.abilities;
 
-import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.util.MiscUtil;
@@ -12,6 +11,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.Random;
 
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +53,11 @@ public class RoleSelect extends Ability {
         SELECTABLE_ROLES.add(player.role);
     }
     @Override
+    public void deInit() {
+        SELECTABLE_ROLES.remove(this.player.role);
+        super.deInit();
+    }
+    @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
         return ITEM_STACK.copy();
     }
@@ -80,15 +85,22 @@ public class RoleSelect extends Ability {
 
                     if (!takeRole(target)) {
                         actor.sendMessage(TextUtil.red("Role already taken."));
-                        //     return;
+                        return;
                     }
 
-                    this.player.role = target;
-                    player.role.removeAbility(player.role.getAbility(ID).get()); //trust me bro
+                    this.player.role = target.getRole().factory.makeRole(this.player);
                 },
                 SELECTABLE_ROLES.stream().toList()
             )
         );
         return null;
+    }
+
+    @Override
+    public void tick() {
+        if (!getShadow().isGracePeriod()) {
+            List<Role> availableRoles = SELECTABLE_ROLES.stream().toList();
+            this.player.role = availableRoles.get(Random.createLocal().nextBetween(0, availableRoles.size()-1));
+        }
     }
 }
