@@ -1,6 +1,9 @@
 package com.maximumg9.shadow.config;
 
 import com.maximumg9.shadow.Shadow;
+import com.maximumg9.shadow.abilities.RoleSelect;
+import com.maximumg9.shadow.roles.Faction;
+import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.RoleSlot;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.neutral.Spectator;
@@ -96,6 +99,7 @@ public class RoleManager implements Saveable {
             
             player.originalRole = role;
             player.role = role.factory.makeRole(player);
+            if(shadow.config.shadowsChooseRole && role.faction == Faction.SHADOW) player.role.addAbility(player, RoleSelect::new);
         }
         
         // Set non participating players to spectators
