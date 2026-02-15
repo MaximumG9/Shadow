@@ -99,9 +99,13 @@ public class RoleManager implements Saveable {
             
             player.originalRole = role;
             player.role = role.factory.makeRole(player);
-            if(shadow.config.shadowsChooseRole && role.faction == Faction.SHADOW) player.role.addAbility(player, RoleSelect::new);
         }
-        
+        if (shadow.config.shadowsChooseRole) {
+            participatingPlayers.stream()
+                .filter(p -> p.role.getFaction() == Faction.SHADOW)
+                .forEach(p -> p.role.addAbility(RoleSelect::new));
+        }
+
         // Set non participating players to spectators
         shadow.getOnlinePlayers().stream()
             .filter((player -> !player.participating))

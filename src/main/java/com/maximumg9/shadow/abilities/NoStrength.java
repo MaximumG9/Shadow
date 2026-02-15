@@ -30,14 +30,21 @@ public class NoStrength extends Ability {
         );
     }
 
-    public NoStrength(IndirectPlayer player) { super(player); }
+    public NoStrength(IndirectPlayer player) {
+        super(player);
+        if (player != null) {
+            getShadow().addTickable(
+                Delay.instant(() -> {
+                    if (player.role.hasAbility(ToggleStrength.ID))
+                        player.role.removeAbility(player.role.getAbility(ToggleStrength.ID).get());
+                })
+            );
+        }
+    }
 
     @Override
-    public void init() {
-        if (player.role.hasAbility(ToggleStrength.ID))
-            getShadow().addTickable(Delay.instant(() ->
-                player.role.removeAbility(player.role.getAbility(ToggleStrength.ID).get())
-            ));
+    public void tick() {
+
     }
 
     @Override
