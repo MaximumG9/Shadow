@@ -19,7 +19,7 @@ public enum Food implements ItemRepresentable {
     COOKED_RABBIT((count) -> new ItemStack(Items.COOKED_RABBIT, count)),
     COOKED_SALMON((count) -> new ItemStack(Items.COOKED_SALMON, count)),
     COOKED_CHICKEN((count) -> new ItemStack(Items.COOKED_CHICKEN, count)),
-    CHICKEN((count) -> new ItemStack(Items.CHICKEN, count)),
+    BEEF((count) -> new ItemStack(Items.BEEF, count)),
     RANDOM((count) -> {
         List<Food> nonRandomFoods = Arrays.stream(Food.values()).filter((food) -> !food.name().equals("RANDOM")).toList();
         return nonRandomFoods.get(Random.createLocal().nextBetween(0, nonRandomFoods.size()-1)).foodGiver.apply(count);

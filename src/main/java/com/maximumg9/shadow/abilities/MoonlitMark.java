@@ -64,6 +64,12 @@ public class MoonlitMark extends Ability {
         return stack.copy();
     }
 
+    @Override
+    public void deInit() {
+        if (this.player.getPlayer().isPresent() && markedTarget != null) this.player.spoofAddPlayersToTeamNow(List.of(markedTarget), getShadow().playerTeam);
+        super.deInit();
+    }
+
     public Optional<IndirectPlayer> getMarkedTarget() {
         return Optional.ofNullable(markedTarget);
     }
