@@ -25,7 +25,7 @@ public class RoleSelect extends Ability {
     private boolean roleTaken = false;
 
     static {
-        ITEM_STACK = new ItemStack(Items.TARGET, 1);
+        ITEM_STACK = new ItemStack(Items.ENDER_PEARL, 1);
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
