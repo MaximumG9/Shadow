@@ -9,6 +9,7 @@ import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.items.ItemUseCallback;
 import com.maximumg9.shadow.items.ParticipationEye;
 import com.maximumg9.shadow.roles.Faction;
+import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.util.LinkRegistry;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
@@ -41,6 +42,7 @@ import org.spongepowered.asm.mixin.Unique;
 import java.io.*;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class Shadow implements Tickable {
@@ -362,7 +364,22 @@ public class Shadow implements Tickable {
     @Unique
     public void checkWin(@Nullable UUID playerToIgnore) {
         if (this.state.phase != GamePhase.PLAYING) return;
-        
+
+        final Predicate<IndirectPlayer> V_VICTOR_CONDITION =
+            (player) ->
+                player.originalRole != null &&
+                    (player.originalRole.faction == Faction.VILLAGER
+                    || player.role.getRole() == Roles.PINATA);
+        final Predicate<IndirectPlayer> S_VICTOR_CONDITION =
+            (player) ->
+                player.originalRole != null &&
+                    (player.originalRole.faction == Faction.SHADOW
+                        || player.role.getRole() == Roles.PINATA);
+        final Predicate<IndirectPlayer> N_VICTOR_CONDITION =
+            (player) ->
+                player.originalRole != null &&
+                    player.role.getRole() == Roles.PINATA;
+
         long villagers = this.indirectPlayerManager
             .getRecentlyOnlinePlayers(this.config.disconnectTime)
             .stream()
@@ -381,15 +398,20 @@ public class Shadow implements Tickable {
             ).count();
         
         if (villagers == 0 && shadows == 0) {
-            this.endGame(List.of(), null, null);
+            this.endGame(
+                this.indirectPlayerManager
+                    .getRecentlyOnlinePlayers(this.config.disconnectTime)
+                    .stream()
+                    .filter(
+                        N_VICTOR_CONDITION
+                    ).toList(), null, null);
         } else if (villagers == 0) {
             this.endGame(
                 this.indirectPlayerManager
                     .getRecentlyOnlinePlayers(this.config.disconnectTime)
                     .stream()
                     .filter(
-                        (player) -> player.originalRole != null &&
-                            player.originalRole.faction == Faction.SHADOW
+                        S_VICTOR_CONDITION
                     ).toList(),
                 Faction.SHADOW,
                 null
@@ -400,8 +422,7 @@ public class Shadow implements Tickable {
                     .getRecentlyOnlinePlayers(this.config.disconnectTime)
                     .stream()
                     .filter(
-                        (player) -> player.originalRole != null &&
-                            player.originalRole.faction == Faction.VILLAGER
+                        V_VICTOR_CONDITION
                     ).toList(),
                 Faction.VILLAGER,
                 null
