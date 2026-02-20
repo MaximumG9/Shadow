@@ -19,13 +19,13 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class RoleManager implements Saveable {
     private final RoleSlot[] roleSlots;
+    private HashMap<Role, IndirectPlayer> availableShadowRoles;
+    private Set<IndirectPlayer> undecidedPlayers = new HashSet<>();
     
     private final Shadow shadow;
 
@@ -73,6 +73,23 @@ public class RoleManager implements Saveable {
                 player.role.init();
             }
         );
+        availableShadowRoles = new HashMap<>();
+        undecidedPlayers = new HashSet<>();
+    }
+
+    private boolean checkRoleAvailability(Role role) {
+        undecidedPlayers.removeIf((p) -> {
+            if (
+                role.getRole() == p.role.getRole()
+                && !availableShadowRoles.containsValue(p)
+                && availableShadowRoles.get(role) == null
+            ) {
+                availableShadowRoles.replace(role, p);
+                return true;
+            }
+            return false;
+        });
+        return availableShadowRoles.get(role) == null;
     }
     
     public boolean pickRoles() {
@@ -96,14 +113,28 @@ public class RoleManager implements Saveable {
             IndirectPlayer player = participatingPlayers.get(i);
             
             Roles role = this.roleSlots[i].pickRandomRole(shadow.random);
-            
-            player.originalRole = role;
-            player.role = role.factory.makeRole(player);
+
+            if (shadow.config.shadowsChooseRole && role.faction == Faction.SHADOW) {
+                player.originalRole = Roles.TEMP_SHADOW;
+                player.role = Roles.TEMP_SHADOW.factory.makeRole(player);
+                availableShadowRoles.put(role.factory.makeRole(null), null);
+                undecidedPlayers.add(player);
+            } else {
+                player.originalRole = role;
+                player.role = role.factory.makeRole(player);
+            }
         }
+
         if (shadow.config.shadowsChooseRole) {
-            participatingPlayers.stream()
-                .filter(p -> p.role.getFaction() == Faction.SHADOW)
-                .forEach(p -> p.role.addAbility(RoleSelect::new));
+            shadow.getAllLivingPlayers()
+                .filter(p -> p.role.getRole() == Roles.TEMP_SHADOW)
+                .forEach(p -> ((RoleSelect) p.role.getAbility(RoleSelect.ID).get())
+                        .setupSelecting(
+                            new ArrayList<>(availableShadowRoles.keySet()),
+                            this::checkRoleAvailability,
+                            shadow.config.gracePeriodTicks
+                        )
+                );
         }
 
         // Set non participating players to spectators

@@ -28,8 +28,8 @@ import java.util.function.Predicate;
 public class RoleSelect extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("role_select");
     private static final ItemStack ITEM_STACK;
-    private ArrayList<Roles> POTENTIAL_ROLES = null;
-    private Predicate<Roles> TAKEN_CHECK;
+    private ArrayList<Role> POTENTIAL_ROLES = null;
+    private Predicate<Role> TAKEN_CHECK;
 
 
 
@@ -38,8 +38,7 @@ public class RoleSelect extends Ability {
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                TextUtil.gray("During Grace Period, select your role."),
-                TextUtil.gray("At the end of grace, you get the role you selected."),
+                TextUtil.gray("Select a role from a list of roles."),
                 AbilityText()
             )
         );
@@ -49,44 +48,40 @@ public class RoleSelect extends Ability {
         );
     }
 
-    boolean selectRole(Roles role) {
+    boolean selectRole(Role role) {
         if (!POTENTIAL_ROLES.stream()
             .filter(TAKEN_CHECK)
             .toList()
             .contains(role)) return false;
-        this.player.originalRole = role;
-        this.player.role = role.factory.makeRole(player);
+        this.player.originalRole = role.getRole();
+        this.player.role = role.getRole().factory.makeRole(player);
         return true;
     }
 
     public RoleSelect(IndirectPlayer player) {
         super(player);
-        //getShadow().getAllLivingPlayers()
-        //    .filter(p -> p.role.getFaction() == this.player.role.getFaction())
-        //    .map(p -> p.role.getRole())
-        //    .forEach(POTENTIAL_ROLES::add);
     }
 
-    public void setupSelecting(ArrayList<Roles> potentialRoles, Predicate<Roles> takenPredicate) {
+    public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> takenPredicate) {
         POTENTIAL_ROLES = potentialRoles;
         TAKEN_CHECK = takenPredicate;
     }
 
-    public void setupSelecting(ArrayList<Roles> potentialRoles, Predicate<Roles> takenPredicate, int forceSelectionTimer) {
+    public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> takenPredicate, int forceSelectionTimer) {
         POTENTIAL_ROLES = potentialRoles;
         TAKEN_CHECK = takenPredicate;
 
         getShadow().addTickable(
             CancellableDelay.of(
                 () -> {
-                    List<Roles> availableRoles = POTENTIAL_ROLES.stream()
+                    List<Role> availableRoles = POTENTIAL_ROLES.stream()
                         .filter(TAKEN_CHECK)
                         .toList();
-                    Roles targetRole = availableRoles.get(Random.createLocal().nextBetween(0, availableRoles.size()-1));
+                    Role targetRole = availableRoles.get(Random.createLocal().nextBetween(0, availableRoles.size()-1));
                     selectRole(targetRole);
                 },
                 forceSelectionTimer,
-                CancellableDelay.wrapCancelCondition(CancelPredicates.GRACE_END, this.player)
+                CancellableDelay.wrapCancelCondition(CancelPredicates.cancelOnLostAbility(this), this.player)
             )
 
         );
@@ -111,13 +106,12 @@ public class RoleSelect extends Ability {
                         return;
                     }
 
-                    if (!selectRole(target.getRole())) {
+                    if (!selectRole(target)) {
                         actor.sendMessage(TextUtil.red("Role not available."));
                     }
                 },
                 POTENTIAL_ROLES.stream()
                     .filter(TAKEN_CHECK)
-                    .<Role>map(r -> r.factory.makeRole(null))
                     .toList()
             )
         );
