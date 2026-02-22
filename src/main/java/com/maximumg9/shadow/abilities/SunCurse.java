@@ -74,7 +74,7 @@ public class SunCurse extends Ability {
 
     @Override
     public void init() {
-        if (player.role.hasAbility(ToggleStrength.ID)) getShadow().addTickable(Delay.instant(() -> player.role.removeAbility(player.role.getAbility(ToggleStrength.ID).get())));
+        if (player.role.hasAbility(ToggleStrength.ID)) getShadow().addTickable(Delay.instant(() -> player.role.removeAbility((ToggleStrength.ID))));
     }
 
     @Override

@@ -102,6 +102,10 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     public void removeAbility(Ability ability) {
         this.abilities.remove(ability);
     }
+
+    public void removeAbility(Identifier ability) {
+        this.abilities.remove(this.getAbility(ability).get());
+    }
     
     public NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putString("role", this.getRawName());

@@ -36,8 +36,8 @@ public class NoStrength extends Ability {
     public void init() {
         if (player.role.hasAbility(ToggleStrength.ID))
             getShadow().addTickable(Delay.instant(() ->
-                player.role.removeAbility(player.role.getAbility(ToggleStrength.ID).get())
-            ));
+                player.role.removeAbility(ToggleStrength.ID))
+            );
     }
 
     @Override
