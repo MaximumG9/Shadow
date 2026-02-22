@@ -37,6 +37,7 @@ public class Config implements Saveable {
     public boolean pinataHittable = false;
     public int disconnectTime = 20 * 60 * 10;
     public int gracePeriodTicks = 20 * 60 * 3;
+    public boolean shadowsChooseRole = false;
     
     public Config(Shadow shadow, Path saveFile) {
         this.roleManager = new RoleManager(shadow, this);
@@ -64,6 +65,7 @@ public class Config implements Saveable {
         this.pinataHittable = nbt.getBoolean("pinataHittable");
         this.disconnectTime = nbt.getInt("disconnectTime");
         this.gracePeriodTicks = nbt.getInt("gracePeriodTicks");
+        this.shadowsChooseRole = nbt.getBoolean("shadowsChooseRole");
         
         this.maxCooldownManager.readNBT(nbt.getCompound("maxCooldownManager"));
         this.roleManager.readNBT(nbt.getCompound("roleManager"));
@@ -89,6 +91,7 @@ public class Config implements Saveable {
         nbt.putBoolean("pinataHittable", this.pinataHittable);
         nbt.putInt("disconnectTime", this.disconnectTime);
         nbt.putInt("gracePeriodTicks", this.gracePeriodTicks);
+        nbt.putBoolean("shadowsChooseRole", this.shadowsChooseRole);
         
         nbt.put("maxCooldownManager", this.maxCooldownManager.writeNBT(new NbtCompound()));
         nbt.put("roleManager", this.roleManager.writeNBT(new NbtCompound()));
