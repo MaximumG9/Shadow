@@ -6,6 +6,7 @@ import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
+import com.maximumg9.shadow.util.CancellableDelay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
@@ -112,15 +113,16 @@ public class RoleGuess extends Ability {
                                 } else {
                                     pl.sendMessage(TextUtil.red("You guessed your target's role incorrectly!"));
 
-                                    this.player.damage(
-                                        pl.getServerWorld()
-                                            .getDamageSources()
-                                            .magic(),
-                                        Float.MAX_VALUE,
-                                        CancelPredicates.cancelOnPhaseChange(
-                                            this.getShadow().state.phase
-                                        )
-                                    );
+                                    if (this.player.role.hasAbility(ToggleStrength.ID)) {
+                                        this.player.role.removeAbility(ToggleStrength.ID);
+                                        CancellableDelay.of(
+                                            () -> {
+                                                this.player.role.addAbility(this.player, ToggleStrength::new);
+                                            },
+                                            COOLDOWN_TIME,
+                                            CancellableDelay.wrapCancelCondition(CancelPredicates.cancelOnLostAbility(this), this.player)
+                                        );
+                                    }
                                 }
                             },
                             Arrays.stream(Roles.values())
