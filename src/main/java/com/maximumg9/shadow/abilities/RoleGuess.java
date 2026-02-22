@@ -120,7 +120,7 @@ public class RoleGuess extends Ability {
                                                 this.player.role.addAbility(this.player, ToggleStrength::new);
                                             },
                                             COOLDOWN_TIME,
-                                            CancellableDelay.wrapCancelCondition(CancelPredicates.cancelOnLostAbility(this), this.player)
+                                            CancellableDelay.wrapCancelCondition(CancelPredicates.cancelOnLostRole(this.player.role), this.player)
                                         );
                                     }
                                 }
