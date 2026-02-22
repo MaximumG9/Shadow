@@ -18,6 +18,16 @@ import java.util.stream.Stream;
 public abstract class AbstractShadow extends Role {
     private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(ToggleStrength::new, SeeGlowing::new);
     
+    AbstractShadow(IndirectPlayer player, List<Ability.Factory> abilityFactories, boolean overrideShadowAbilities) {
+        super(
+            player,
+            Stream.concat(
+                abilityFactories.stream(),
+                overrideShadowAbilities ? Stream.of() : ABILITY_FACTORIES.stream()
+            ).toList()
+        );
+    }
+
     AbstractShadow(IndirectPlayer player, List<Ability.Factory> abilityFactories) {
         super(
             player,
@@ -27,7 +37,11 @@ public abstract class AbstractShadow extends Role {
             ).toList()
         );
     }
-    
+
+    private static boolean test(Ability.Factory f) {
+        return false;
+    }
+
     @Override
     public void init() {
         super.init();
