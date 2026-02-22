@@ -11,7 +11,10 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-public class NoStrength extends Ability {
+import java.util.List;
+import java.util.stream.Stream;
+
+public class NoStrength extends ToggleStrength {
     public static final Identifier ID = MiscUtil.shadowID("strength_debuff");
     private static final ItemStack ITEM_STACK;
 
@@ -30,23 +33,22 @@ public class NoStrength extends Ability {
         );
     }
 
-    public NoStrength(IndirectPlayer player) { super(player); }
+
+    public NoStrength(IndirectPlayer player) {
+        super(player);
+    }
 
     @Override
     public void init() {
-        if (player.role.hasAbility(ToggleStrength.ID))
-            getShadow().addTickable(Delay.instant(() ->
-                player.role.removeAbility(player.role.getAbility(ToggleStrength.ID).get())
-            ));
+        Stream<Ability> abilities = player.role.getAbilities().stream();
+
+        player.role.removeAbilities(abilities.filter((ability) -> ability.getID() == ID && ability != this).toList());
     }
 
     @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
         return ITEM_STACK.copy();
     }
-
-    @Override
-    public Identifier getID() { return ID; }
 
     @Override
     public AbilityResult apply() { return AbilityResult.NO_CLOSE; }
