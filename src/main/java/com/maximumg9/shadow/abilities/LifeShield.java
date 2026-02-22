@@ -52,8 +52,8 @@ public class LifeShield extends Ability {
         );
     }
 
-    private void colorShieldedPlayers(List<IndirectPlayer> p) {
-        this.player.spoofAddPlayersToTeamNow(p, getShadow().shieldedTeam);
+    private void colorShieldedPlayers(IndirectPlayer p) {
+        this.player.spoofAddPlayersToTeamNow(List.of(p), getShadow().shieldedTeam);
     }
 
     public LifeShield(IndirectPlayer player) { super(player); }
@@ -98,7 +98,7 @@ public class LifeShield extends Ability {
 
     @Override
     public void onDay() {
-        if (this.player.getPlayer().isPresent() && shieldedPlayer != null) getShadow().addTickable(Delay.instant(() -> colorShieldedPlayers(List.of(shieldedPlayer))));
+        if (this.player.getPlayer().isPresent() && shieldedPlayer != null) getShadow().addTickable(Delay.instant(() -> colorShieldedPlayers(shieldedPlayer)));
     }
 
     public void onJoin() {
@@ -111,7 +111,7 @@ public class LifeShield extends Ability {
                         .flatMap(a -> ((MoonlitMark) a).getMarkedTarget())
                         .stream()
                 ).anyMatch((p) -> p != shieldedPlayer))
-        ) colorShieldedPlayers(List.of(shieldedPlayer));
+        ) colorShieldedPlayers(shieldedPlayer);
     }
 
     public void onNight() {
@@ -202,7 +202,7 @@ public class LifeShield extends Ability {
                     }
                     this.resetLastActivated();
                     shieldedPlayer = target;
-                    colorShieldedPlayers(List.of(shieldedPlayer));
+                    colorShieldedPlayers(shieldedPlayer);
                 },
             this.getShadow()
                 .getAllLivingPlayers()
