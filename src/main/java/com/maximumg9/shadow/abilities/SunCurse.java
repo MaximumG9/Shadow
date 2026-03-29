@@ -15,7 +15,6 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 
 import java.util.stream.Stream;
@@ -72,9 +71,18 @@ public class SunCurse extends ToggleStrength {
 
     @Override
     public void init() {
-        Stream<Ability> abilities = player.role.getAbilities().stream();
+        this.getShadow().addTickable(
+            Delay.instant(() -> {
+                Stream<Ability> abilities = player.role.getAbilities().stream();
 
-        player.role.removeAbilities(abilities.filter((ability) -> ability.getID() == ID && ability != this).toList());
+                player.role.removeAbilities(
+                    abilities.filter(
+                        (ability) -> ability.getID() == ID &&
+                        ability != this
+                    ).toList()
+                );
+            })
+        );
     }
 
     @Override
