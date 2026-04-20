@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 public enum Roles {
     SPECTATOR(Spectator.FACTORY),
+    TEMP_ROLE(TemporaryRole.FACTORY),
 
     VILLAGER(Villager.FACTORY),
 
@@ -32,10 +33,8 @@ public enum Roles {
     ORACLE(Oracle.FACTORY),
     SPECTRE(Spectre.FACTORY),
     DUSK(Dusk.FACTORY),
-    TEMP_SHADOW(TemporaryShadow.FACTORY),
 
     PINATA(Pinata.FACTORY);
-    
     
     public final String name;
     public final RoleFactory<?> factory;
