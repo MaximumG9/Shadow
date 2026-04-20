@@ -1,5 +1,6 @@
 package com.maximumg9.shadow.mixins.mechanics;
 
+import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.abilities.shadow.Haunt;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.network.packet.Packet;
@@ -12,6 +13,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.util.Optional;
 
 import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
@@ -30,7 +33,9 @@ public class ServerPlayerInteractionManagerMixin {
     public void sendPackets(PlayerManager instance, Packet<?> packet) {
         IndirectPlayer indirectPlayer = getShadow(instance.getServer()).getIndirect(player);
 
-        if(indirectPlayer.role.hasAbility(Haunt.ID) && indirectPlayer.role.getAbility(Haunt.ID).get().getToggled()) {
+        Optional<Ability> possibleHaunt = indirectPlayer.role.getAbility(Haunt.ID);
+
+        if(possibleHaunt.isPresent() && possibleHaunt.get().getToggled()) {
             player.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, player));
         } else {
             instance.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, player));

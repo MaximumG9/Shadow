@@ -43,7 +43,7 @@ public class PinataGift extends Ability {
         );
     }
 
-    public PinataGift(IndirectPlayer player) { super(player); };
+    public PinataGift(IndirectPlayer player) { super(player); }
 
     public void onDeath(DamageSource damageSource) {
         ServerPlayerEntity attacker = (ServerPlayerEntity) damageSource.getAttacker();
@@ -91,15 +91,15 @@ public class PinataGift extends Ability {
         else giftedPlayers = List.of(randomVillager, randomShadow);
 
 
-        attacker.server.getPlayerManager().getPlayerList().forEach((player) -> {
+        attacker.server.getPlayerManager().getPlayerList().forEach((player) ->
             player.sendMessage(
                 TextUtil.withColour("The Piñata has gifted that one of ", Formatting.DARK_AQUA)
                     .append(giftedPlayers.getFirst().getName())
                     .append(" and ")
                     .append(giftedPlayers.getLast().getName())
                     .append(" is a shadow!")
-            );
-        });
+            )
+        );
     }
 
     @Override

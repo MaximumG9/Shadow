@@ -38,10 +38,6 @@ public abstract class AbstractShadow extends Role {
         );
     }
 
-    private static boolean test(Ability.Factory f) {
-        return false;
-    }
-
     @Override
     public void init() {
         super.init();

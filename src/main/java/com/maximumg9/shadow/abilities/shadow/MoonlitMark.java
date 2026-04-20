@@ -21,6 +21,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -129,7 +130,7 @@ public class MoonlitMark extends Ability {
     }
 
     @Override
-    public void onAnyDeath(DamageSource damageSource, IndirectPlayer deadPlayer) {
+    public void onAnyDeath(DamageSource damageSource, @NotNull IndirectPlayer deadPlayer) {
         if (deadPlayer == markedTarget) {
             if (getShadow().isNight()) {
                 markedTarget.addToTeamNow(this.getShadow().playerTeam);
@@ -191,8 +192,8 @@ public class MoonlitMark extends Ability {
 
 
         IndirectPlayer indirectTarget = this.getShadow().getIndirect(target);
-        markedTarget = indirectTarget;
         colorMarkedPlayer(indirectTarget);
+        markedTarget = indirectTarget;
 
         this.player.sendMessageNow(TextUtil.green(markedTarget.getName().getString()).append(" was successfully marked."));
         usedToday = true;
@@ -208,17 +209,22 @@ public class MoonlitMark extends Ability {
     @Override
     public void tick() {
         super.tick();
-        if (targetKilled && this.player.getPlayer().isPresent() && this.player.getPlayerOrThrow().getStatusEffect(StatusEffects.STRENGTH) != null && this.player.getPlayerOrThrow().getStatusEffect(StatusEffects.STRENGTH).getAmplifier() == 0) {
-            this.player.giveEffectNow(
-                new StatusEffectInstance(
-                    StatusEffects.STRENGTH,
-                    -1,
-                    1,
-                    false,
-                    false,
-                    true
-                )
-            );
+        Optional<ServerPlayerEntity> possiblePlayer = this.player.getPlayer();
+
+        if (targetKilled && possiblePlayer.isPresent()) {
+            StatusEffectInstance possibleStrength = possiblePlayer.get().getStatusEffect(StatusEffects.STRENGTH);
+            if(possibleStrength != null && possibleStrength.getAmplifier() == 0) {
+                this.player.giveEffectNow(
+                    new StatusEffectInstance(
+                        StatusEffects.STRENGTH,
+                        -1,
+                        1,
+                        false,
+                        false,
+                        true
+                    )
+                );
+            }
         }
     }
 }

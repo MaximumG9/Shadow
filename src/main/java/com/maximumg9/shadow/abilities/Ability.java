@@ -15,6 +15,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public abstract class Ability implements ItemRepresentable, Tickable {
     private static final Text PASSIVE_TEXT = TextUtil.blue("[PASSIVE]");
@@ -71,10 +72,11 @@ public abstract class Ability implements ItemRepresentable, Tickable {
             .filter(p ->
                 this.player.getSquaredDistance(p) <=
                     this.player.getShadow().config.fearRadius * this.player.getShadow().config.fearRadius
-                    && this.player.role.hasAbility(Paranoia.ID)
             ).map((p) ->
-                ((Paranoia) p.role.getAbility(Paranoia.ID).get())
-            ).forEach(
+                p.role.getAbility(Paranoia.ID)
+            ).filter(Optional::isPresent)
+            .map((a) -> ((Paranoia) a.get()))
+            .forEach(
                 (p) -> p.addPing(this.player)
             );
 

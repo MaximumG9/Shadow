@@ -185,13 +185,11 @@ public class AddHealthLink extends Ability {
         player2.giveEffect(
             secondResistance,
             (p) ->
-                p.role != null &&
                 p.role.getFaction() != Faction.SPECTATOR
         );
         player2.giveEffect(
             secondRegeneration,
             (p) ->
-                p.role != null &&
                 p.role.getFaction() != Faction.SPECTATOR
         );
     }
