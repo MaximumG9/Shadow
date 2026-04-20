@@ -46,7 +46,7 @@ public class Cull extends Ability {
             new Filter("You've already used this ability tonight!") {
                 @Override
                 public boolean filter(Ability ability) {
-                    return usedThisNight;
+                    return !usedThisNight;
                 }
             } // TODO: This is bad
         );
@@ -90,7 +90,7 @@ public class Cull extends Ability {
             (player) -> {
                 IndirectPlayer indirect = getShadow().getIndirect(player);
                 return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius &&
-                    indirect.role.getFaction() != Faction.SHADOW;
+                    indirect.role.getFaction() != Faction.SHADOW && indirect.role.getFaction() != Faction.SPECTATOR;
             }
         );
         
