@@ -1,5 +1,7 @@
-package com.maximumg9.shadow.abilities;
+package com.maximumg9.shadow.abilities.shadow;
 
+import com.maximumg9.shadow.abilities.Ability;
+import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;

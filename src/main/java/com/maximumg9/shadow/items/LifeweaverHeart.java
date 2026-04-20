@@ -1,6 +1,6 @@
 package com.maximumg9.shadow.items;
 
-import com.maximumg9.shadow.abilities.GetHeart;
+import com.maximumg9.shadow.abilities.villager.GetHeart;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
 import net.minecraft.entity.attribute.EntityAttributeInstance;

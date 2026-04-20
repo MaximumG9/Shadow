@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.abilities;
+package com.maximumg9.shadow.abilities.shadow;
 
 public class ObfuscateRole {
     // @TODO extend CooldownAbility

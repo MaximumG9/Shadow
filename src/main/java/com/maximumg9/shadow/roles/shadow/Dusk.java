@@ -1,9 +1,9 @@
 package com.maximumg9.shadow.roles.shadow;
 
 import com.maximumg9.shadow.abilities.Ability;
-import com.maximumg9.shadow.abilities.BloodMoon;
-import com.maximumg9.shadow.abilities.MoonlitMark;
-import com.maximumg9.shadow.abilities.SunCurse;
+import com.maximumg9.shadow.abilities.shadow.BloodMoon;
+import com.maximumg9.shadow.abilities.shadow.MoonlitMark;
+import com.maximumg9.shadow.abilities.shadow.SunCurse;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;
@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Style;
-import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

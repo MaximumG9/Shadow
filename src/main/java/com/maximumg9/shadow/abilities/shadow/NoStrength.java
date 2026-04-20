@@ -1,5 +1,7 @@
-package com.maximumg9.shadow.abilities;
+package com.maximumg9.shadow.abilities.shadow;
 
+import com.maximumg9.shadow.abilities.Ability;
+import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
@@ -23,7 +25,7 @@ public class NoStrength extends ToggleStrength {
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
                 TextUtil.gray("You cannot enable Strength."),
-                PassiveText()
+                Ability.PassiveText()
             )
         );
         ITEM_STACK.set(

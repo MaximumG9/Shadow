@@ -1,6 +1,6 @@
 package com.maximumg9.shadow.mixins.abilities.shadow;
 
-import com.maximumg9.shadow.abilities.PoseidonsTrident;
+import com.maximumg9.shadow.abilities.shadow.PoseidonsTrident;
 import com.maximumg9.shadow.util.NBTUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

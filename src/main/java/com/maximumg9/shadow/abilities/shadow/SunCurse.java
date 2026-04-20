@@ -1,5 +1,7 @@
-package com.maximumg9.shadow.abilities;
+package com.maximumg9.shadow.abilities.shadow;
 
+import com.maximumg9.shadow.abilities.Ability;
+import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
@@ -29,7 +31,7 @@ public class SunCurse extends ToggleStrength {
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
                 TextUtil.gray("You cannot enable Strength during the day."),
-                PassiveText()
+                Ability.PassiveText()
             )
         );
         ITEM_STACK_DAY.set(
@@ -57,7 +59,7 @@ public class SunCurse extends ToggleStrength {
                     .append(TextUtil.gray(" and "))
                     .append(TextUtil.withColour("Speed II",Formatting.AQUA))
                 ,
-                AbilityText()
+                Ability.AbilityText()
             )
         );
         ITEM_STACK_NIGHT.set(

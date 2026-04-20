@@ -3,6 +3,7 @@ package com.maximumg9.shadow.abilities;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.Tickable;
 import com.maximumg9.shadow.abilities.filters.Filter;
+import com.maximumg9.shadow.abilities.villager.Paranoia;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -21,16 +22,16 @@ public abstract class Ability implements ItemRepresentable, Tickable {
     private static final Text INVISIBLE_TEXT = TextUtil.gray("[INVISIBLE]");
     private static final Text ABILITY_TEXT = TextUtil.withColour("[ABILITY]",Formatting.DARK_PURPLE);
 
-    final IndirectPlayer player;
+    protected final IndirectPlayer player;
     private long lastActivated;
     
     public Ability(IndirectPlayer player) {
         this.player = player;
     }
-    static MutableText PassiveText() { return PASSIVE_TEXT.copy(); }
-    static MutableText ItemText() { return ITEM_TEXT.copy(); }
-    static MutableText InvisibleText() { return INVISIBLE_TEXT.copy(); }
-    static MutableText AbilityText() { return ABILITY_TEXT.copy(); }
+    protected static MutableText PassiveText() { return PASSIVE_TEXT.copy(); }
+    protected static MutableText ItemText() { return ITEM_TEXT.copy(); }
+    protected static MutableText InvisibleText() { return INVISIBLE_TEXT.copy(); }
+    protected static MutableText AbilityText() { return ABILITY_TEXT.copy(); }
     public List<Filter> getFilters() { return List.of(); }
     public long getLastActivated() { return lastActivated; }
     public void resetLastActivated() { this.lastActivated = this.getShadow().getServer().getOverworld().getTime(); }

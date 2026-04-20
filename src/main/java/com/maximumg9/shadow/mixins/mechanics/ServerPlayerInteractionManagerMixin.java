@@ -1,6 +1,6 @@
 package com.maximumg9.shadow.mixins.mechanics;
 
-import com.maximumg9.shadow.abilities.Haunt;
+import com.maximumg9.shadow.abilities.shadow.Haunt;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;

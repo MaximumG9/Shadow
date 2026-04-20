@@ -2,7 +2,7 @@ package com.maximumg9.shadow.util.indirectplayer;
 
 
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.abilities.AddHealthLink;
+import com.maximumg9.shadow.abilities.villager.AddHealthLink;
 import com.maximumg9.shadow.modifiers.Modifier;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
