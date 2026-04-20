@@ -1,6 +1,6 @@
 package com.maximumg9.shadow.roles.villager;
 
-import com.maximumg9.shadow.abilities.Paranoia;
+import com.maximumg9.shadow.abilities.villager.Paranoia;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;

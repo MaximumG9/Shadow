@@ -7,7 +7,6 @@ import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.util.NBTUtil;
-import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -58,7 +57,7 @@ public class DebugCommand {
 
                                             Role newRole = role.factory.makeRole(indirectPlayer);
 
-                                            indirectPlayer.role = role.factory.makeRole(indirectPlayer);
+                                            indirectPlayer.role = newRole;
 
                                             indirectPlayer.role.init();
 

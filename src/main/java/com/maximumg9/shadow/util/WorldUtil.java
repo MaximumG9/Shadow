@@ -1,7 +1,6 @@
 package com.maximumg9.shadow.util;
 
 import com.maximumg9.shadow.Shadow;
-import com.mojang.logging.LogUtils;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -18,9 +17,7 @@ public class WorldUtil {
         int maxX = MathHelper.floor(bb.maxX);
         int minZ = MathHelper.floor(bb.minZ);
         int maxZ = MathHelper.floor(bb.maxZ);
-        
-        LogUtils.getLogger().info("minX: {},maxX: {},minZ: {},maxZ: {}", bb.minX, bb.maxX, bb.minZ, bb.maxZ);
-        
+
         int highest = world.getChunk(ChunkSectionPos.getSectionCoord(minX), ChunkSectionPos.getSectionCoord(minZ)).sampleHeightmap(heightMap, minX, minZ);
         int nhighest;
         
@@ -43,9 +40,7 @@ public class WorldUtil {
                 }
             }
         }
-        
-        LogUtils.getLogger().info("y: {}", highest);
-        
+
         return highest;
     }
 }

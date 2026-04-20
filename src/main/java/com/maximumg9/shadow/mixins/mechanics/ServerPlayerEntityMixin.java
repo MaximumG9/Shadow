@@ -2,8 +2,8 @@ package com.maximumg9.shadow.mixins.mechanics;
 
 import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.abilities.AddHealthLink;
-import com.maximumg9.shadow.abilities.ObfuscateRole;
+import com.maximumg9.shadow.abilities.villager.AddHealthLink;
+import com.maximumg9.shadow.abilities.shadow.ObfuscateRole;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.util.Delay;

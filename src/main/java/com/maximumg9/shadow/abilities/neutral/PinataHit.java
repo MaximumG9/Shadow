@@ -1,5 +1,7 @@
-package com.maximumg9.shadow.abilities;
+package com.maximumg9.shadow.abilities.neutral;
 
+import com.maximumg9.shadow.abilities.Ability;
+import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -8,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Unit;
 
 // UNFINISHED
 

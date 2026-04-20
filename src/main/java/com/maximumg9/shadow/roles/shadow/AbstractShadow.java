@@ -1,8 +1,8 @@
 package com.maximumg9.shadow.roles.shadow;
 
 import com.maximumg9.shadow.abilities.Ability;
-import com.maximumg9.shadow.abilities.SeeGlowing;
-import com.maximumg9.shadow.abilities.ToggleStrength;
+import com.maximumg9.shadow.abilities.shadow.SeeGlowing;
+import com.maximumg9.shadow.abilities.shadow.ToggleStrength;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.util.TextUtil;
@@ -36,10 +36,6 @@ public abstract class AbstractShadow extends Role {
                 ABILITY_FACTORIES.stream()
             ).toList()
         );
-    }
-
-    private static boolean test(Ability.Factory f) {
-        return false;
     }
 
     @Override

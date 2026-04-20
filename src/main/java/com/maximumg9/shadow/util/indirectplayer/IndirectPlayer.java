@@ -2,7 +2,7 @@ package com.maximumg9.shadow.util.indirectplayer;
 
 
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.abilities.AddHealthLink;
+import com.maximumg9.shadow.abilities.villager.AddHealthLink;
 import com.maximumg9.shadow.modifiers.Modifier;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
@@ -115,7 +115,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             tempRole = Role.load(nbt.getCompound("role"), this);
         }
 
-        if (nbt.contains("original_role", NbtElement.COMPOUND_TYPE)) {
+        if (nbt.contains("original_role", NbtElement.STRING_TYPE)) {
             this.originalRole = Roles.getRole(nbt.getString("original_role"));
         } else {
             this.originalRole = null;

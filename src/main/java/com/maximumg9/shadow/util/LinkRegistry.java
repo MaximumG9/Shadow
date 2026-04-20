@@ -1,7 +1,7 @@
 package com.maximumg9.shadow.util;
 
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.abilities.AddHealthLink;
+import com.maximumg9.shadow.abilities.villager.AddHealthLink;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.entity.damage.DamageSource;

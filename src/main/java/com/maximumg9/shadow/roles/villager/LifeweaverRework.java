@@ -1,8 +1,7 @@
 package com.maximumg9.shadow.roles.villager;
 
 import com.maximumg9.shadow.abilities.Ability;
-import com.maximumg9.shadow.abilities.GetHeart;
-import com.maximumg9.shadow.abilities.LifeShield;
+import com.maximumg9.shadow.abilities.villager.LifeShield;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;

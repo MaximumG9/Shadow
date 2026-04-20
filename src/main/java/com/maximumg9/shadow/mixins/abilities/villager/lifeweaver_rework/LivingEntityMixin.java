@@ -3,7 +3,7 @@ package com.maximumg9.shadow.mixins.abilities.villager.lifeweaver_rework;
 // i hate this organization
 
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.abilities.LifeShield;
+import com.maximumg9.shadow.abilities.villager.LifeShield;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -17,8 +17,6 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
-import java.util.Optional;
 
 import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 

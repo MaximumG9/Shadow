@@ -1,7 +1,7 @@
 package com.maximumg9.shadow.mixins.abilities.villager;
 
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.abilities.SheriffBow;
+import com.maximumg9.shadow.abilities.villager.SheriffBow;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;

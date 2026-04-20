@@ -1,12 +1,10 @@
 package com.maximumg9.shadow.roles.shadow;
 
-import com.maximumg9.shadow.abilities.Haunt;
-import com.maximumg9.shadow.abilities.NoStrength;
+import com.maximumg9.shadow.abilities.shadow.Haunt;
+import com.maximumg9.shadow.abilities.shadow.NoStrength;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;
-import com.maximumg9.shadow.roles.villager.Paranoid;
-import com.maximumg9.shadow.roles.villager.Villager;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
