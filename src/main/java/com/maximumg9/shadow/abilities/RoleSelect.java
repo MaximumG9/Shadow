@@ -29,7 +29,7 @@ public class RoleSelect extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("role_select");
     private static final ItemStack ITEM_STACK;
     private ArrayList<Role> POTENTIAL_ROLES = null;
-    private Predicate<Role> TAKEN_CHECK;
+    private Predicate<Role> AVAILABLE_CHECK;
 
 
 
@@ -38,7 +38,7 @@ public class RoleSelect extends Ability {
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                TextUtil.gray("Select a role from a list of roles."),
+                TextUtil.gray("Select a role to become from a list of roles."),
                 AbilityText()
             )
         );
@@ -50,7 +50,7 @@ public class RoleSelect extends Ability {
 
     boolean selectRole(Role role) {
         if (!POTENTIAL_ROLES.stream()
-            .filter(TAKEN_CHECK)
+            .filter(AVAILABLE_CHECK)
             .toList()
             .contains(role)) return false;
         this.player.originalRole = role.getRole();
@@ -62,20 +62,20 @@ public class RoleSelect extends Ability {
         super(player);
     }
 
-    public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> takenPredicate) {
+    public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> availablePredicate) {
         POTENTIAL_ROLES = potentialRoles;
-        TAKEN_CHECK = takenPredicate;
+        AVAILABLE_CHECK = availablePredicate;
     }
 
-    public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> takenPredicate, int forceSelectionTimer) {
+    public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> availablePredicate, int forceSelectionTimer) {
         POTENTIAL_ROLES = potentialRoles;
-        TAKEN_CHECK = takenPredicate;
+        AVAILABLE_CHECK = availablePredicate;
 
         getShadow().addTickable(
             CancellableDelay.of(
                 () -> {
                     List<Role> availableRoles = POTENTIAL_ROLES.stream()
-                        .filter(TAKEN_CHECK)
+                        .filter(AVAILABLE_CHECK)
                         .toList();
                     Role targetRole = availableRoles.get(Random.createLocal().nextBetween(0, availableRoles.size()-1));
                     selectRole(targetRole);
@@ -111,7 +111,7 @@ public class RoleSelect extends Ability {
                     }
                 },
                 POTENTIAL_ROLES.stream()
-                    .filter(TAKEN_CHECK)
+                    .filter(AVAILABLE_CHECK)
                     .toList()
             )
         );
