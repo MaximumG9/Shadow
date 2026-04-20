@@ -115,7 +115,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             tempRole = Role.load(nbt.getCompound("role"), this);
         }
 
-        if (nbt.contains("original_role", NbtElement.COMPOUND_TYPE)) {
+        if (nbt.contains("original_role", NbtElement.STRING_TYPE)) {
             this.originalRole = Roles.getRole(nbt.getString("original_role"));
         } else {
             this.originalRole = null;
