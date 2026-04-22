@@ -112,7 +112,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     public void removeAbilities(List<Ability> abilities) {
         abilities.forEach(this.abilities::remove);
     }
-    
+
     public NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putString("role", this.getRawName());
         return nbt;
@@ -189,7 +189,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
         );
 
     }
-    
+
     public void baseInit() {
         player.addToTeam(player.getShadow().playerTeam, CancelPredicates.cancelOnLostRole(this));
 
