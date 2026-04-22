@@ -1,6 +1,7 @@
 package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.roles.Role;
+import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.util.*;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
@@ -20,8 +21,7 @@ import java.util.function.Predicate;
 public class RoleSelect extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("role_select");
     private static final ItemStack ITEM_STACK;
-    private ArrayList<Role> POTENTIAL_ROLES = null;
-    private SelectionRegistry selectionRegistry;
+    private final SelectionRegistry<Role> selectionRegistry;
 
 
 
@@ -40,38 +40,21 @@ public class RoleSelect extends Ability {
         );
     }
 
-    boolean selectRole(Role role) {
-        if (!POTENTIAL_ROLES.stream()
-            .toList()
-            .contains(role)) return false;
-        this.player.originalRole = role.getRole();
-        this.player.role = role.getRole().factory.makeRole(player);
-        return true;
-    }
-
-    public RoleSelect(IndirectPlayer player, SelectionRegistry registry) {
+    public RoleSelect(IndirectPlayer player, SelectionRegistry<Role> registry) {
         super(player);
         this.selectionRegistry = registry;
     }
 
     public RoleSelect(IndirectPlayer player) {
-        this(player, new SelectionRegistry());
+        this(player, new SelectionRegistry<>());
     }
 
-    public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> availablePredicate) {
-        POTENTIAL_ROLES = potentialRoles;
-    }
-
-    public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> availablePredicate, int forceSelectionTimer) {
-        POTENTIAL_ROLES = potentialRoles;
-
+    public void setForceSelectionTimer(int forceSelectionTimer) {
         getShadow().addTickable(
             CancellableDelay.of(
                 () -> {
-                    List<Role> availableRoles = POTENTIAL_ROLES.stream()
-                        .toList();
+                    List<Role> availableRoles = selectionRegistry.get().stream().toList();
                     Role targetRole = availableRoles.get(Random.createLocal().nextBetween(0, availableRoles.size()-1));
-                    selectRole(targetRole);
                 },
                 forceSelectionTimer,
                 CancellableDelay.wrapCancelCondition(CancelPredicates.cancelOnLostAbility(this), this.player)
@@ -91,7 +74,7 @@ public class RoleSelect extends Ability {
     @Override
     public AbilityResult apply() {
         this.player.getPlayerOrThrow().openHandledScreen(
-            new DecisionScreenHandler.Factory<>(
+            new DecisionScreenHandler.Factory<Role>(
                 Text.literal("Role to select"),
                 (target, actor, _a, _b) -> {
                     if (target == null) {
@@ -99,11 +82,11 @@ public class RoleSelect extends Ability {
                         return;
                     }
 
-                    if (!selectRole(target)) {
-                        actor.sendMessage(TextUtil.red("Role not available."));
-                    }
+                    this.player.originalRole = target.getRole();
+                    this.player.role = target.getRole().factory.makeRole(player);
                 },
-                POTENTIAL_ROLES
+                selectionRegistry,
+                true
             )
         );
         return AbilityResult.NO_CLOSE;

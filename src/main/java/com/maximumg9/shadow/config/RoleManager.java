@@ -23,8 +23,6 @@ import java.util.*;
 
 public class RoleManager implements Saveable {
     private final RoleSlot[] roleSlots;
-    private HashMap<Role, IndirectPlayer> availableShadowRoles;
-    private Set<IndirectPlayer> undecidedPlayers = new HashSet<>();
     
     private final Shadow shadow;
 
@@ -63,37 +61,10 @@ public class RoleManager implements Saveable {
         
         return nbt;
     }
-    
-    public void clearRoles() {
-        shadow.getAllPlayers().forEach(
-            (player) -> {
-                player.role.deInit();
-                player.role = new Spectator(player);
-                player.role.init();
-            }
-        );
-        availableShadowRoles = new HashMap<>();
-        undecidedPlayers = new HashSet<>();
-    }
 
-    private boolean checkRoleAvailability(Role role) {
-        undecidedPlayers.removeIf((p) -> {
-            if (
-                role.getRole() == p.role.getRole()
-                && !availableShadowRoles.containsValue(p)
-                && availableShadowRoles.get(role) == null
-            ) {
-                availableShadowRoles.replace(role, p);
-                return true;
-            }
-            return false;
-        });
-        return availableShadowRoles.get(role) == null;
-    }
+
     
     public boolean pickRoles() {
-        clearRoles();
-        
         List<IndirectPlayer> participatingPlayers = new ArrayList<>(
             shadow.getOnlinePlayers().stream()
                 .filter((player -> player.participating))
@@ -108,7 +79,7 @@ public class RoleManager implements Saveable {
             return false;
         }
 
-        SelectionRegistry<Roles> selectionRegistry;
+        SelectionRegistry<Role> selectionRegistry;
 
         if (shadow.config.shadowsChooseRole) {
             selectionRegistry = new SelectionRegistry<>();
@@ -122,29 +93,16 @@ public class RoleManager implements Saveable {
             Roles role = this.roleSlots[i].pickRandomRole(shadow.random);
 
             if (selectionRegistry != null && role.faction == Faction.SHADOW) {
-                selectionRegistry.add(role);
+                selectionRegistry.add(role.factory.makeRole(null));
 
                 player.originalRole = Roles.TEMP_ROLE;
                 player.role = Roles.TEMP_ROLE.factory.makeRole(player);
                 RoleSelect a = (RoleSelect) player.role.addAbility(p -> new RoleSelect(p, selectionRegistry));
-
-                undecidedPlayers.add(player);
+                a.setForceSelectionTimer(shadow.config.gracePeriodTicks);
             } else {
                 player.originalRole = role;
                 player.role = role.factory.makeRole(player);
             }
-        }
-
-        if (shadow.config.shadowsChooseRole) {
-            shadow.getAllLivingPlayers()
-                .filter(p -> p.role.getRole() == Roles.TEMP_ROLE)
-                .forEach(p -> ((RoleSelect) p.role.getAbility(RoleSelect.ID).get())
-                        .setupSelecting(
-                            new ArrayList<>(availableShadowRoles.keySet()),
-                            this::checkRoleAvailability,
-                            shadow.config.gracePeriodTicks
-                        )
-                );
         }
 
         // Set non participating players to spectators
