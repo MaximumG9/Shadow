@@ -125,13 +125,15 @@ public class DecisionScreenHandler<V extends ItemRepresentable> extends ShadowSc
 
     @Override
     public void updateSelection(List<V> newValues) {
-        initSlots();
-
         int i = 0;
         for (V value : newValues) {
             this.inventory.setStack(i, MiscUtil.getItemWithContext(value, context));
             decisionResultHashMap.put(i, value);
             i++;
+        }
+        for (int j = newValues.size(); j < inventorySize; j++) {
+            this.inventory.setStack(j, ItemStack.EMPTY);
+            decisionResultHashMap.remove(j);
         }
     }
 

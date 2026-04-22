@@ -1,7 +1,6 @@
 package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.roles.Role;
-import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.util.*;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
@@ -14,9 +13,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class RoleSelect extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("role_select");
@@ -55,6 +52,11 @@ public class RoleSelect extends Ability {
                 () -> {
                     List<Role> availableRoles = selectionRegistry.get().stream().toList();
                     Role targetRole = availableRoles.get(Random.createLocal().nextBetween(0, availableRoles.size()-1));
+
+                    this.player.originalRole = targetRole.getRole();
+                    this.player.role = targetRole.getRole().factory.makeRole(player);
+                    this.player.role.roleInit();
+                    selectionRegistry.remove(targetRole);
                 },
                 forceSelectionTimer,
                 CancellableDelay.wrapCancelCondition(CancelPredicates.cancelOnLostAbility(this), this.player)
@@ -83,6 +85,8 @@ public class RoleSelect extends Ability {
 
                     this.player.originalRole = target.getRole();
                     this.player.role = target.getRole().factory.makeRole(player);
+                    this.player.role.roleInit();
+                    selectionRegistry.remove(target);
                 },
                 selectionRegistry,
                 true

@@ -2,10 +2,7 @@ package com.maximumg9.shadow.config;
 
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.RoleSelect;
-import com.maximumg9.shadow.roles.Faction;
-import com.maximumg9.shadow.roles.Role;
-import com.maximumg9.shadow.roles.RoleSlot;
-import com.maximumg9.shadow.roles.Roles;
+import com.maximumg9.shadow.roles.*;
 import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
@@ -96,7 +93,7 @@ public class RoleManager implements Saveable {
                 selectionRegistry.add(role.factory.makeRole(null));
 
                 player.originalRole = Roles.TEMP_ROLE;
-                player.role = Roles.TEMP_ROLE.factory.makeRole(player);
+                player.role = new TemporaryRole(player, Faction.SHADOW);
                 RoleSelect a = (RoleSelect) player.role.addAbility(p -> new RoleSelect(p, selectionRegistry));
                 a.setForceSelectionTimer(shadow.config.gracePeriodTicks);
             } else {

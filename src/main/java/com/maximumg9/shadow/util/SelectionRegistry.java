@@ -2,18 +2,19 @@ package com.maximumg9.shadow.util;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SelectionRegistry<T> {
     private final List<T> values;
-    private final List<SelectionCallback<T>> selectors = List.of();
+    private final List<SelectionCallback<T>> selectors = new ArrayList<>();
 
     public SelectionRegistry(List<T> startingList) {
         this.values = startingList;
     }
 
     public SelectionRegistry() {
-        this(List.of());
+        this(new ArrayList<>());
     }
 
     public void add(T value) {

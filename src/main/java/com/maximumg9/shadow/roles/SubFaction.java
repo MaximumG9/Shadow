@@ -27,6 +27,9 @@ public enum SubFaction {
     SHADOW(
         TextUtil.red("Shadow")
     ),
+    TEMPORARY(
+        TextUtil.gray("Temporary")
+    ),
     SPECTATOR(
         TextUtil.gray("Spectator")
     );

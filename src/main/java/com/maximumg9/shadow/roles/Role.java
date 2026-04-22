@@ -177,8 +177,20 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     }
     
     public void readNBT(NbtCompound nbt) { }
+
+    public void roleInit() {
+        this.abilities.forEach(Ability::init);
+
+        player.sendMessage(
+            Text.literal("You are " + this.aOrAn() + " ")
+                .setStyle(this.getStyle())
+                .append(this.getName()),
+            CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
+        );
+
+    }
     
-    public void init() {
+    public void baseInit() {
         player.addToTeam(player.getShadow().playerTeam, CancelPredicates.cancelOnLostRole(this));
 
         player.giveItem(
@@ -188,14 +200,14 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             MiscUtil.DELETE_WARN,
             CancelPredicates.cancelOnLostRole(this)
         );
-        
+
         ItemStack abilitySelector = Items.NETHER_STAR.getDefaultStack();
-        
+
         abilitySelector.set(
             DataComponentTypes.ITEM_NAME,
             TextUtil.withColour("Ability Star",Formatting.YELLOW)
         );
-        
+
         player.giveItem(
             NBTUtil.flagDisableAttributes(
                 NBTUtil.flagRestrictMovement(
@@ -210,14 +222,9 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             MiscUtil.DELETE_WARN,
             CancelPredicates.cancelOnLostRole(this)
         );
-        
-        player.sendMessage(
-            Text.literal("You are " + this.aOrAn() + " ")
-                .setStyle(this.getStyle())
-                .append(this.getName()),
-            CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
-        );
-        
+
+
+
         this.player.scheduleUntil(
             (p) -> {
                 p.setGlowing(true);
@@ -230,7 +237,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             },
             CancelPredicates.NEVER_CANCEL
         );
-        
+
         this.player.giveEffect(
             new StatusEffectInstance(
                 StatusEffects.HASTE,
@@ -249,7 +256,8 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             ),
             CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
         );
-        this.abilities.forEach(Ability::init);
+
+        roleInit();
     }
     
     public abstract Roles getRole();

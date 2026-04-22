@@ -254,8 +254,6 @@ public class Shadow implements Tickable {
                 player.clearPlayerData(CancelPredicates.NEVER_CANCEL);
                 player.frozen = false;
             });
-            
-            this.config.roleManager.clearRoles();
 
             this.linkRegistry.clearLinks();
             

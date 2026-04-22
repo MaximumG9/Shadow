@@ -1,5 +1,6 @@
 package com.maximumg9.shadow.roles;
 
+import com.maximumg9.shadow.roles.shadow.AbstractShadow;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
@@ -30,7 +31,7 @@ public class TemporaryRole extends Role {
     @Override
     public Faction getFaction() {return faction;}
     @Override
-    public SubFaction getSubFaction() { return SubFaction.VILLAGER_OUTLIER; }
+    public SubFaction getSubFaction() { return SubFaction.TEMPORARY; }
     @Override
     public String getRawName() { return "Temporary Role"; }
     @Override
@@ -41,6 +42,13 @@ public class TemporaryRole extends Role {
     }
     @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) { return ITEM_STACK.copy(); }
+
+    @Override
+    public void roleInit() {
+        super.roleInit();
+
+        if (faction == Faction.SHADOW) AbstractShadow.announceShadowPartners(this.player);
+    }
 
     @Override
     public void readNBT(NbtCompound nbt) {
