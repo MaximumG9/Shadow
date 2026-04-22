@@ -59,7 +59,6 @@ public class RoleSelect extends Ability {
                 forceSelectionTimer,
                 CancellableDelay.wrapCancelCondition(CancelPredicates.cancelOnLostAbility(this), this.player)
             )
-
         );
     }
 
