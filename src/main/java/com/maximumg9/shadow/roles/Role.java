@@ -95,8 +95,10 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
         return this.abilities.stream().map(Ability::getID).anyMatch(abilities::contains);
     }
 
-    public void addAbility(Ability.Factory abilityFactory) {
-        this.abilities.add(abilityFactory.create(this.player));
+    public Ability addAbility(Ability.Factory abilityFactory) {
+        Ability newAbility = abilityFactory.create(this.player);
+        this.abilities.add(newAbility);
+        return newAbility;
     }
 
     public void addAbilities(IndirectPlayer player, List<Ability.Factory> abilityFactories) {

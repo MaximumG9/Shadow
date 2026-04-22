@@ -10,6 +10,7 @@ import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.screens.RoleSlotScreenHandler;
+import com.maximumg9.shadow.util.SelectionRegistry;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -19,7 +20,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class RoleManager implements Saveable {
     private final RoleSlot[] roleSlots;
@@ -107,16 +107,27 @@ public class RoleManager implements Saveable {
             shadow.ERROR("More players than role slots, consider increasing the number of role slots in the config");
             return false;
         }
-        
+
+        SelectionRegistry<Roles> selectionRegistry;
+
+        if (shadow.config.shadowsChooseRole) {
+            selectionRegistry = new SelectionRegistry<>();
+        } else {
+            selectionRegistry = null;
+        }
+
         for (int i = 0; i < participatingPlayers.size(); i++) {
             IndirectPlayer player = participatingPlayers.get(i);
             
             Roles role = this.roleSlots[i].pickRandomRole(shadow.random);
 
-            if (shadow.config.shadowsChooseRole && role.faction == Faction.SHADOW) {
-                player.originalRole = Roles.TEMP_SHADOW;
-                player.role = Roles.TEMP_SHADOW.factory.makeRole(player);
-                availableShadowRoles.put(role.factory.makeRole(null), null);
+            if (selectionRegistry != null && role.faction == Faction.SHADOW) {
+                selectionRegistry.add(role);
+
+                player.originalRole = Roles.TEMP_ROLE;
+                player.role = Roles.TEMP_ROLE.factory.makeRole(player);
+                RoleSelect a = (RoleSelect) player.role.addAbility(p -> new RoleSelect(p, selectionRegistry));
+
                 undecidedPlayers.add(player);
             } else {
                 player.originalRole = role;
@@ -126,7 +137,7 @@ public class RoleManager implements Saveable {
 
         if (shadow.config.shadowsChooseRole) {
             shadow.getAllLivingPlayers()
-                .filter(p -> p.role.getRole() == Roles.TEMP_SHADOW)
+                .filter(p -> p.role.getRole() == Roles.TEMP_ROLE)
                 .forEach(p -> ((RoleSelect) p.role.getAbility(RoleSelect.ID).get())
                         .setupSelecting(
                             new ArrayList<>(availableShadowRoles.keySet()),

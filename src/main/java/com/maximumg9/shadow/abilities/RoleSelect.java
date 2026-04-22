@@ -1,17 +1,11 @@
 package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.roles.Role;
-import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
-import com.maximumg9.shadow.screens.ItemRepresentable;
-import com.maximumg9.shadow.util.CancellableDelay;
-import com.maximumg9.shadow.util.Delay;
-import com.maximumg9.shadow.util.MiscUtil;
-import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.*;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
@@ -20,16 +14,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 
 public class RoleSelect extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("role_select");
     private static final ItemStack ITEM_STACK;
     private ArrayList<Role> POTENTIAL_ROLES = null;
-    private Predicate<Role> AVAILABLE_CHECK;
+    private SelectionRegistry selectionRegistry;
 
 
 
@@ -50,7 +42,6 @@ public class RoleSelect extends Ability {
 
     boolean selectRole(Role role) {
         if (!POTENTIAL_ROLES.stream()
-            .filter(AVAILABLE_CHECK)
             .toList()
             .contains(role)) return false;
         this.player.originalRole = role.getRole();
@@ -58,24 +49,26 @@ public class RoleSelect extends Ability {
         return true;
     }
 
-    public RoleSelect(IndirectPlayer player) {
+    public RoleSelect(IndirectPlayer player, SelectionRegistry registry) {
         super(player);
+        this.selectionRegistry = registry;
+    }
+
+    public RoleSelect(IndirectPlayer player) {
+        this(player, new SelectionRegistry());
     }
 
     public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> availablePredicate) {
         POTENTIAL_ROLES = potentialRoles;
-        AVAILABLE_CHECK = availablePredicate;
     }
 
     public void setupSelecting(ArrayList<Role> potentialRoles, Predicate<Role> availablePredicate, int forceSelectionTimer) {
         POTENTIAL_ROLES = potentialRoles;
-        AVAILABLE_CHECK = availablePredicate;
 
         getShadow().addTickable(
             CancellableDelay.of(
                 () -> {
                     List<Role> availableRoles = POTENTIAL_ROLES.stream()
-                        .filter(AVAILABLE_CHECK)
                         .toList();
                     Role targetRole = availableRoles.get(Random.createLocal().nextBetween(0, availableRoles.size()-1));
                     selectRole(targetRole);
@@ -110,9 +103,7 @@ public class RoleSelect extends Ability {
                         actor.sendMessage(TextUtil.red("Role not available."));
                     }
                 },
-                POTENTIAL_ROLES.stream()
-                    .filter(AVAILABLE_CHECK)
-                    .toList()
+                POTENTIAL_ROLES
             )
         );
         return AbilityResult.NO_CLOSE;
