@@ -2,6 +2,7 @@ package com.maximumg9.shadow.abilities;
 
 import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.filters.Filters;
+import com.maximumg9.shadow.abilities.shadow.ToggleStrength;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
@@ -22,6 +23,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class RoleGuess extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("role_guess");
@@ -114,7 +116,7 @@ public class RoleGuess extends Ability {
                                     pl.sendMessage(TextUtil.red("You guessed your target's role incorrectly!"));
 
                                     if (this.player.role.hasAbility(ToggleStrength.ID)) {
-                                        this.player.role.removeAbility(ToggleStrength.ID);
+                                        this.player.role.removeAbility(this.player.role.getAbility(ToggleStrength.ID).get());
                                         CancellableDelay.of(
                                             () -> {
                                                 this.player.role.addAbility(this.player, ToggleStrength::new);
