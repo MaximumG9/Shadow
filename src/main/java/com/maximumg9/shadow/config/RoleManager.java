@@ -1,12 +1,13 @@
 package com.maximumg9.shadow.config;
 
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.roles.RoleSlot;
-import com.maximumg9.shadow.roles.Roles;
+import com.maximumg9.shadow.abilities.RoleSelect;
+import com.maximumg9.shadow.roles.*;
 import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.screens.RoleSlotScreenHandler;
+import com.maximumg9.shadow.util.SelectionRegistry;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -15,10 +16,7 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class RoleManager implements Saveable {
     private final RoleSlot[] roleSlots;
@@ -60,20 +58,10 @@ public class RoleManager implements Saveable {
         
         return nbt;
     }
-    
-    public void clearRoles() {
-        shadow.getAllPlayers().forEach(
-            (player) -> {
-                player.role.deInit();
-                player.role = new Spectator(player);
-                player.role.init();
-            }
-        );
-    }
+
+
     
     public boolean pickRoles() {
-        clearRoles();
-        
         List<IndirectPlayer> participatingPlayers = new ArrayList<>(
             shadow.getOnlinePlayers().stream()
                 .filter((player -> player.participating))
@@ -87,16 +75,33 @@ public class RoleManager implements Saveable {
             shadow.ERROR("More players than role slots, consider increasing the number of role slots in the config");
             return false;
         }
-        
+
+        SelectionRegistry<Role> selectionRegistry;
+
+        if (shadow.config.shadowsChooseRole) {
+            selectionRegistry = new SelectionRegistry<>();
+        } else {
+            selectionRegistry = null;
+        }
+
         for (int i = 0; i < participatingPlayers.size(); i++) {
             IndirectPlayer player = participatingPlayers.get(i);
             
             Roles role = this.roleSlots[i].pickRandomRole(shadow.random);
-            
-            player.originalRole = role;
-            player.role = role.factory.makeRole(player);
+
+            if (selectionRegistry != null && role.faction == Faction.SHADOW) {
+                selectionRegistry.add(role.factory.makeRole(null));
+
+                player.originalRole = Roles.TEMP_ROLE;
+                player.role = new TemporaryRole(player, Faction.SHADOW);
+                RoleSelect a = (RoleSelect) player.role.addAbility(p -> new RoleSelect(p, selectionRegistry));
+                a.setForceSelectionTimer(shadow.config.gracePeriodTicks);
+            } else {
+                player.originalRole = role;
+                player.role = role.factory.makeRole(player);
+            }
         }
-        
+
         // Set non participating players to spectators
         shadow.getOnlinePlayers().stream()
             .filter((player -> !player.participating))

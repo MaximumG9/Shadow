@@ -95,8 +95,10 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
         return this.abilities.stream().map(Ability::getID).anyMatch(abilities::contains);
     }
 
-    public void addAbility(IndirectPlayer player, Ability.Factory abilityFactory) {
-        this.abilities.add(abilityFactory.create(player));
+    public Ability addAbility(Ability.Factory abilityFactory) {
+        Ability newAbility = abilityFactory.create(this.player);
+        this.abilities.add(newAbility);
+        return newAbility;
     }
 
     public void addAbilities(IndirectPlayer player, List<Ability.Factory> abilityFactories) {
@@ -110,7 +112,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     public void removeAbilities(List<Ability> abilities) {
         abilities.forEach(this.abilities::remove);
     }
-    
+
     public NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putString("role", this.getRawName());
         return nbt;
@@ -175,8 +177,20 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     }
     
     public void readNBT(NbtCompound nbt) { }
-    
-    public void init() {
+
+    public void roleInit() {
+        this.abilities.forEach(Ability::init);
+
+        player.sendMessage(
+            Text.literal("You are " + this.aOrAn() + " ")
+                .setStyle(this.getStyle())
+                .append(this.getName()),
+            CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
+        );
+
+    }
+
+    public void baseInit() {
         player.addToTeam(player.getShadow().playerTeam, CancelPredicates.cancelOnLostRole(this));
 
         player.giveItem(
@@ -186,14 +200,14 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             MiscUtil.DELETE_WARN,
             CancelPredicates.cancelOnLostRole(this)
         );
-        
+
         ItemStack abilitySelector = Items.NETHER_STAR.getDefaultStack();
-        
+
         abilitySelector.set(
             DataComponentTypes.ITEM_NAME,
             TextUtil.withColour("Ability Star",Formatting.YELLOW)
         );
-        
+
         player.giveItem(
             NBTUtil.flagDisableAttributes(
                 NBTUtil.flagRestrictMovement(
@@ -208,14 +222,9 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             MiscUtil.DELETE_WARN,
             CancelPredicates.cancelOnLostRole(this)
         );
-        
-        player.sendMessage(
-            Text.literal("You are " + this.aOrAn() + " ")
-                .setStyle(this.getStyle())
-                .append(this.getName()),
-            CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
-        );
-        
+
+
+
         this.player.scheduleUntil(
             (p) -> {
                 p.setGlowing(true);
@@ -228,7 +237,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             },
             CancelPredicates.NEVER_CANCEL
         );
-        
+
         this.player.giveEffect(
             new StatusEffectInstance(
                 StatusEffects.HASTE,
@@ -247,7 +256,8 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             ),
             CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
         );
-        this.abilities.forEach(Ability::init);
+
+        roleInit();
     }
     
     public abstract Roles getRole();

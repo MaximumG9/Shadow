@@ -28,7 +28,7 @@ public class Spectator extends Role {
     }
 
     @Override
-    public void init() {
+    public void baseInit() {
         player.addToTeam(player.getShadow().playerTeam, CancelPredicates.cancelOnLostRole(this));
     }
     

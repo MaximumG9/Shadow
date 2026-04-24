@@ -38,41 +38,45 @@ public abstract class AbstractShadow extends Role {
         );
     }
 
-    @Override
-    public void init() {
-        super.init();
-        if (this.player.getShadow()
+    public static void announceShadowPartners(IndirectPlayer player) {
+        if (player.getShadow()
             .getAllLivingPlayers()
             .noneMatch(
-                (player) ->
-                    player.role.getFaction() == Faction.SHADOW &&
-                        player.playerUUID != this.player.playerUUID
+                (p) ->
+                    p.role.getFaction() == Faction.SHADOW &&
+                        p.playerUUID != player.playerUUID
             )) {
-            this.player.sendMessage(
+            player.sendMessage(
                 Text.literal("There are no other shadows (good luck!)"),
-                CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
+                CancelPredicates.cancelOnPhaseChange(player.getShadow().state.phase)
             );
         } else {
-            this.player.sendMessage(
+            player.sendMessage(
                 TextUtil.red("The other shadows are: ")
                     .append(
                         Texts.join(
-                            this.player.getShadow()
+                            player.getShadow()
                                 .getAllPlayers()
                                 .stream()
                                 .filter(
-                                    (player) ->
-                                        player.role.getFaction() == Faction.SHADOW &&
-                                            player != this.player
+                                    (p) ->
+                                        p.role.getFaction() == Faction.SHADOW &&
+                                            p != player
                                 ).map(
-                                    (player) -> player.getName().copy().setStyle(player.role.getStyle())
+                                    (p) -> p.getName().copy().setStyle(p.role.getStyle())
                                 ).toList(),
                             TextUtil.gray(", ")
                         )
                     ),
-                CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
+                CancelPredicates.cancelOnPhaseChange(player.getShadow().state.phase)
             );
         }
+    }
+
+    @Override
+    public void roleInit() {
+        super.roleInit();
+        announceShadowPartners(this.player);
     }
     
     @Override

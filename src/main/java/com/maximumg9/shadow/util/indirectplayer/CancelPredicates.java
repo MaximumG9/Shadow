@@ -13,6 +13,7 @@ public abstract class CancelPredicates {
     public static final Predicate<IndirectPlayer> IS_NIGHT = (p) -> getShadow(p.server).isNight();
     public static final Predicate<IndirectPlayer> IS_DAY = (p) -> !getShadow(p.server).isNight();
     public static final Predicate<IndirectPlayer> NEVER_CANCEL = (p) -> false;
+    public static final Predicate<IndirectPlayer> GRACE_END = (p) -> !p.getShadow().isGracePeriod();
     public static Predicate<IndirectPlayer> cancelOnPhaseChange(GamePhase currentPhase) {
         return (p) -> currentPhase != getShadow(p.server).state.phase;
     }

@@ -75,7 +75,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.name = base.getName();
         this.extraStorage = new NbtCompound();
 
-        getShadow().addTickable(Delay.instant(this.role::init));
+        getShadow().addTickable(Delay.instant(this.role::roleInit));
     }
     
     IndirectPlayer(MinecraftServer server, UUID uuid) {
@@ -84,7 +84,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.extraStorage = new NbtCompound();
         this.role = new Spectator(this);
 
-        getShadow().addTickable(Delay.instant(this.role::init));
+        getShadow().addTickable(Delay.instant(this.role::roleInit));
     }
     
     @SuppressWarnings("CopyConstructorMissesField")
@@ -142,7 +142,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             this.role = tempRole;
         } else {
             this.role = new Spectator(this);
-            getShadow().addTickable(Delay.instant(this.role::init));
+            getShadow().addTickable(Delay.instant(this.role::roleInit));
         }
     }
 

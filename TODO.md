@@ -9,3 +9,4 @@
 - [X] Poseidon's Wrath
 - [X] Grace period weapon cooldowns
 - [ ] Save ability data
+- [ ] Make typed IDs for abilities and such
