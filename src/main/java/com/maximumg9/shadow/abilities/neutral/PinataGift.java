@@ -1,6 +1,7 @@
-package com.maximumg9.shadow.abilities;
+package com.maximumg9.shadow.abilities.neutral;
 
-import com.maximumg9.shadow.Shadow;
+import com.maximumg9.shadow.abilities.Ability;
+import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
@@ -14,15 +15,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 public class PinataGift extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("pinata_gifting");
@@ -46,7 +43,7 @@ public class PinataGift extends Ability {
         );
     }
 
-    public PinataGift(IndirectPlayer player) { super(player); };
+    public PinataGift(IndirectPlayer player) { super(player); }
 
     public void onDeath(DamageSource damageSource) {
         ServerPlayerEntity attacker = (ServerPlayerEntity) damageSource.getAttacker();
@@ -94,15 +91,15 @@ public class PinataGift extends Ability {
         else giftedPlayers = List.of(randomVillager, randomShadow);
 
 
-        attacker.server.getPlayerManager().getPlayerList().forEach((player) -> {
+        attacker.server.getPlayerManager().getPlayerList().forEach((player) ->
             player.sendMessage(
                 TextUtil.withColour("The Piñata has gifted that one of ", Formatting.DARK_AQUA)
                     .append(giftedPlayers.getFirst().getName())
                     .append(" and ")
                     .append(giftedPlayers.getLast().getName())
                     .append(" is a shadow!")
-            );
-        });
+            )
+        );
     }
 
     @Override

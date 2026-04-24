@@ -2,7 +2,6 @@ package com.maximumg9.shadow.util;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,6 +16,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -39,21 +39,24 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.tick.QueryableTickScheduler;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class FakeStructureWorldAccess implements StructureWorldAccess {
     private final ServerWorld backing;
-    
-    private final List<BlockPos> portalFrames = new ArrayList<>();
+
+    private List<StrongholdGenerator.Piece> pathFromPortalToStart;
     
     public FakeStructureWorldAccess(ServerWorld backingWorld) {
         this.backing = backingWorld;
     }
     
-    public List<BlockPos> getPortalFrames() {
-        return portalFrames;
+    public List<StrongholdGenerator.Piece> getPathFromPortalToStart() {
+        return pathFromPortalToStart;
+    }
+
+    public void setPathFromPortalToStart(List<StrongholdGenerator.Piece> pathFromPortalToStart) {
+        this.pathFromPortalToStart = pathFromPortalToStart;
     }
     
     @Override
@@ -175,9 +178,6 @@ public class FakeStructureWorldAccess implements StructureWorldAccess {
     
     @Override
     public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-        if (state.isOf(Blocks.END_PORTAL_FRAME)) {
-            portalFrames.add(pos);
-        }
         return true;
     }
     

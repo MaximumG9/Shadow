@@ -2,9 +2,9 @@ package com.maximumg9.shadow.mixins.glowing;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.abilities.MoonlitMark;
-import com.maximumg9.shadow.abilities.SeeEnderEyesGlow;
-import com.maximumg9.shadow.abilities.SeeGlowing;
+import com.maximumg9.shadow.abilities.shadow.MoonlitMark;
+import com.maximumg9.shadow.abilities.villager.SeeEnderEyesGlow;
+import com.maximumg9.shadow.abilities.shadow.SeeGlowing;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

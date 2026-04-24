@@ -9,8 +9,6 @@ import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.logging.LogUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.RegistryKeys;
@@ -19,18 +17,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.structure.StrongholdGenerator;
+import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.StructureSetKeys;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.*;
-import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.util.math.random.RandomSeed;
-import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
@@ -120,26 +113,24 @@ public class LocationCommand {
             return -1;
         }
         
-        BlockBox frames = findLocation(ctx);
+        BlockBox pathBounding = findLocation(ctx);
         
-        if (frames == null) {
-            shadow.ERROR("Portal frames not found");
+        if (pathBounding == null) {
+            shadow.ERROR("Path through stronghold not found");
             return -1;
         }
-        
-        clearPortalEyes(overworld, frames);
         
         int xRange = shadow.config.worldBorderSize / 2;
         int zRange = shadow.config.worldBorderSize / 2;
         
-        frames = frames.expand(
-            xRange - frames.getBlockCountX(),
+        pathBounding = pathBounding.expand(
+            Math.max(xRange - pathBounding.getBlockCountX(), -pathBounding.getBlockCountX()/2),
             0,
-            zRange - frames.getBlockCountZ()
+            Math.max(zRange - pathBounding.getBlockCountZ(), -pathBounding.getBlockCountZ()/2)
         );
         
-        int x = overworld.getRandom().nextBetween(frames.getMinX(), frames.getMaxX());
-        int z = overworld.getRandom().nextBetween(frames.getMinZ(), frames.getMaxZ());
+        int x = overworld.getRandom().nextBetween(pathBounding.getMinX(), pathBounding.getMaxX());
+        int z = overworld.getRandom().nextBetween(pathBounding.getMinZ(), pathBounding.getMaxZ());
         
         shadow.state.currentLocation = new BlockPos(x, 0, z);
         Vec3d teleportPos = shadow.state.currentLocation.toBottomCenterPos();
@@ -194,7 +185,7 @@ public class LocationCommand {
         return 1;
     }
     
-    // Returns BlockBox containing all portal frames
+    // Returns BlockBox encompassing the path from the stronghold start to the portal room
     public static BlockBox findLocation(CommandContext<ServerCommandSource> ctx) {
         ServerCommandSource src = ctx.getSource();
         MinecraftServer server = src.getServer();
@@ -234,10 +225,18 @@ public class LocationCommand {
         );
         
         placementPositions.removeAll(shadow.state.playedStrongholdPositions);
+
+        Instant startTime = Instant.now();
+
+        src.sendMessage(
+            TextUtil.withColour("Generating stronghold", Formatting.AQUA)
+        );
         
         ChunkPos startChunkPos = placementPositions.getFirst();
+
+        FakeStructureWorldAccess fakeStructureWorldAccess = new FakeStructureWorldAccess(overworld);
         
-        StructureStart start = strongholdStructure.get().value().createStructureStart(
+        strongholdStructure.get().value().createStructureStart(
             overworld.getRegistryManager(),
             overworld.getChunkManager().getChunkGenerator(),
             overworld.getChunkManager().getChunkGenerator().getBiomeSource(),
@@ -246,80 +245,14 @@ public class LocationCommand {
             overworld.getSeed(),
             startChunkPos,
             0,
-            overworld,
+            fakeStructureWorldAccess,
             (biome) -> true
         );
         
         shadow.state.strongholdChunkPosition = startChunkPos;
-        
-        shadow.saveAsync();
-        
-        FakeStructureWorldAccess fakeStructureWorldAccess = new FakeStructureWorldAccess(overworld);
-        
-        List<StrongholdGenerator.PortalRoom> portalRooms = start.getChildren().stream()
-            .filter((piece) -> piece instanceof StrongholdGenerator.PortalRoom)
-            .map((piece) -> (StrongholdGenerator.PortalRoom) piece)
-            .toList();
-        
-        if (portalRooms.isEmpty()) {
-            shadow.ERROR("Stronghold somehow has NO PORTAL ROOMS??");
-            return null;
-        }
-        if (portalRooms.size() > 1) {
-            shadow.ERROR("Stronghold somehow has MORE THAN ONE PORTAL ROOM? Picking only first");
-        }
-        
-        StrongholdGenerator.PortalRoom portalRoom = portalRooms.getFirst();
-        
-        BlockBox firstChildBox = (start.getChildren().getFirst()).getBoundingBox();
-        BlockPos firstChildCenter = firstChildBox.getCenter();
-        BlockPos firstChildBottomCenter = new BlockPos(firstChildCenter.getX(), firstChildBox.getMinY(), firstChildCenter.getZ());
-        
-        ChunkRandom random = new ChunkRandom(new Xoroshiro128PlusPlusRandom(RandomSeed.getSeed()));
-        
-        List<Structure> generationStepStructures =
-            overworld
-                .getRegistryManager()
-                .get(RegistryKeys.STRUCTURE)
-                .stream()
-                .filter(
-                    structureType -> structureType.getFeatureGenerationStep() == strongholdStructure.get().value().getFeatureGenerationStep()
-                ).toList();
-        
-        int index = generationStepStructures.indexOf(strongholdStructure.get().value());
-        
-        Instant startTime = Instant.now();
-        
-        src.sendMessage(
-            TextUtil.withColour("Generating portal room", Formatting.AQUA)
-        );
-        
-        portalRoom.getBoundingBox().streamChunkPos().forEach(
-            chunkPos -> {
-                ChunkSectionPos bottomSection = ChunkSectionPos.from(chunkPos, overworld.getBottomSectionCoord());
-                
-                BlockPos lv3 = bottomSection.getMinPos();
-                
-                long popSeed = random.setPopulationSeed(overworld.getSeed(), lv3.getX(), lv3.getZ());
-                
-                int generationStep = strongholdStructure.get().value().getFeatureGenerationStep().ordinal();
-                
-                random.setDecoratorSeed(popSeed, index, generationStep);
-                
-                portalRoom.generate(
-                    fakeStructureWorldAccess,
-                    overworld.getStructureAccessor(),
-                    overworld.getChunkManager().getChunkGenerator(),
-                    random,
-                    new BlockBox(chunkPos.getStartX(), overworld.getBottomY(), chunkPos.getStartZ(), chunkPos.getEndX(), overworld.getTopY(), chunkPos.getEndZ()),
-                    chunkPos,
-                    firstChildBottomCenter
-                );
-            }
-        );
-        
+
         long timeInMillis = Duration.between(startTime, Instant.now()).toMillis();
-        
+
         src.sendMessage(
             TextUtil.withColour(
                 "Finished generating portal rooms in (" + timeInMillis + "ms)",
@@ -327,27 +260,13 @@ public class LocationCommand {
             )
         );
         
-        LogUtils.getLogger().info("Portal generating in {}ms", timeInMillis);
+        shadow.saveAsync();
         
-        Optional<BlockBox> possibleBox = BlockBox.encompassPositions(fakeStructureWorldAccess.getPortalFrames());
+        Optional<BlockBox> possibleBox = fakeStructureWorldAccess.getPathFromPortalToStart()
+                .stream().map(StructurePiece::getBoundingBox)
+                .reduce(BlockBox::encompass);
         
         return possibleBox.orElse(null);
-    }
-    
-    public static void clearPortalEyes(ServerWorld world, BlockBox portalBoundingBox) {
-        for (BlockPos current : BlockPos.iterate(
-            portalBoundingBox.getMinX(),
-            portalBoundingBox.getMinY(),
-            portalBoundingBox.getMinZ(),
-            portalBoundingBox.getMaxX(),
-            portalBoundingBox.getMaxY(),
-            portalBoundingBox.getMaxZ()
-        )) {
-            BlockState currentBlockState = world.getBlockState(current);
-            if (currentBlockState.isOf(Blocks.END_PORTAL_FRAME)) {
-                world.setBlockState(current, currentBlockState.with(Properties.EYE, false));
-            }
-        }
     }
     
     public static void arrangePlayersInCircle(ServerWorld world, Vec3d centerPos, List<ServerPlayerEntity> players) {

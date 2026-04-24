@@ -7,7 +7,6 @@ import com.maximumg9.shadow.modifiers.Modifiers;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
-import com.mojang.logging.LogUtils;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -182,11 +181,8 @@ public class ModifierSlotScreenHandler extends ShadowScreenHandler {
                 int modifierColumn = (slotIndex - (slotIndex / 9)) % 8;
                 int modifierIndex = modifierRow * 8 + modifierColumn;
                 if (modifierIndex >= Modifiers.values().length) return;
-                
-                Modifiers modifier = Modifiers.values()[modifierIndex];
-                LogUtils.getLogger().info(modifier.name);
-                
-                this.slot.modifier = modifier;
+
+                this.slot.modifier = Modifiers.values()[modifierIndex];
                 
                 this.buildPage();
                 this.syncState();

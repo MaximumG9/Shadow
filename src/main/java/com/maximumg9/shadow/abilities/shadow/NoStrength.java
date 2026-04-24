@@ -1,5 +1,7 @@
-package com.maximumg9.shadow.abilities;
+package com.maximumg9.shadow.abilities.shadow;
 
+import com.maximumg9.shadow.abilities.Ability;
+import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
@@ -11,8 +13,9 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-public class NoStrength extends Ability {
-    public static final Identifier ID = MiscUtil.shadowID("strength_debuff");
+import java.util.stream.Stream;
+
+public class NoStrength extends ToggleStrength {
     private static final ItemStack ITEM_STACK;
 
     static {
@@ -21,7 +24,7 @@ public class NoStrength extends Ability {
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
                 TextUtil.gray("You cannot enable Strength."),
-                PassiveText()
+                Ability.PassiveText()
             )
         );
         ITEM_STACK.set(
@@ -30,23 +33,26 @@ public class NoStrength extends Ability {
         );
     }
 
-    public NoStrength(IndirectPlayer player) { super(player); }
+
+    public NoStrength(IndirectPlayer player) {
+        super(player);
+    }
 
     @Override
     public void init() {
-        if (player.role.hasAbility(ToggleStrength.ID))
-            getShadow().addTickable(Delay.instant(() ->
-                player.role.removeAbility(ToggleStrength.ID))
-            );
+        this.getShadow().addTickable(
+            Delay.instant(() -> {
+                Stream<Ability> abilities = player.role.getAbilities().stream();
+
+                player.role.removeAbilities(abilities.filter((ability) -> ability.getID() == ID && ability != this).toList());
+            })
+        );
     }
 
     @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
         return ITEM_STACK.copy();
     }
-
-    @Override
-    public Identifier getID() { return ID; }
 
     @Override
     public AbilityResult apply() { return AbilityResult.NO_CLOSE; }

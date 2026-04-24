@@ -1,7 +1,7 @@
 package com.maximumg9.shadow.roles.shadow;
 
 import com.maximumg9.shadow.abilities.Ability;
-import com.maximumg9.shadow.abilities.PoseidonsTrident;
+import com.maximumg9.shadow.abilities.shadow.PoseidonsTrident;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;

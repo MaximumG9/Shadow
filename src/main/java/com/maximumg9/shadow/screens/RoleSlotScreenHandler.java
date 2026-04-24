@@ -7,7 +7,6 @@ import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
-import com.mojang.logging.LogUtils;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -163,7 +162,6 @@ public class RoleSlotScreenHandler extends ShadowScreenHandler {
                 if (roleIndex >= Roles.values().length) return;
                 
                 Roles role = Roles.values()[roleIndex];
-                LogUtils.getLogger().info(role.name);
                 
                 if (clickType == ClickType.LEFT) {
                     this.slot.setWeight(role, this.slot.getWeight(role) + 1);

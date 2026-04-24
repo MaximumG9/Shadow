@@ -2,9 +2,10 @@
 - [x] Advancement
 - [ ] Anti-stall
 - [ ] End regen
-- [ ] Saved rolelist
+- [X] Saved rolelist
 - [X] In role slot list set barriers for ones not in play and struct voids for others
 - [X] Role slot menu rework
 - [X] Modifiers
-- [ ] Poseidon's Wrath
-- [ ] Grace period weapon cooldowns
+- [X] Poseidon's Wrath
+- [X] Grace period weapon cooldowns
+- [ ] Save ability data

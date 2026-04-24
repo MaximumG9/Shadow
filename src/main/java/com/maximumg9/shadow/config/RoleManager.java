@@ -8,7 +8,6 @@ import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.screens.RoleSlotScreenHandler;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
-import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -132,8 +131,6 @@ public class RoleManager implements Saveable {
             slot.getName(),
             slot
         ));
-        
-        LogUtils.getLogger().info(slot.toString());
     }
     
 }

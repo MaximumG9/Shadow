@@ -1,6 +1,6 @@
 package com.maximumg9.shadow.roles.shadow;
 
-import com.maximumg9.shadow.abilities.Cull;
+import com.maximumg9.shadow.abilities.shadow.Cull;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;

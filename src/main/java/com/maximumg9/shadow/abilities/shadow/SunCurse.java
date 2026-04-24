@@ -1,5 +1,7 @@
-package com.maximumg9.shadow.abilities;
+package com.maximumg9.shadow.abilities.shadow;
 
+import com.maximumg9.shadow.abilities.Ability;
+import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
@@ -15,12 +17,11 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 
-// could this have been made as a togglestrength extension?
-public class SunCurse extends Ability {
-    public static final Identifier ID = MiscUtil.shadowID("sun_curse");
+import java.util.stream.Stream;
+
+public class SunCurse extends ToggleStrength {
     private static final ItemStack ITEM_STACK_DAY;
     private static final ItemStack ITEM_STACK_NIGHT;
 
@@ -30,7 +31,7 @@ public class SunCurse extends Ability {
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
                 TextUtil.gray("You cannot enable Strength during the day."),
-                PassiveText()
+                Ability.PassiveText()
             )
         );
         ITEM_STACK_DAY.set(
@@ -58,7 +59,7 @@ public class SunCurse extends Ability {
                     .append(TextUtil.gray(" and "))
                     .append(TextUtil.withColour("Speed II",Formatting.AQUA))
                 ,
-                AbilityText()
+                Ability.AbilityText()
             )
         );
         ITEM_STACK_NIGHT.set(
@@ -68,17 +69,23 @@ public class SunCurse extends Ability {
         NBTUtil.removeAttributeModifiers(ITEM_STACK_NIGHT);
     }
 
-    private boolean hasStrength = false;
-
     public SunCurse(IndirectPlayer player) { super(player); }
 
     @Override
     public void init() {
-        if (player.role.hasAbility(ToggleStrength.ID)) getShadow().addTickable(Delay.instant(() -> player.role.removeAbility((ToggleStrength.ID))));
-    }
+        this.getShadow().addTickable(
+            Delay.instant(() -> {
+                Stream<Ability> abilities = player.role.getAbilities().stream();
 
-    @Override
-    public boolean getToggled() { return hasStrength; }
+                player.role.removeAbilities(
+                    abilities.filter(
+                        (ability) -> ability.getID() == ID &&
+                        ability != this
+                    ).toList()
+                );
+            })
+        );
+    }
 
     @Override
     public void onDay() {
@@ -94,7 +101,6 @@ public class SunCurse extends Ability {
             StatusEffects.HASTE,
             CancelPredicates.NEVER_CANCEL
         );
-        hasStrength = false;
     }
 
     @Override
@@ -104,14 +110,9 @@ public class SunCurse extends Ability {
     }
 
     @Override
-    public Identifier getID() { return ID; }
-
-    @Override
-    public AbilityResult apply() {
-        if (!getShadow().isNight()) return AbilityResult.NO_CLOSE;
-        hasStrength = !hasStrength;
-        if (hasStrength) {
-            this.player.giveEffectNow(
+    public void onNight() {
+        if (getToggled()) {
+            this.player.giveEffect(
                 new StatusEffectInstance(
                     StatusEffects.STRENGTH,
                     -1,
@@ -119,74 +120,16 @@ public class SunCurse extends Ability {
                     false,
                     false,
                     true
-                )
+                ),
+                CancelPredicates.IS_DAY
             );
-            if (this.player.getShadow().isNight()) {
-                this.player.giveEffectNow(
-                    new StatusEffectInstance(
-                        StatusEffects.HASTE,
-                        -1,
-                        4,
-                        false,
-                        false,
-                        true
-                    )
-                );
-                this.player.giveEffectNow(
-                    new StatusEffectInstance(
-                        StatusEffects.SPEED,
-                        -1,
-                        1,
-                        false,
-                        false,
-                        true
-                    )
-                );
-            }
-
-            this.player.sendMessageNow(TextUtil.green("Turned strength on."));
-        } else {
-            this.player.removeEffectNow(StatusEffects.STRENGTH);
-
-            if (this.player.getShadow().isNight()) {
-                this.player.removeEffect(
-                    StatusEffects.HASTE,
-                    CancelPredicates.NEVER_CANCEL
-                );
-                this.player.removeEffect(
-                    StatusEffects.SPEED,
-                    CancelPredicates.NEVER_CANCEL
-                );
-                this.player.giveEffect(
-                    new StatusEffectInstance(
-                        StatusEffects.HASTE,
-                        -1,
-                        1,
-                        false,
-                        false,
-                        true
-                    ),
-                    CancelPredicates.IS_DAY
-                );
-            }
-            this.player.sendMessageNow(TextUtil.green("Turned strength off."));
         }
-        return AbilityResult.CLOSE;
     }
 
     @Override
-    public void deInit() {
-        this.player.removeEffect(
-            StatusEffects.STRENGTH,
-            CancelPredicates.NEVER_CANCEL
-        );
-        this.player.removeEffect(
-            StatusEffects.SPEED,
-            CancelPredicates.NEVER_CANCEL
-        );
-        this.player.removeEffect(
-            StatusEffects.HASTE,
-            CancelPredicates.NEVER_CANCEL
-        );
+    public AbilityResult apply() {
+        if (!getShadow().isNight()) return AbilityResult.NO_CLOSE;
+        super.apply();
+        return AbilityResult.CLOSE;
     }
 }

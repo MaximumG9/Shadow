@@ -99,12 +99,16 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
         this.abilities.add(abilityFactory.create(player));
     }
 
+    public void addAbilities(IndirectPlayer player, List<Ability.Factory> abilityFactories) {
+        abilityFactories.forEach( (a) -> this.abilities.add(a.create(player)));
+    }
+
     public void removeAbility(Ability ability) {
         this.abilities.remove(ability);
     }
 
-    public void removeAbility(Identifier ability) {
-        this.abilities.remove(this.getAbility(ability).get());
+    public void removeAbilities(List<Ability> abilities) {
+        abilities.forEach(this.abilities::remove);
     }
     
     public NbtCompound writeNBT(NbtCompound nbt) {

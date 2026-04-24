@@ -1,6 +1,8 @@
-package com.maximumg9.shadow.abilities;
+package com.maximumg9.shadow.abilities.villager;
 
 import com.maximumg9.shadow.LifeweaverHeart;
+import com.maximumg9.shadow.abilities.*;
+import com.maximumg9.shadow.abilities.shadow.*;
 import com.maximumg9.shadow.util.*;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -17,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 public class Paranoia extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("paranoia");

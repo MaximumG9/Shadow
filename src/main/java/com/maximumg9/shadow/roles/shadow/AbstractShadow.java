@@ -1,8 +1,8 @@
 package com.maximumg9.shadow.roles.shadow;
 
 import com.maximumg9.shadow.abilities.Ability;
-import com.maximumg9.shadow.abilities.SeeGlowing;
-import com.maximumg9.shadow.abilities.ToggleStrength;
+import com.maximumg9.shadow.abilities.shadow.SeeGlowing;
+import com.maximumg9.shadow.abilities.shadow.ToggleStrength;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.util.TextUtil;
@@ -18,6 +18,16 @@ import java.util.stream.Stream;
 public abstract class AbstractShadow extends Role {
     private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(ToggleStrength::new, SeeGlowing::new);
     
+    AbstractShadow(IndirectPlayer player, List<Ability.Factory> abilityFactories, boolean overrideShadowAbilities) {
+        super(
+            player,
+            Stream.concat(
+                abilityFactories.stream(),
+                overrideShadowAbilities ? Stream.of() : ABILITY_FACTORIES.stream()
+            ).toList()
+        );
+    }
+
     AbstractShadow(IndirectPlayer player, List<Ability.Factory> abilityFactories) {
         super(
             player,
@@ -27,7 +37,7 @@ public abstract class AbstractShadow extends Role {
             ).toList()
         );
     }
-    
+
     @Override
     public void init() {
         super.init();

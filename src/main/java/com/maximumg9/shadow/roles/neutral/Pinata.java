@@ -1,36 +1,20 @@
 package com.maximumg9.shadow.roles.neutral;
 
-import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.abilities.Ability;
-import com.maximumg9.shadow.abilities.GetHeart;
-import com.maximumg9.shadow.abilities.PinataGift;
-import com.maximumg9.shadow.abilities.PinataHit;
-import com.maximumg9.shadow.config.Config;
+import com.maximumg9.shadow.abilities.neutral.PinataGift;
+import com.maximumg9.shadow.abilities.neutral.PinataHit;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;
-import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
-
-import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 public class Pinata extends AbstractNeutral {
     public static final RoleFactory<Pinata> FACTORY = new Pinata.Factory();
