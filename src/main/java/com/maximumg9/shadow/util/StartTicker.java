@@ -75,7 +75,7 @@ public class StartTicker implements Tickable {
 
             player.clearPlayerData(CancelPredicates.NEVER_CANCEL);
 
-            player.role.init();
+            player.role.baseInit();
             player.modifiers.forEach(Modifier::init);
             player.sendMessage(TextUtil.gray("Your modifiers: ").append(
                 player.modifiers.isEmpty() ? TextUtil.red("None") : Texts.join(

@@ -16,7 +16,6 @@ import net.minecraft.util.Identifier;
 import java.util.stream.Stream;
 
 public class NoStrength extends ToggleStrength {
-    public static final Identifier ID = MiscUtil.shadowID("strength_debuff");
     private static final ItemStack ITEM_STACK;
 
     static {

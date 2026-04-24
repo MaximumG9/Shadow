@@ -1,6 +1,7 @@
 package com.maximumg9.shadow.screens;
 
 import com.maximumg9.shadow.util.MiscUtil;
+import com.maximumg9.shadow.util.SelectionRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 
-public class DecisionScreenHandler<V extends ItemRepresentable> extends ShadowScreenHandler {
+public class DecisionScreenHandler<V extends ItemRepresentable> extends ShadowScreenHandler implements SelectionRegistry.SelectionCallback<V> {
 
     public final HashMap<Integer, V> decisionResultHashMap = new HashMap<>();
 
@@ -31,10 +32,19 @@ public class DecisionScreenHandler<V extends ItemRepresentable> extends ShadowSc
 
     private final boolean autoClose;
 
-    protected DecisionScreenHandler(int syncId, @Nullable Callback<V> resultCallback, List<V> values, PlayerInventory playerInventory, ScreenHandlerContext context, boolean autoClose) {
-        super(getTypeForSize(values.size()), syncId, playerInventory);
+    private final SelectionRegistry<V> registry;
 
-        inventorySize = Math.ceilDiv(Math.max(values.size(), 1), 9) * 9;
+    private final ScreenHandlerContext context;
+
+    protected DecisionScreenHandler(int syncId, @Nullable Callback<V> resultCallback, SelectionRegistry<V> values, PlayerInventory playerInventory, ScreenHandlerContext context, boolean autoClose) {
+        super(getTypeForSize(values.get().size()), syncId, playerInventory);
+
+        this.context = context;
+
+        this.registry = values;
+        values.subscribe(this);
+
+        inventorySize = Math.ceilDiv(Math.max(values.get().size(), 1), 9) * 9;
         this.resultCallback = resultCallback;
 
         this.inventory = new SimpleInventory(inventorySize);
@@ -42,7 +52,7 @@ public class DecisionScreenHandler<V extends ItemRepresentable> extends ShadowSc
         initSlots();
 
         int i = 0;
-        for (V value : values) {
+        for (V value : values.get()) {
             this.inventory.setStack(i, MiscUtil.getItemWithContext(value, context));
             decisionResultHashMap.put(i, value);
             i++;
@@ -84,6 +94,11 @@ public class DecisionScreenHandler<V extends ItemRepresentable> extends ShadowSc
     }
 
     @Override
+    public void onClosed(PlayerEntity player) {
+        registry.unsubscribe(this);
+    }
+
+    @Override
     public ItemStack quickMove(PlayerEntity player, int slot) {
         return ItemStack.EMPTY;
     }
@@ -108,6 +123,20 @@ public class DecisionScreenHandler<V extends ItemRepresentable> extends ShadowSc
         return true;
     }
 
+    @Override
+    public void updateSelection(List<V> newValues) {
+        int i = 0;
+        for (V value : newValues) {
+            this.inventory.setStack(i, MiscUtil.getItemWithContext(value, context));
+            decisionResultHashMap.put(i, value);
+            i++;
+        }
+        for (int j = newValues.size(); j < inventorySize; j++) {
+            this.inventory.setStack(j, ItemStack.EMPTY);
+            decisionResultHashMap.remove(j);
+        }
+    }
+
     @FunctionalInterface
     public interface Callback<V> {
         void accept(@Nullable V value, ServerPlayerEntity player, int button, SlotActionType actionType);
@@ -117,20 +146,27 @@ public class DecisionScreenHandler<V extends ItemRepresentable> extends ShadowSc
 
         public final Callback<V> resultCallback;
         private final Text name;
-        private final List<V> values;
+        private final SelectionRegistry<V> values;
         private final boolean autoClose;
 
-        public Factory(Text name, Callback<V> resultCallback, List<V> values, boolean autoClose) {
+        public Factory(Text name, Callback<V> resultCallback, SelectionRegistry<V> values, boolean autoClose) {
             this.name = name;
             this.resultCallback = resultCallback;
             this.values = values;
             this.autoClose = autoClose;
         }
 
+        public Factory(Text name, Callback<V> resultCallback, List<V> values, boolean autoClose) {
+            this.name = name;
+            this.resultCallback = resultCallback;
+            this.values = new SelectionRegistry<>(values);
+            this.autoClose = autoClose;
+        }
+
         public Factory(Text name, Callback<V> resultCallback, List<V> values) {
             this.name = name;
             this.resultCallback = resultCallback;
-            this.values = values;
+            this.values = new SelectionRegistry<>(values);
             this.autoClose = true;
         }
 
