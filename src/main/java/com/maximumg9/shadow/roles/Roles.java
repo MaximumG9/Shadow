@@ -33,7 +33,6 @@ public enum Roles {
     ORACLE(Oracle.FACTORY),
     SPECTRE(Spectre.FACTORY),
     DUSK(Dusk.FACTORY),
-    TEMP_SHADOW(TemporaryShadow.FACTORY),
 
     PINATA(Pinata.FACTORY);
     
