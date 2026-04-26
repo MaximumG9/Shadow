@@ -32,10 +32,10 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Redirect(method = "damage", at= @At(
         value = "INVOKE",
-        target = "Lnet/minecraft/entity/LivingEntity;onDeath(Lnet/minecraft/entity/damage/DamageSource;)V",
+        target = "Lnet/minecraft/entity/LivingEntity;tryUseTotem(Lnet/minecraft/entity/damage/DamageSource;)Z",
         ordinal = 0
     ))
-    public void deathPrevention(LivingEntity instance, DamageSource damageSource) {
+    public boolean deathPrevention(LivingEntity instance, DamageSource damageSource) {
         if (instance.isPlayer()) {
             Shadow shadow = getShadow(instance.getServer());
             IndirectPlayer indirect = shadow.getIndirect((ServerPlayerEntity) instance);
@@ -60,11 +60,12 @@ public abstract class LivingEntityMixin extends Entity {
                 instance.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1));
                 instance.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 0));
                 instance.getWorld().sendEntityStatus(this, EntityStatuses.USE_TOTEM_OF_UNDYING);
+                return true;
             } else {
-                instance.onDeath(damageSource);
+                return instance.tryUseTotem(damageSource);
             }
         } else {
-            instance.onDeath(damageSource);
+            return instance.tryUseTotem(damageSource);
         }
     }
 }
