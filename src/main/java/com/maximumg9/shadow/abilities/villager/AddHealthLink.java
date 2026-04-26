@@ -396,7 +396,7 @@ public class AddHealthLink extends Ability {
 
             if(p.role.getFaction() == Faction.SHADOW) return false;
 
-            float fractionDamage = (newHealth - oldHealth) / damageTarget.getMaxHealth();
+            float fractionDamage = newHealth / damageTarget.getMaxHealth() - this.health;
 
             this.health += fractionDamage;
 
