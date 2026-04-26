@@ -10,6 +10,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -119,10 +121,12 @@ public abstract class PersistentProjectileMixin extends ProjectileEntity {
                 1.0f
             );
 
-            return Float.MAX_VALUE;
+            if(target instanceof EnderDragonEntity || target instanceof WitherEntity) {
+                return EnchantmentHelper.getDamage(world, stack, target, damageSource, baseDamage);
+            } else {
+                return Float.MAX_VALUE;
+            }
         }
-        
-        
         return baseDamage;
     }
     
