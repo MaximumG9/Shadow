@@ -28,6 +28,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -99,8 +100,11 @@ public class AddHealthLink extends Ability {
                         clicker.sendMessage(TextUtil.red("You need to select a player to link to"));
                         return;
                     }
-                    IndirectPlayer iClicker = getShadow().getIndirect(clicker);
-                    this.link(target, iClicker);
+                    if(target.equals(this.player)) {
+                        clicker.sendMessage(TextUtil.red("You must link with a player other than yourself"));
+                        return;
+                    }
+                    this.link(target, this.player);
                     clicker.sendMessage(
                         TextUtil.green("Successfully linked to ")
                             .append(target.getName())
@@ -121,7 +125,7 @@ public class AddHealthLink extends Ability {
                                 p.role.getFaction() == Faction.VILLAGER || p.role.getFaction() == Faction.NEUTRAL
                         );
                     }
-                    giveEffects(iClicker, target);
+                    giveEffects(this.player, target);
                 },
                 this.getShadow().indirectPlayerManager
                     .getAllPlayers()
@@ -195,6 +199,9 @@ public class AddHealthLink extends Ability {
     }
 
     private void link(IndirectPlayer player1, IndirectPlayer player2) {
+        if(player1.equals(player2)) {
+            return;
+        }
         if(player1.link == null && player2.link == null) {
             Link link = new Link(getShadow(), player1, player2);
             player1.link = link;
@@ -215,14 +222,7 @@ public class AddHealthLink extends Ability {
                 player2.link.players.add(player1);
             }
 
-            oldLink.syncHealths(
-                new DamageSource(
-                    MiscUtil.getDamageType(
-                        player1.getShadow().getServer(),
-                        DamageTypes.GENERIC
-                    )
-                )
-            );
+            oldLink.syncHealths();
         }
     }
 
@@ -244,14 +244,7 @@ public class AddHealthLink extends Ability {
         public Link(Shadow shadow, IndirectPlayer... players) {
             this.shadow = shadow;
             this.players = new ArrayList<>(List.of(players));
-            syncHealths(
-                new DamageSource(
-                    MiscUtil.getDamageType(
-                        shadow.getServer(),
-                        DamageTypes.GENERIC
-                    )
-                )
-            );
+            syncHealths();
             shadow.linkRegistry.addLink(this);
         }
 
@@ -293,14 +286,8 @@ public class AddHealthLink extends Ability {
             Link newLink = combine(link1,link2);
             propagateNewLink(link1,newLink);
             propagateNewLink(link2,newLink);
-            newLink.syncHealths(
-                newLink
-                    .shadow
-                    .getServer()
-                    .getOverworld()
-                    .getDamageSources()
-                    .generic()
-            );
+            newLink.syncHealths();
+            newLink.shadow.linkRegistry.addLink(newLink);
             Link.destroyLink(link1);
             Link.destroyLink(link2);
         }
@@ -335,29 +322,55 @@ public class AddHealthLink extends Ability {
             link.shadow.linkRegistry.removeLink(link);
         }
 
+        public void syncHealths() {
+            this.syncHealths(
+                new DamageSource(
+                    MiscUtil.getDamageType(
+                        this.shadow.getServer(),
+                        DamageTypes.MAGIC
+                    )
+                )
+            );
+        }
+
         public void syncHealths(DamageSource source) {
             players.stream()
                 .filter(
                     (p) ->
                         p.role.getFaction() != Faction.SHADOW
-                )
-                .forEach(
-                    (player) ->
-                        player.scheduleUntil(
+                ).forEach(
+                    (p) ->
+                        p.scheduleUntil(
                             (sPlayer) -> {
                                 float newHealth = sPlayer.getMaxHealth() * this.health;
                                 setHealthNoLifeLink(sPlayer,newHealth);
-                                if (sPlayer.isDead()) {
-                                    if (!sPlayer.tryUseTotem(source)) {
-                                        sPlayer.onDeath(source);
-                                    }
-                                }
                             },
-                            CancelPredicates.cancelOnPhaseChange(
-                                player.getShadow().state.phase
-                            )
+                            CancelPredicates
+                                .cancelOnPhaseChange(
+                                    this.shadow.state.phase
+                                )
                         )
                 );
+            // if any singular player was able to use the totem
+            // they will have triggered a health update and then a syncHealths
+            // making everyone all on the correct health after a totem was used
+            // HOWEVER IF THESE WERE COMBINED, the health would be set to 0
+            // for all people iterated after the totem user
+            players.stream()
+                .filter(
+                    (p) ->
+                        p.role.getFaction() != Faction.SHADOW
+                )
+                .filter((p) -> p.getPlayer().isPresent())
+                .forEach((p) -> {
+                    ServerPlayerEntity sPlayer = p.getPlayerOrThrow();
+                    if(sPlayer.isDead()) {
+                        if(!sPlayer.tryUseTotem(source)) {
+                            sPlayer.playSound(SoundEvents.ENTITY_PLAYER_DEATH);
+                            sPlayer.onDeath(source);
+                        }
+                    }
+                });
 
             if(this.health <= 0) {
                 destroyLink(this);
@@ -388,14 +401,10 @@ public class AddHealthLink extends Ability {
             this.health += fractionDamage;
 
             if(source == null) {
-                source = damageTarget.getDamageSources().magic();
+                this.syncHealths();
+            } else {
+                this.syncHealths(source);
             }
-
-            // Guys is life linking magical?
-            // Should I use the magic damage type???
-
-            syncHealths(source);
-
             return true;
         }
     }

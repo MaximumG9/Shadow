@@ -25,7 +25,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "setHealth",cancellable = true,at=@At("HEAD"))
     public void hookSetHealth(float health, CallbackInfo ci) {
-        // It incorrectly believe it can never be a ServerPlayerEntity
+        // It incorrectly believes it can never be a ServerPlayerEntity
         //noinspection ConstantValue
         if(!((Object) this instanceof ServerPlayerEntity player)) return;
         if(player.server == null) return;

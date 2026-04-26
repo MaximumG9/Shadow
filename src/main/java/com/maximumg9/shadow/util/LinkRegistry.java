@@ -4,8 +4,6 @@ import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.villager.AddHealthLink;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -78,13 +76,6 @@ public class LinkRegistry implements Saveable {
             }
         }
 
-        link.syncHealths(
-            new DamageSource(
-                MiscUtil.getDamageType(
-                    shadow.getServer(),
-                    DamageTypes.GENERIC
-                )
-            )
-        );
+        link.syncHealths();
     }
 }
