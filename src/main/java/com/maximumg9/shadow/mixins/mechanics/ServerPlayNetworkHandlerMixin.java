@@ -90,14 +90,14 @@ public abstract class ServerPlayNetworkHandlerMixin {
         
         IndirectPlayer p = shadow.getIndirect(this.player);
         if (p.role.getFaction() == Faction.SPECTATOR && !this.player.hasPermissionLevel(3)) {
-            p.sendMessageNow(
+            p.sendMessageOrThrow(
                 TextUtil.withColour("You are a spectator so you cannot chat", Formatting.YELLOW)
             );
             ci.cancel();
             return;
         }
         if (p.chatMessageCooldown > 0) {
-            p.sendMessageNow(
+            p.sendMessageOrThrow(
                 TextUtil.gray("You are still on chat cooldown for ")
                     .append(
                         TextUtil.withColour(

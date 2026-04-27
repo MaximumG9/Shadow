@@ -51,6 +51,8 @@ import java.util.function.Predicate;
 /**
  * This is meant to represent a player who existed at some time, even if the player does not exist now
  */
+
+// @TODO impliment equals and hashcode for indirectplayer
 public class IndirectPlayer implements ItemRepresentable, Saveable {
     public final UUID playerUUID;
     final MinecraftServer server;
@@ -209,6 +211,17 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         }
         return this.name;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if(!(object instanceof IndirectPlayer)) return false;
+        else return this.playerUUID.equals(((IndirectPlayer) object).playerUUID);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.playerUUID.hashCode();
+    }
     
     public ServerPlayerEntity getPlayerOrThrow() throws OfflinePlayerException {
         return this.getPlayer()
@@ -233,7 +246,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         return thisPlayer.get().squaredDistanceTo(otherPlayer.get());
     }
     
-    public void damageNow(DamageSource source, float amount) {
+    public void damageOrThrow(DamageSource source, float amount) {
         this.getPlayerOrThrow()
             .damage(source, amount);
     }
@@ -245,7 +258,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
     
-    public void giveEffectNow(StatusEffectInstance effect) {
+    public void giveEffectOrThrow(StatusEffectInstance effect) {
         this.getPlayerOrThrow()
             .addStatusEffect(effect);
     }
@@ -257,7 +270,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
     
-    public void removeEffectNow(RegistryEntry<StatusEffect> effectType) {
+    public void removeEffectOrThrow(RegistryEntry<StatusEffect> effectType) {
         this.getPlayerOrThrow().removeStatusEffect(effectType);
     }
     
@@ -273,7 +286,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
     
-    public boolean giveItemNow(ItemStack stack, BiConsumer<ServerPlayerEntity, ItemStack> ifFail) {
+    public boolean giveItemOrThrow(ItemStack stack, BiConsumer<ServerPlayerEntity, ItemStack> ifFail) {
         ServerPlayerEntity player = this.getPlayerOrThrow();
         
         boolean succeeded = player
@@ -295,7 +308,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
     
-    public void setTitleTimesNow(int fadeInTicks, int stayTicks, int fadeOutTicks) {
+    public void setTitleTimesOrThrow(int fadeInTicks, int stayTicks, int fadeOutTicks) {
         TitleFadeS2CPacket packet = new TitleFadeS2CPacket(fadeInTicks, stayTicks, fadeOutTicks);
         
         this.getPlayerOrThrow()
@@ -310,7 +323,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             , cancelCondition);
     }
     
-    public void sendTitleNow(Text title) throws OfflinePlayerException {
+    public void sendTitleOrThrow(Text title) throws OfflinePlayerException {
         TitleS2CPacket packet = new TitleS2CPacket(title);
         this.getPlayerOrThrow()
             .networkHandler.sendPacket(packet);
@@ -328,7 +341,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             , cancelCondition);
     }
     
-    public void sendSubtitleNow(Text subtitle) throws OfflinePlayerException {
+    public void sendSubtitleOrThrow(Text subtitle) throws OfflinePlayerException {
         SubtitleS2CPacket packet = new SubtitleS2CPacket(subtitle);
         this.getPlayerOrThrow()
             .networkHandler.sendPacket(packet);
@@ -340,7 +353,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             , cancelCondition);
     }
     
-    public void sendMessageNow(Text chatMessage) throws OfflinePlayerException {
+    public void sendMessageOrThrow(Text chatMessage) throws OfflinePlayerException {
         this.getPlayerOrThrow()
             .sendMessage(chatMessage);
     }
@@ -351,7 +364,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             , cancelCondition);
     }
     
-    public void playSoundNow(RegistryEntry.Reference<SoundEvent> event, SoundCategory category, float volume, float pitch) throws OfflinePlayerException {
+    public void playSoundOrThrow(RegistryEntry.Reference<SoundEvent> event, SoundCategory category, float volume, float pitch) throws OfflinePlayerException {
         ServerPlayerEntity player = this.getPlayerOrThrow();
         player.networkHandler.sendPacket(
                 new PlaySoundFromEntityS2CPacket(
@@ -390,7 +403,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
 
-    public void addToTeamNow(Team team) {
+    public void addToTeamOrThrow(Team team) {
         this.server.getScoreboard().addScoreHolderToTeam(
             getPlayerOrThrow().getNameForScoreboard(),
             team
@@ -412,7 +425,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
 
-    public void spoofAddPlayersToTeamNow(List<IndirectPlayer> targets, Team team) {
+    public void spoofAddPlayersToTeamOrThrow(List<IndirectPlayer> targets, Team team) {
         targets.forEach((t) ->
            getPlayerOrThrow().networkHandler.sendPacket(
                 TeamS2CPacket.changePlayerTeam(team,
@@ -423,7 +436,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
 
-    public void sendOverlayNow(Text chatMessage) throws OfflinePlayerException {
+    public void sendOverlayOrThrow(Text chatMessage) throws OfflinePlayerException {
         this.getPlayerOrThrow()
             .sendMessage(chatMessage, true);
     }

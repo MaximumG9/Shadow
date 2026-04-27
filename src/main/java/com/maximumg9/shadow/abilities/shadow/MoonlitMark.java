@@ -68,7 +68,7 @@ public class MoonlitMark extends Ability {
 
     @Override
     public void deInit() {
-        if (this.player.getPlayer().isPresent() && markedTarget != null) this.player.spoofAddPlayersToTeamNow(List.of(markedTarget), getShadow().playerTeam);
+        if (this.player.getPlayer().isPresent() && markedTarget != null) this.player.spoofAddPlayersToTeamOrThrow(List.of(markedTarget), getShadow().playerTeam);
         super.deInit();
     }
 
@@ -77,7 +77,7 @@ public class MoonlitMark extends Ability {
     }
 
     private void colorMarkedPlayer(IndirectPlayer p) {
-        this.player.spoofAddPlayersToTeamNow(List.of(p), getShadow().markedTeam);
+        this.player.spoofAddPlayersToTeamOrThrow(List.of(p), getShadow().markedTeam);
     }
 
     public void confirmTargetKill(boolean validKill) {
@@ -133,7 +133,7 @@ public class MoonlitMark extends Ability {
     public void onAnyDeath(DamageSource damageSource, @NotNull IndirectPlayer deadPlayer) {
         if (deadPlayer == markedTarget) {
             if (getShadow().isNight()) {
-                markedTarget.addToTeamNow(this.getShadow().playerTeam);
+                markedTarget.addToTeamOrThrow(this.getShadow().playerTeam);
                 if(damageSource.getAttacker() == null || !damageSource.getAttacker().isPlayer()) {
                     confirmTargetKill(true);
                 } else {
@@ -163,7 +163,7 @@ public class MoonlitMark extends Ability {
         ServerPlayerEntity p = this.player.getPlayerOrThrow();
 
         if(usedToday) {
-            this.player.sendMessageNow(TextUtil.red("Cannot mark more than one player per day."));
+            this.player.sendMessageOrThrow(TextUtil.red("Cannot mark more than one player per day."));
             return AbilityResult.CLOSE;
         }
 
@@ -186,7 +186,7 @@ public class MoonlitMark extends Ability {
         }
 
         if (target == null) {
-            this.player.sendMessageNow(TextUtil.red("No players in range."));
+            this.player.sendMessageOrThrow(TextUtil.red("No players in range."));
             return AbilityResult.CLOSE;
         }
 
@@ -195,7 +195,7 @@ public class MoonlitMark extends Ability {
         colorMarkedPlayer(indirectTarget);
         markedTarget = indirectTarget;
 
-        this.player.sendMessageNow(TextUtil.green(markedTarget.getName().getString()).append(" was successfully marked."));
+        this.player.sendMessageOrThrow(TextUtil.green(markedTarget.getName().getString()).append(" was successfully marked."));
         usedToday = true;
         return AbilityResult.CLOSE;
     }
@@ -214,7 +214,7 @@ public class MoonlitMark extends Ability {
         if (targetKilled && possiblePlayer.isPresent()) {
             StatusEffectInstance possibleStrength = possiblePlayer.get().getStatusEffect(StatusEffects.STRENGTH);
             if(possibleStrength != null && possibleStrength.getAmplifier() == 0) {
-                this.player.giveEffectNow(
+                this.player.giveEffectOrThrow(
                     new StatusEffectInstance(
                         StatusEffects.STRENGTH,
                         -1,

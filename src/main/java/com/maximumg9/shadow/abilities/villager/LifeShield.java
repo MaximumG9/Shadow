@@ -56,7 +56,7 @@ public class LifeShield extends Ability {
     }
 
     private void colorShieldedPlayers(IndirectPlayer p) {
-        this.player.spoofAddPlayersToTeamNow(List.of(p), getShadow().shieldedTeam);
+        this.player.spoofAddPlayersToTeamOrThrow(List.of(p), getShadow().shieldedTeam);
     }
 
     public LifeShield(IndirectPlayer player) { super(player); }
@@ -187,15 +187,15 @@ public class LifeShield extends Ability {
                             ));
                         }
 
-                        this.player.sendMessageNow(
+                        this.player.sendMessageOrThrow(
                             TextUtil.green(target.getName().getString())
                                 .append(" was shielded. Your max health is now ")
                                 .append(TextUtil.hearts((float) Math.floor(actor.getMaxHealth() / 2)))
                                 .append(TextUtil.green("."))
                         );
                     } else {
-                        this.player.spoofAddPlayersToTeamNow(List.of(shieldedPlayer), getShadow().playerTeam);
-                        this.player.sendMessageNow(
+                        this.player.spoofAddPlayersToTeamOrThrow(List.of(shieldedPlayer), getShadow().playerTeam);
+                        this.player.sendMessageOrThrow(
                             TextUtil.green("Changed shield target from ")
                                 .append(shieldedPlayer.getName().getString())
                                 .append(" to ")

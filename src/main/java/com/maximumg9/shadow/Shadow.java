@@ -210,7 +210,7 @@ public class Shadow implements Tickable {
         if (config.debug) {
             this.getOnlinePlayers()
                 .forEach(
-                    (player) -> player.sendMessageNow(messageAsText)
+                    (player) -> player.sendMessageOrThrow(messageAsText)
                 );
         } else {
             this.getOnlinePlayers().stream()
@@ -219,7 +219,7 @@ public class Shadow implements Tickable {
                     player.getPlayerOrThrow().hasPermissionLevel(3)
                 )
                 .forEach(
-                    (player) -> player.sendMessageNow(messageAsText)
+                    (player) -> player.sendMessageOrThrow(messageAsText)
                 );
         }
     }

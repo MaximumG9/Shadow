@@ -34,7 +34,7 @@ public class MessageCommandMixin {
         
         IndirectPlayer player = shadow.getIndirect(p);
         if (player.role.getFaction() == Faction.SPECTATOR && !p.hasPermissionLevel(3)) {
-            player.sendMessageNow(
+            player.sendMessageOrThrow(
                 TextUtil.withColour(
                     "You are a spectator so you cannot message",
                     Formatting.YELLOW
@@ -45,7 +45,7 @@ public class MessageCommandMixin {
         }
         
         if (player.chatMessageCooldown > 0) {
-            player.sendMessageNow(
+            player.sendMessageOrThrow(
                 TextUtil.gray("You are still on chat cooldown for ")
                     .append(
                         TextUtil.withColour(

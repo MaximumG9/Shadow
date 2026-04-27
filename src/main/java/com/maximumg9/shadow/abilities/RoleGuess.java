@@ -26,7 +26,6 @@ import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class RoleGuess extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("role_guess");
@@ -122,7 +121,7 @@ public class RoleGuess extends Ability {
                                 } else {
                                     pl.sendMessage(TextUtil.red("You guessed your target's role incorrectly!"));
                                     if (pl.getMaxHealth() <= 6) {
-                                        this.player.damageNow(
+                                        this.player.damageOrThrow(
                                             pl.getServerWorld()
                                                 .getDamageSources()
                                                 .magic(),

@@ -44,13 +44,13 @@ public class QuickStart extends Modifier {
         triggered = true;
         
         ItemStack pickaxe = new ItemStack(Items.STONE_PICKAXE);
-        player.giveItemNow(pickaxe, MiscUtil.DELETE_WARN);
+        player.giveItemOrThrow(pickaxe, MiscUtil.DELETE_WARN);
         
         ItemStack axe = new ItemStack(Items.STONE_AXE);
-        player.giveItemNow(axe, MiscUtil.DELETE_WARN);
+        player.giveItemOrThrow(axe, MiscUtil.DELETE_WARN);
         
         ItemStack shovel = new ItemStack(Items.STONE_SHOVEL);
-        player.giveItemNow(shovel, MiscUtil.DELETE_WARN);
+        player.giveItemOrThrow(shovel, MiscUtil.DELETE_WARN);
     }
     @Override
     public Style getStyle() { return STYLE; }
