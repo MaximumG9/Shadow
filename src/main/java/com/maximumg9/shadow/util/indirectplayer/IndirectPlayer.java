@@ -51,8 +51,6 @@ import java.util.function.Predicate;
 /**
  * This is meant to represent a player who existed at some time, even if the player does not exist now
  */
-
-// @TODO impliment equals and hashcode for indirectplayer
 public class IndirectPlayer implements ItemRepresentable, Saveable {
     public final UUID playerUUID;
     final MinecraftServer server;
