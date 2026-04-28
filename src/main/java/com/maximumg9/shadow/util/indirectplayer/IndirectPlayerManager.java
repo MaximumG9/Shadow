@@ -8,6 +8,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.ArrayListDeque;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,8 +114,9 @@ public class IndirectPlayerManager implements Tickable, Saveable {
             .toList();
     }
 
+    @Nullable
     public IndirectPlayer get(UUID uuid) {
-        return this.indirectPlayers.computeIfAbsent(uuid, (Uuid) -> new IndirectPlayer(server, Uuid));
+        return this.indirectPlayers.get(uuid);
     }
 
     public IndirectPlayer getIndirect(ServerPlayerEntity base) {

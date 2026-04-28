@@ -188,7 +188,7 @@ public class LifeShield extends Ability {
                         }
 
                         this.player.sendMessageOrThrow(
-                            TextUtil.green(target.getName().getString())
+                            TextUtil.green(target.getLiteralName())
                                 .append(" was shielded. Your max health is now ")
                                 .append(TextUtil.hearts((float) Math.floor(actor.getMaxHealth() / 2)))
                                 .append(TextUtil.green("."))
@@ -197,9 +197,9 @@ public class LifeShield extends Ability {
                         this.player.spoofAddPlayersToTeamOrThrow(List.of(shieldedPlayer), getShadow().playerTeam);
                         this.player.sendMessageOrThrow(
                             TextUtil.green("Changed shield target from ")
-                                .append(shieldedPlayer.getName().getString())
+                                .append(shieldedPlayer.getLiteralName())
                                 .append(" to ")
-                                .append(target.getName().getString())
+                                .append(target.getLiteralName())
                                 .append(".")
                         );
                     }

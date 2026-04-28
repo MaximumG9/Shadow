@@ -3,6 +3,7 @@ package com.maximumg9.shadow.util.indirectplayer;
 
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.villager.AddHealthLink;
+import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.modifiers.Modifier;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
@@ -64,15 +65,16 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     public int chatMessageCooldown;
     public NbtCompound extraStorage;
     private int offlineTicks = Integer.MAX_VALUE;
-    private Text name = null;
+    private String name = null;
     @Nullable
     public AddHealthLink.Link link = null;
+    private final HashMap<IndirectPlayer, InternalTeam> teamViewOverrides = new HashMap<>();
     
     public IndirectPlayer(ServerPlayerEntity base) {
         this.playerUUID = base.getUuid();
         this.server = base.server;
         this.role = new Spectator(this);
-        this.name = base.getName();
+        this.name = base.getNameForScoreboard();
         this.extraStorage = new NbtCompound();
 
         getShadow().addTickable(Delay.instant(this.role::roleInit));
@@ -95,7 +97,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.modifiers = src.modifiers;
         this.participating = src.participating;
         this.frozen = src.frozen;
-        this.name = src.getName();
+        this.name = src.getLiteralName();
         this.chatMessageCooldown = src.chatMessageCooldown;
         this.originalRole = src.originalRole;
         this.offlineTicks = src.offlineTicks;
@@ -109,6 +111,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     public void readNBT(NbtCompound nbt) {
         this.frozen = nbt.getBoolean("frozen");
         this.participating = nbt.getBoolean("participating");
+        this.name = nbt.getString("name");
         Role tempRole = null;
 
         if (nbt.contains("role", NbtElement.COMPOUND_TYPE)) {
@@ -135,6 +138,17 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             }
         }
 
+        NbtCompound teamViewOverrides = nbt.getCompound("team_view_overrides");
+        teamViewOverrides.getKeys()
+            .forEach(
+                (playerUUID) -> {
+                    this.teamViewOverrides.put(
+                        getShadow().indirectPlayerManager.get(UUID.fromString(playerUUID)),
+                        InternalTeam.getTeam(teamViewOverrides.getString(playerUUID))
+                    );
+                }
+            );
+
         this.offlineTicks = nbt.getInt("offline_ticks");
         this.extraStorage = nbt.getCompound("extra_storage");
 
@@ -154,6 +168,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         nbt.putUuid("playerUUID", this.playerUUID);
         nbt.putBoolean("frozen", this.frozen);
         nbt.putBoolean("participating", this.participating);
+        nbt.putString("name", this.name);
 
         nbt.put("role", this.role.writeNBT(new NbtCompound()));
 
@@ -164,6 +179,19 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         NbtList list = new NbtList();
         list.addAll(this.modifiers.stream().map(modifier -> modifier.writeNBT(new NbtCompound())).toList());
         nbt.put("modifiers", list);
+
+        NbtCompound teamViewOverrides = new NbtCompound();
+
+        this.teamViewOverrides.forEach(
+            (player, team) -> {
+                teamViewOverrides.putString(
+                    player.playerUUID.toString(),
+                    team.teamName
+                );
+            }
+        );
+
+        nbt.put("team_view_overrides", teamViewOverrides);
         
         nbt.putInt("offline_ticks", this.offlineTicks);
         nbt.put("extra_storage", this.extraStorage);
@@ -185,29 +213,27 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         return this.offlineTicks;
     }
     
-    public Text getName() {
-        this.getPlayer().ifPresent((psPlayer) -> this.name = psPlayer.getName());
+    public String getLiteralName() {
+        this.getPlayer().ifPresent((psPlayer) -> this.name = psPlayer.getNameForScoreboard());
         if (name == null) {
             UserCache cache = this.server.getUserCache();
             if (cache != null) {
                 Optional<GameProfile> profile = cache.getByUuid(this.playerUUID);
                 this.name = profile.map(
-                    gameProfile -> Text.literal(
-                        gameProfile.getName()
-                    )
+                    GameProfile::getName
                 ).orElse(
-                    Text.literal(
-                        playerUUID.toString()
-                    )
-                );
-            } else {
-                this.name = Text.literal(
                     playerUUID.toString()
                 );
+            } else {
+                this.name = playerUUID.toString();
             }
-            
+
         }
         return this.name;
+    }
+
+    public Text getName() {
+        return Text.of(getLiteralName());
     }
 
     @Override
@@ -408,13 +434,20 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
 
+    public void addToTeamNow(InternalTeam team) {
+        this.server.getScoreboard().addScoreHolderToTeam(
+            this.name,
+            server.getScoreboard().getTeam(team.teamName)
+        );
+    }
+
     public void spoofAddPlayersToTeam(List<IndirectPlayer> targets, Team team, Predicate<IndirectPlayer> cancelCondition) {
         scheduleUntil(
             (p) ->
                 targets.forEach((t) ->
                     p.networkHandler.sendPacket(
                         TeamS2CPacket.changePlayerTeam(team,
-                            t.getName().getString(),
+                            t.getLiteralName(),
                             TeamS2CPacket.Operation.ADD
                     )
                 )
@@ -427,7 +460,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         targets.forEach((t) ->
            getPlayerOrThrow().networkHandler.sendPacket(
                 TeamS2CPacket.changePlayerTeam(team,
-                    t.getName().getString(),
+                    t.getLiteralName(),
                     TeamS2CPacket.Operation.ADD
                 )
             )
@@ -525,7 +558,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     
     public class OfflinePlayerException extends IllegalStateException {
         private OfflinePlayerException() {
-            super(IndirectPlayer.this.getName().getLiteralString() + " could not execute the task as they are not online");
+            super(IndirectPlayer.this.getLiteralName() + " could not execute the task as they are not online");
         }
     }
 }

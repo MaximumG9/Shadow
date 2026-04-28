@@ -3,6 +3,7 @@ package com.maximumg9.shadow.roles;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.Tickable;
 import com.maximumg9.shadow.abilities.Ability;
+import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.items.AbilityStar;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.ItemRepresentable;
@@ -191,7 +192,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     }
 
     public void baseInit() {
-        player.addToTeam(player.getShadow().playerTeam, CancelPredicates.cancelOnLostRole(this));
+        player.addToTeamNow(InternalTeam.PLAYER);
 
         player.giveItem(
             this.player.getShadow().config.food.foodGiver.apply(

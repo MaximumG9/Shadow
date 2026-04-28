@@ -195,7 +195,7 @@ public class MoonlitMark extends Ability {
         colorMarkedPlayer(indirectTarget);
         markedTarget = indirectTarget;
 
-        this.player.sendMessageOrThrow(TextUtil.green(markedTarget.getName().getString()).append(" was successfully marked."));
+        this.player.sendMessageOrThrow(TextUtil.green(markedTarget.getLiteralName()).append(" was successfully marked."));
         usedToday = true;
         return AbilityResult.CLOSE;
     }
