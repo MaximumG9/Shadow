@@ -56,7 +56,7 @@ public class LifeShield extends Ability {
     }
 
     private void colorShieldedPlayers(IndirectPlayer p) {
-        this.player.spoofAddPlayersToTeamOrThrow(List.of(p), getShadow().shieldedTeam);
+        this.player.addTeamViewOverrides(List.of(p), getShadow().shieldedTeam);
     }
 
     public LifeShield(IndirectPlayer player) { super(player); }
@@ -194,7 +194,7 @@ public class LifeShield extends Ability {
                                 .append(TextUtil.green("."))
                         );
                     } else {
-                        this.player.spoofAddPlayersToTeamOrThrow(List.of(shieldedPlayer), getShadow().playerTeam);
+                        this.player.addTeamViewOverrides(List.of(shieldedPlayer), getShadow().playerTeam);
                         this.player.sendMessageOrThrow(
                             TextUtil.green("Changed shield target from ")
                                 .append(shieldedPlayer.getLiteralName())

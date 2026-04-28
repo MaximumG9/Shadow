@@ -25,7 +25,7 @@ public class SeeGlowing extends Ability {
         ITEM_STACK.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                TextUtil.gray("See glowing during the night, when others can't."),
+                TextUtil.gray("See playervisuals during the night, when others can't."),
                 PassiveText()
             )
         );

@@ -417,23 +417,6 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             , cancelCondition);
     }
 
-    public void addToTeam(Team team, Predicate<IndirectPlayer> cancelCondition) {
-        scheduleUntil(
-            (p) -> this.server.getScoreboard().addScoreHolderToTeam(
-                p.getNameForScoreboard(),
-                team
-            ),
-            cancelCondition
-        );
-    }
-
-    public void addToTeamOrThrow(Team team) {
-        this.server.getScoreboard().addScoreHolderToTeam(
-            getPlayerOrThrow().getNameForScoreboard(),
-            team
-        );
-    }
-
     public void addToTeamNow(InternalTeam team) {
         this.server.getScoreboard().addScoreHolderToTeam(
             this.name,
@@ -441,29 +424,22 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
 
-    public void spoofAddPlayersToTeam(List<IndirectPlayer> targets, Team team, Predicate<IndirectPlayer> cancelCondition) {
-        scheduleUntil(
-            (p) ->
-                targets.forEach((t) ->
-                    p.networkHandler.sendPacket(
-                        TeamS2CPacket.changePlayerTeam(team,
-                            t.getLiteralName(),
-                            TeamS2CPacket.Operation.ADD
-                    )
-                )
-            ),
-            cancelCondition
-        );
+    public HashMap<IndirectPlayer, InternalTeam> getTeamViewOverrides() {
+        return this.teamViewOverrides;
     }
 
-    public void spoofAddPlayersToTeamOrThrow(List<IndirectPlayer> targets, Team team) {
-        targets.forEach((t) ->
-           getPlayerOrThrow().networkHandler.sendPacket(
-                TeamS2CPacket.changePlayerTeam(team,
-                    t.getLiteralName(),
-                    TeamS2CPacket.Operation.ADD
-                )
-            )
+    public HashMap<String, Team> getLiteralViewOverrides() {
+        HashMap<String, Team> literalNames = new HashMap<>();
+        this.teamViewOverrides.forEach((iP, team) -> {
+                literalNames.put(iP.getLiteralName(), server.getScoreboard().getTeam(team.teamName));
+            }
+        );
+        return literalNames;
+    }
+
+    public void addTeamViewOverrides(List<IndirectPlayer> targets, InternalTeam team) {
+        targets.forEach(
+            (p) -> this.teamViewOverrides.put(p, team)
         );
     }
 

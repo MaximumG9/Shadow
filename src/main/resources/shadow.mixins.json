@@ -12,8 +12,6 @@
     "abilities.villager.lifelink.LivingEntityMixin",
     "abilities.villager.lifeweaver_rework.LivingEntityMixin",
     "commands.CommandManagerMixin",
-    "glowing.EntityTrackerEntryMixin",
-    "glowing.EntityTrackerMixin",
     "items.EntityEquipmentUpdateS2CPacketMixin",
     "items.ItemStackMixin",
     "items.LivingEntityMixin",
@@ -36,7 +34,12 @@
     "ncr.ChatMessageC2SPacketMixin",
     "ncr.DedicatedServerMixin",
     "ncr.PlayerSessionC2SPacketMixin",
-    "ncr.ServerCommonNetworkHandlerMixin"
+    "ncr.ServerCommonNetworkHandlerMixin",
+    "playervisuals.EntityTrackerEntryMixin",
+    "playervisuals.EntityTrackerMixin",
+    "playervisuals.PlayerManagerMixin",
+    "playervisuals.ServerScoreBoardMixin",
+    "playervisuals.TeamS2CPacketAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

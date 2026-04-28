@@ -68,7 +68,7 @@ public class MoonlitMark extends Ability {
 
     @Override
     public void deInit() {
-        if (this.player.getPlayer().isPresent() && markedTarget != null) this.player.spoofAddPlayersToTeamOrThrow(List.of(markedTarget), getShadow().playerTeam);
+        if (this.player.getPlayer().isPresent() && markedTarget != null) this.player.addTeamViewOverrides(List.of(markedTarget), getShadow().playerTeam);
         super.deInit();
     }
 
@@ -77,7 +77,7 @@ public class MoonlitMark extends Ability {
     }
 
     private void colorMarkedPlayer(IndirectPlayer p) {
-        this.player.spoofAddPlayersToTeamOrThrow(List.of(p), getShadow().markedTeam);
+        this.player.addTeamViewOverrides(List.of(p), getShadow().markedTeam);
     }
 
     public void confirmTargetKill(boolean validKill) {

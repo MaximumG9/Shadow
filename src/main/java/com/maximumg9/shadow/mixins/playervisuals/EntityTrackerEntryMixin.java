@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins.glowing;
+package com.maximumg9.shadow.mixins.playervisuals;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.maximumg9.shadow.Shadow;
@@ -32,9 +32,9 @@ public class EntityTrackerEntryMixin {
     public List<DataTracker.SerializedEntry<?>> newEntityTrackerPacket(List<DataTracker.SerializedEntry<?>> changedEntries, @Local(argsOnly = true) ServerPlayerEntity player) {
         Shadow shadow = getShadow(player.getServer());
         Set<IndirectPlayer> markedPlayers = new HashSet<>();
-        // Reminder to future self: make glowing not be here
+        // Reminder to future self: make playervisuals not be here
         
-        IndirectPlayer Iplayer = shadow.getIndirect(player);
+        IndirectPlayer iPlayer = shadow.getIndirect(player);
         if (shadow.isNight() && this.entity.getType() == EntityType.PLAYER) {
             shadow.getAllLivingPlayers()
                 .filter(p -> p.role.hasAbility(MoonlitMark.ID))
@@ -45,7 +45,7 @@ public class EntityTrackerEntryMixin {
                 ).forEach(
                     markedPlayers::add
                 );
-            if (!Iplayer.role.hasAbility(SeeGlowing.ID) && !markedPlayers.contains(shadow.getIndirect((ServerPlayerEntity) this.entity))) {
+            if (!iPlayer.role.hasAbility(SeeGlowing.ID) && !markedPlayers.contains(shadow.getIndirect((ServerPlayerEntity) this.entity))) {
                 changedEntries.replaceAll(
                     (entry) -> {
                         if (entry.id() == Entity.FLAGS.id()) {
@@ -64,7 +64,7 @@ public class EntityTrackerEntryMixin {
             }
         }
         
-        if (!Iplayer.role.hasAbility(SeeEnderEyesGlow.ID)) {
+        if (!iPlayer.role.hasAbility(SeeEnderEyesGlow.ID)) {
             if (shadow.state.eyes.stream().anyMatch(eye -> eye.display().equals(this.entity.getUuid()))) {
                 changedEntries.replaceAll(
                     (entry) -> {
