@@ -65,7 +65,7 @@ public class ToggleStrength extends Ability {
     public AbilityResult apply() {
         hasStrength = !hasStrength;
         if (hasStrength) {
-            this.player.giveEffectNow(
+            this.player.giveEffectOrThrow(
                 new StatusEffectInstance(
                     StatusEffects.STRENGTH,
                     -1,
@@ -76,7 +76,7 @@ public class ToggleStrength extends Ability {
                 )
             );
             if (this.player.getShadow().isNight()) {
-                this.player.giveEffectNow(
+                this.player.giveEffectOrThrow(
                     new StatusEffectInstance(
                         StatusEffects.HASTE,
                         -1,
@@ -86,7 +86,7 @@ public class ToggleStrength extends Ability {
                         true
                     )
                 );
-                this.player.giveEffectNow(
+                this.player.giveEffectOrThrow(
                     new StatusEffectInstance(
                         StatusEffects.SPEED,
                         -1,
@@ -98,9 +98,9 @@ public class ToggleStrength extends Ability {
                 );
             }
             
-            this.player.sendMessageNow(TextUtil.green("Turned strength on."));
+            this.player.sendMessageOrThrow(TextUtil.green("Turned strength on."));
         } else {
-            this.player.removeEffectNow(StatusEffects.STRENGTH);
+            this.player.removeEffectOrThrow(StatusEffects.STRENGTH);
             
             if (this.player.getShadow().isNight()) {
                 this.player.removeEffect(
@@ -123,7 +123,7 @@ public class ToggleStrength extends Ability {
                     CancelPredicates.IS_DAY
                 );
             }
-            this.player.sendMessageNow(TextUtil.green("Turned strength off."));
+            this.player.sendMessageOrThrow(TextUtil.green("Turned strength off."));
         }
         return AbilityResult.CLOSE;
     }
@@ -158,7 +158,7 @@ public class ToggleStrength extends Ability {
                 ),
                 CancelPredicates.IS_DAY
             );
-            this.player.giveEffectNow(
+            this.player.giveEffectOrThrow(
                 new StatusEffectInstance(
                     StatusEffects.SPEED,
                     -1,

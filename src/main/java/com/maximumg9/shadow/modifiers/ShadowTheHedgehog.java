@@ -44,7 +44,7 @@ public class ShadowTheHedgehog extends Modifier {
         if (triggered) return;
         triggered = true;
         
-        player.giveEffectNow(new StatusEffectInstance(
+        player.giveEffectOrThrow(new StatusEffectInstance(
             StatusEffects.SPEED,
             -1,
             2,

@@ -4,8 +4,8 @@ import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.filters.Filters;
+import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.roles.Faction;
-import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
@@ -68,7 +68,7 @@ public class MoonlitMark extends Ability {
 
     @Override
     public void deInit() {
-        if (this.player.getPlayer().isPresent() && markedTarget != null) this.player.spoofAddPlayersToTeamNow(List.of(markedTarget), getShadow().playerTeam);
+        this.player.removeFromTeamViewOverrides(markedTarget);
         super.deInit();
     }
 
@@ -77,24 +77,19 @@ public class MoonlitMark extends Ability {
     }
 
     private void colorMarkedPlayer(IndirectPlayer p) {
-        this.player.spoofAddPlayersToTeamNow(List.of(p), getShadow().markedTeam);
+        this.player.addTeamViewOverrides(List.of(p), InternalTeam.MARKED);
     }
 
     public void confirmTargetKill(boolean validKill) {
-        if (validKill) {
-            targetKilled = true;
-            markedTarget = null;
-        } else {
-            targetKilled = false;
-            markedTarget = null;
-        }
+        targetKilled = validKill;
+        markedTarget = null;
     }
 
     @Override
     public void onDay() {
         super.onDay();
         if(markedTarget != null) {
-            markedTarget.addToTeam(this.getShadow().playerTeam, CancelPredicates.cancelOnLostRole(markedTarget.role));
+            markedTarget.addToTeamNow(InternalTeam.PLAYER);
         }
         markedTarget = null;
         usedToday = false;
@@ -115,17 +110,9 @@ public class MoonlitMark extends Ability {
                         true
                     );
                 },
-                //when using instead CancelPredicates.cancelOnLostAbility(this), schedule was cancelled without this ability
-                //being lost.
                 CancelPredicates.cancelOnLostRole(markedTarget.role).or(CancelPredicates.IS_DAY)
             );
-            this.player.spoofAddPlayersToTeam(List.of(markedTarget),
-                getShadow().playerTeam,
-                CancelPredicates.cancelOnLostRole(markedTarget.role)
-                    .or(CancelPredicates.IS_DAY)
-            );
-            getShadow().addTickable(Delay.instant(() -> markedTarget.addToTeam(this.getShadow().markedTeam,
-                CancelPredicates.cancelOnLostRole(markedTarget.role).or(CancelPredicates.IS_DAY))));
+            markedTarget.addToTeamNow(InternalTeam.MARKED);
         }
     }
 
@@ -133,17 +120,15 @@ public class MoonlitMark extends Ability {
     public void onAnyDeath(DamageSource damageSource, @NotNull IndirectPlayer deadPlayer) {
         if (deadPlayer == markedTarget) {
             if (getShadow().isNight()) {
-                markedTarget.addToTeamNow(this.getShadow().playerTeam);
+                markedTarget.addToTeamNow(InternalTeam.PLAYER);
                 if(damageSource.getAttacker() == null || !damageSource.getAttacker().isPlayer()) {
                     confirmTargetKill(true);
                 } else {
                     IndirectPlayer indirectSource = getShadow().getIndirect((ServerPlayerEntity) damageSource.getAttacker());
-                    // note to self to make not Faction.VILLAGER forced
-                    confirmTargetKill(indirectSource.role.getFaction() != Faction.VILLAGER);
+                    confirmTargetKill(indirectSource.role.getFaction() == this.player.role.getFaction());
                 }
-            } else {
-                this.player.spoofAddPlayersToTeam(List.of(deadPlayer),getShadow().playerTeam,CancelPredicates.cancelOnLostAbility(this));
             }
+            this.player.removeFromTeamViewOverrides(deadPlayer);
         }
     }
 
@@ -163,7 +148,7 @@ public class MoonlitMark extends Ability {
         ServerPlayerEntity p = this.player.getPlayerOrThrow();
 
         if(usedToday) {
-            this.player.sendMessageNow(TextUtil.red("Cannot mark more than one player per day."));
+            this.player.sendMessageOrThrow(TextUtil.red("Cannot mark more than one player per day."));
             return AbilityResult.CLOSE;
         }
 
@@ -186,7 +171,7 @@ public class MoonlitMark extends Ability {
         }
 
         if (target == null) {
-            this.player.sendMessageNow(TextUtil.red("No players in range."));
+            this.player.sendMessageOrThrow(TextUtil.red("No players in range."));
             return AbilityResult.CLOSE;
         }
 
@@ -195,15 +180,9 @@ public class MoonlitMark extends Ability {
         colorMarkedPlayer(indirectTarget);
         markedTarget = indirectTarget;
 
-        this.player.sendMessageNow(TextUtil.green(markedTarget.getName().getString()).append(" was successfully marked."));
+        this.player.sendMessageOrThrow(TextUtil.green(markedTarget.getLiteralName()).append(" was successfully marked."));
         usedToday = true;
         return AbilityResult.CLOSE;
-    }
-
-    @Override
-    public void onJoin() {
-        super.onJoin();
-        if (markedTarget != null) colorMarkedPlayer(markedTarget);
     }
 
     @Override
@@ -214,7 +193,7 @@ public class MoonlitMark extends Ability {
         if (targetKilled && possiblePlayer.isPresent()) {
             StatusEffectInstance possibleStrength = possiblePlayer.get().getStatusEffect(StatusEffects.STRENGTH);
             if(possibleStrength != null && possibleStrength.getAmplifier() == 0) {
-                this.player.giveEffectNow(
+                this.player.giveEffectOrThrow(
                     new StatusEffectInstance(
                         StatusEffects.STRENGTH,
                         -1,

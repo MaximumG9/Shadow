@@ -97,7 +97,7 @@ public class Cull extends Ability {
         );
         
         if (realTargets.isEmpty()) {
-            this.player.sendMessageNow(
+            this.player.sendMessageOrThrow(
                 Text.literal("No targets to hit")
             );
             return AbilityResult.CLOSE;
@@ -131,7 +131,7 @@ public class Cull extends Ability {
             )
         );
         
-        this.player.sendMessageNow(
+        this.player.sendMessageOrThrow(
             TextUtil.green("Damaged ")
                 .append(
                     Texts.join(
