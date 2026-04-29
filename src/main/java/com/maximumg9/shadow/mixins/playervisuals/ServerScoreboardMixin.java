@@ -14,32 +14,35 @@ import net.minecraft.server.PlayerManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import static com.maximumg9.shadow.util.MiscUtil.getShadow;
 
 @Mixin(ServerScoreboard.class)
-public class ServerScoreBoardMixin {
+public class ServerScoreboardMixin {
     @org.spongepowered.asm.mixin.Shadow
     @Final
     private MinecraftServer server;
 
-    @WrapOperation(
+    @Redirect(
         method = "updateScoreboardTeamAndPlayers",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/server/PlayerManager;sendToAll(Lnet/minecraft/network/packet/Packet;)V"
         )
     )
-    void modifyPacketUpdateTeam(PlayerManager instance, Packet<?> packet, Operation<Void> original, @Local(argsOnly = true) Team team) {
+    void modifyPacketUpdateTeam(PlayerManager instance, Packet<?> packet, @Local(argsOnly = true) Team team) {
         Shadow shadow = getShadow(this.server);
 
         instance.getPlayerList().forEach(
             (player) -> {
-                Collection<String> playerNames = team.getPlayerList();
+                Collection<String> playerNames = new ArrayList<>(List.copyOf(team.getPlayerList()));
                 IndirectPlayer iPlayer = shadow.getIndirect(player);
 
                 HashMap<String, Team> viewOverrides = iPlayer.getLiteralViewOverrides();
@@ -101,7 +104,7 @@ public class ServerScoreBoardMixin {
 
         instance.getPlayerList().forEach(
             (player) -> {
-                IndirectPlayer iPlayer = shadow.getIndirect(player);
+                    IndirectPlayer iPlayer = shadow.getIndirect(player);
 
                 if (!iPlayer.getLiteralViewOverrides().containsKey(scoreHolderName)) {
                     player.networkHandler.sendPacket(

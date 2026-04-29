@@ -38,7 +38,7 @@
     "playervisuals.EntityTrackerEntryMixin",
     "playervisuals.EntityTrackerMixin",
     "playervisuals.PlayerManagerMixin",
-    "playervisuals.ServerScoreBoardMixin",
+    "playervisuals.ServerScoreboardMixin",
     "playervisuals.TeamS2CPacketAccessor"
   ],
   "injectors": {

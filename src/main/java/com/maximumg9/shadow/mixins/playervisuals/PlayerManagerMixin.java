@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
@@ -33,7 +34,7 @@ public abstract class PlayerManagerMixin {
     TeamS2CPacket updateTeam(Team team, boolean updatePlayers, Operation<TeamS2CPacket> original, @Local(argsOnly = true) ServerPlayerEntity player) {
         // temp method to get shadow to get indirect
 
-        Collection<String> playerNames = updatePlayers ? team.getPlayerList() : ImmutableList.of();
+        Collection<String> playerNames = updatePlayers ? new ArrayList<>(team.getPlayerList()) : ImmutableList.of();
 
         if (updatePlayers) {
             Shadow shadow = getShadow(player.server);

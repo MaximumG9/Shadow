@@ -441,10 +441,13 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         targets.forEach(
             (p) -> this.teamViewOverrides.put(p, team)
         );
+        server.getScoreboard().updateScoreboardTeamAndPlayers(server.getScoreboard().getTeam(team.teamName));
     }
 
     public void removeFromTeamViewOverrides(IndirectPlayer target) {
+        InternalTeam team = this.teamViewOverrides.get(target);
         this.teamViewOverrides.remove(target);
+        server.getScoreboard().updateScoreboardTeamAndPlayers(server.getScoreboard().getScoreHolderTeam(target.getLiteralName()));
     }
 
     public void sendOverlayOrThrow(Text chatMessage) throws OfflinePlayerException {
