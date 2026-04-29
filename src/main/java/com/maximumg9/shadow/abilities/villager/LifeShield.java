@@ -5,6 +5,7 @@ import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.abilities.shadow.MoonlitMark;
 import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.filters.Filters;
+import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
@@ -56,7 +57,7 @@ public class LifeShield extends Ability {
     }
 
     private void colorShieldedPlayers(IndirectPlayer p) {
-        this.player.addTeamViewOverrides(List.of(p), getShadow().shieldedTeam);
+        this.player.addTeamViewOverrides(List.of(p), InternalTeam.SHIELDED);
     }
 
     public LifeShield(IndirectPlayer player) { super(player); }
@@ -84,7 +85,7 @@ public class LifeShield extends Ability {
             // this.player.sendMessage(
             //     TextUtil.red("Using your ability again will kill you if you have less than 5 max hearts.")
             //     ,CancelPredicates.cancelOnLostAbility(this));
-            this.player.spoofAddPlayersToTeam(List.of(player),getShadow().playerTeam, CancelPredicates.cancelOnLostAbility(this));
+            this.player.removeFromTeamViewOverrides(player);
             shieldedPlayer = null;
             return attacker != this.player;
         }
@@ -93,46 +94,11 @@ public class LifeShield extends Ability {
 
     @Override
     public void deInit() {
-        if (shieldedPlayer != null) this.player.spoofAddPlayersToTeam(List.of(shieldedPlayer),getShadow().playerTeam, CancelPredicates.NEVER_CANCEL);
+        this.player.removeFromTeamViewOverrides(shieldedPlayer);
     }
 
     @Override
     public Identifier getID() { return ID; }
-
-    @Override
-    public void onDay() {
-        if (this.player.getPlayer().isPresent() && shieldedPlayer != null) getShadow().addTickable(Delay.instant(() -> colorShieldedPlayers(shieldedPlayer)));
-    }
-
-    public void onJoin() {
-        if (shieldedPlayer != null
-            && (!getShadow().isNight()
-            || getShadow().getAllLivingPlayers()
-                .filter(p -> p.role.hasAbility(MoonlitMark.ID))
-                .flatMap(
-                    (p) -> p.role.getAbility(MoonlitMark.ID)
-                        .flatMap(a -> ((MoonlitMark) a).getMarkedTarget())
-                        .stream()
-                ).anyMatch((p) -> p != shieldedPlayer))
-        ) colorShieldedPlayers(shieldedPlayer);
-    }
-
-    public void onNight() {
-        if (shieldedPlayer != null && player.getPlayer().isPresent()
-            && (!getShadow().isNight()
-            || getShadow().getAllLivingPlayers()
-            .filter(p -> p.role.hasAbility(MoonlitMark.ID))
-            .flatMap(
-                (p) -> p.role.getAbility(MoonlitMark.ID)
-                    .flatMap(a -> ((MoonlitMark) a).getMarkedTarget())
-                    .stream()
-            ).anyMatch((p) -> p != shieldedPlayer))
-        ) this.player.spoofAddPlayersToTeam(List.of(shieldedPlayer),
-            getShadow().playerTeam,
-            CancelPredicates.cancelOnLostRole(shieldedPlayer.role)
-                .or(CancelPredicates.IS_DAY)
-        );
-    }
 
     @Override
     public AbilityResult apply() {
@@ -194,7 +160,7 @@ public class LifeShield extends Ability {
                                 .append(TextUtil.green("."))
                         );
                     } else {
-                        this.player.addTeamViewOverrides(List.of(shieldedPlayer), getShadow().playerTeam);
+                        this.player.removeFromTeamViewOverrides(shieldedPlayer);
                         this.player.sendMessageOrThrow(
                             TextUtil.green("Changed shield target from ")
                                 .append(shieldedPlayer.getLiteralName())

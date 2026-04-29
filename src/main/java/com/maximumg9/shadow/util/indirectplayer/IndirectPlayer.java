@@ -443,6 +443,10 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
 
+    public void removeFromTeamViewOverrides(IndirectPlayer target) {
+        this.teamViewOverrides.remove(target);
+    }
+
     public void sendOverlayOrThrow(Text chatMessage) throws OfflinePlayerException {
         this.getPlayerOrThrow()
             .sendMessage(chatMessage, true);
