@@ -123,7 +123,7 @@ public class DebugCommand {
                                 return true;
                             }
                             IndirectPlayer player = getShadow(source.getServer()).getIndirect(source.getPlayer());
-                            return player.role.getFaction() == Faction.SPECTATOR;
+                            return !player.isLiving();
                         })
                         .executes((ctx) -> {
                             Shadow shadow = getShadow(ctx.getSource().getServer());
@@ -139,6 +139,10 @@ public class DebugCommand {
                                         .append(player.getName())
                                         .append(Text.literal(": ")).setStyle(Style.EMPTY)
                                         .append(player.role.getName())
+                                        .append(player.isLiving() ?
+                                            Text.empty() :
+                                            Text.literal("(DEAD)")
+                                        )
                                         .append(Text.literal("\n"))
                             );
                             

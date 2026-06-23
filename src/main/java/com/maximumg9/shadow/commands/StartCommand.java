@@ -23,6 +23,7 @@ public class StartCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
             literal("$start")
+                .requires((source) -> source.hasPermissionLevel(3))
                 .then(
                     literal("force").executes(StartCommand::start)
                 )

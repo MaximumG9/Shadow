@@ -7,10 +7,7 @@ import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.items.AbilityStar;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.ItemRepresentable;
-import com.maximumg9.shadow.util.Delay;
-import com.maximumg9.shadow.util.MiscUtil;
-import com.maximumg9.shadow.util.NBTUtil;
-import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.*;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -21,10 +18,16 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.GameMode;
 
 import java.util.*;
 
@@ -74,6 +77,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
         for (IndirectPlayer indirect : player.getShadow().getAllPlayers()) {
             indirect.role.onAnyDeath(damageSource, player);
         }
+        this.player.addToTeamNow(InternalTeam.SPECTATOR);
     }
 
     public void onAnyDeath(DamageSource damageSource, IndirectPlayer deadPlayer) {
@@ -99,18 +103,17 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     public Ability addAbility(Ability.Factory abilityFactory) {
         Ability newAbility = abilityFactory.create(this.player);
         this.abilities.add(newAbility);
+        newAbility.init();
         return newAbility;
     }
 
-    public void addAbilities(IndirectPlayer player, List<Ability.Factory> abilityFactories) {
-        abilityFactories.forEach( (a) -> this.abilities.add(a.create(player)));
-    }
-
     public void removeAbility(Ability ability) {
+        ability.deInit();
         this.abilities.remove(ability);
     }
 
     public void removeAbilities(List<Ability> abilities) {
+        abilities.forEach(Ability::deInit);
         abilities.forEach(this.abilities::remove);
     }
 
@@ -130,9 +133,9 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
         Shadow shadow = player.getShadow();
 
         shadow.addTickable(
-            Delay.of(
+            CancellableDelay.of(
                 () -> {
-                    if (this.player.getOfflineTicks() >= shadow.config.disconnectTime && this.player.role.getFaction() != Faction.SPECTATOR) {
+                    if (this.player.getOfflineTicks() >= shadow.config.disconnectTime && this.player.isLiving()) {
                         shadow.broadcast(
                             name.copy().styled(style -> style.withColor(Formatting.YELLOW))
                                 .append(
@@ -144,7 +147,8 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
                         shadow.checkWin(this.player.playerUUID);
                     }
                 },
-                shadow.config.disconnectTime
+                shadow.config.disconnectTime,
+                () -> this.player.getPlayer().isPresent()
             )
         );
 
@@ -194,12 +198,15 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     public void baseInit() {
         player.addToTeamNow(InternalTeam.PLAYER);
 
+        player.setDead(false);
+        player.changeGameMode(GameMode.SURVIVAL, CancelPredicates.cancelOnLostRole(this));
+
         player.giveItem(
             this.player.getShadow().config.food.foodGiver.apply(
                 this.player.getShadow().config.foodAmount
             ),
             MiscUtil.DELETE_WARN,
-            CancelPredicates.cancelOnLostRole(this)
+            CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
         );
 
         ItemStack abilitySelector = Items.NETHER_STAR.getDefaultStack();
@@ -221,10 +228,8 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
                 )
             ),
             MiscUtil.DELETE_WARN,
-            CancelPredicates.cancelOnLostRole(this)
+            CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
         );
-
-
 
         this.player.scheduleUntil(
             (p) -> {
@@ -260,6 +265,32 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
 
         roleInit();
     }
+
+    public void win() {
+        Optional<ServerPlayerEntity> possiblePlayer = this.player.getPlayer();
+        possiblePlayer.ifPresent(sPlayer -> {
+            this.player.playSoundOrThrow(
+                Registries.SOUND_EVENT.getEntry(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE),
+                SoundCategory.MASTER,
+                1.0f,
+                1.0f
+            );
+        });
+    }
+
+    public void lose() {
+        Optional<ServerPlayerEntity> possiblePlayer = this.player.getPlayer();
+        possiblePlayer.ifPresent(sPlayer -> {
+            this.player.playSoundOrThrow(
+                SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE,
+                SoundCategory.MASTER,
+                1.0f,
+                1.0f
+            );
+        });
+    }
+
+    public abstract boolean shouldWin(WinState winState);
     
     public abstract Roles getRole();
     

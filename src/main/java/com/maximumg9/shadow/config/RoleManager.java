@@ -8,6 +8,7 @@ import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.screens.RoleSlotScreenHandler;
 import com.maximumg9.shadow.util.SelectionRegistry;
+import com.maximumg9.shadow.util.WinState;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -93,7 +94,12 @@ public class RoleManager implements Saveable {
                 selectionRegistry.add(role.factory.makeRole(null));
 
                 player.originalRole = Roles.TEMP_ROLE;
-                player.role = new TemporaryRole(player, Faction.SHADOW);
+                player.role = new TemporaryRole(
+                    player,
+                    Faction.SHADOW,
+                    (winState) -> winState == WinState.VILLAGERS_KILLED,
+                    Text.literal("Select a role with your ability selector")
+                );
                 RoleSelect a = (RoleSelect) player.role.addAbility(p -> new RoleSelect(p, selectionRegistry));
                 a.setForceSelectionTimer(shadow.config.gracePeriodTicks);
             } else {

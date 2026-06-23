@@ -3,6 +3,7 @@ package com.maximumg9.shadow.roles.neutral;
 import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.roles.*;
 import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.WinState;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -11,6 +12,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -30,6 +32,10 @@ public class Spectator extends Role {
 
     @Override
     public void baseInit() {
+        player.changeGameMode(
+            GameMode.SPECTATOR,
+            CancelPredicates.cancelOnLostRole(this)
+        );
         player.addToTeamNow(InternalTeam.SPECTATOR);
     }
     
@@ -68,7 +74,12 @@ public class Spectator extends Role {
         );
         super.onDay();
     }
-    
+
+    @Override
+    public boolean shouldWin(WinState winState) {
+        return false;
+    }
+
     @Override
     public Roles getRole() {
         return Roles.SPECTATOR;

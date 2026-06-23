@@ -55,7 +55,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         Shadow shadow = getShadow(this.server);
 
         IndirectPlayer p = shadow.getIndirect((ServerPlayerEntity) (Object) this);
-        if (p.role.getFaction() == Faction.SPECTATOR) p.addToTeamNow(InternalTeam.PLAYER);
         shadow.addTickable(Delay.instant(() -> p.role.onJoin()));
     }
 
@@ -97,7 +96,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
                     if (
                         shadow.getIndirect(player).role.getFaction().ordinal() ==
                             iPlayer.extraStorage.getInt(ObfuscateRole.HIDE_ROLE_KEY)
-                            || shadow.getIndirect(player).role.getFaction() == Faction.SPECTATOR) {
+                            || !shadow.getIndirect(player).isLiving()) {
                         player.sendMessage(
                             Text.literal("").
                                 append(name)
@@ -143,7 +142,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
         player.role.onDeath(damageSource);
         
-        player.role = new Spectator(player);
+        player.setDead(true);
         
         shadow.checkWin(null);
 
@@ -154,8 +153,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     public void onSpawn(CallbackInfo ci) {
         Shadow shadow = getShadow(this.server);
         IndirectPlayer iPlayer = shadow.getIndirect((ServerPlayerEntity) (Object) this);
-        if (iPlayer.role.getFaction() == Faction.SPECTATOR) {
-            this.changeGameMode(GameMode.SPECTATOR);
+        if (!iPlayer.isLiving()) {
+            iPlayer.changeGameModeOrThrow(GameMode.SPECTATOR);
         }
 
     }

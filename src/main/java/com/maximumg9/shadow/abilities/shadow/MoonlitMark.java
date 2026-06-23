@@ -161,7 +161,7 @@ public class MoonlitMark extends Ability {
                 IndirectPlayer indirect = getShadow().getIndirect(player);
                 return player.squaredDistanceTo(p) <= maxDistance * maxDistance
                     && indirect != this.player
-                    && indirect.role.getFaction() != Faction.SPECTATOR;
+                    && indirect.isLiving();
             }
         )) {
             if (serverPlayerEntity.squaredDistanceTo(p) < targetDistance * targetDistance) {

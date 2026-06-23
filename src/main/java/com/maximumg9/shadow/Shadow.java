@@ -13,6 +13,7 @@ import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.util.LinkRegistry;
 import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.WinState;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayerManager;
@@ -21,7 +22,6 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
-import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -31,11 +31,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Unique;
@@ -118,6 +118,8 @@ public class Shadow implements Tickable {
             team.setNameTagVisibilityRule(internalTeam.nametagVisibility);
             team.setColor(internalTeam.color);
         }
+
+        server.getGameRules().get(GameRules.DO_IMMEDIATE_RESPAWN).set(true,server);
     }
     
     public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -208,7 +210,7 @@ public class Shadow implements Tickable {
         } else {
             this.getOnlinePlayers().stream()
                 .filter(player ->
-                    player.role.getFaction() == Faction.SPECTATOR &&
+                    !player.isLiving() &&
                     player.getPlayerOrThrow().hasPermissionLevel(3)
                 )
                 .forEach(
@@ -223,7 +225,7 @@ public class Shadow implements Tickable {
     }
 
     public Stream<IndirectPlayer> getAllLivingPlayers() {
-        return this.getAllPlayers().stream().filter(iP -> iP.role.getFaction() != Faction.SPECTATOR);
+        return this.getAllPlayers().stream().filter(IndirectPlayer::isLiving);
     }
     
     public void clearEyes() {
@@ -257,61 +259,56 @@ public class Shadow implements Tickable {
         
     }
     
-    public void endGame(List<IndirectPlayer> winners, @Nullable Faction winningFaction, @Nullable Faction secondaryWinningFaction) {
+    public void endGame(WinState winState) {
         state.phase = GamePhase.WON;
         
         this.state.playedStrongholdPositions.add(
             this.state.strongholdChunkPosition
         );
         
-        MutableText titleText;
-        
-        if (winningFaction == null) {
-            winningFaction = secondaryWinningFaction;
-            secondaryWinningFaction = null;
-        }
-        
-        if (winningFaction == null) {
-            titleText = Text.literal("Tie Game");
-        } else {
-            titleText = winningFaction.name.copy();
-            titleText.append(" Win");
-        }
-        
-        MutableText subtitleText;
-        
-        if (secondaryWinningFaction != null) {
-            subtitleText = Text.literal("& ");
-            subtitleText.append(secondaryWinningFaction.name);
-        } else {
-            subtitleText = null;
-        }
-        
         this.getAllPlayers().forEach((player) -> {
-            player.scheduleUntil((sPlayer) -> sPlayer.changeGameMode(GameMode.SPECTATOR), CancelPredicates.cancelOnPhaseChange(state.phase));
+            player.changeGameMode(GameMode.SPECTATOR, CancelPredicates.cancelOnPhaseChange(state.phase));
             player.setTitleTimes(10, 40, 10, CancelPredicates.cancelOnPhaseChange(state.phase));
-            player.sendTitle(titleText, CancelPredicates.cancelOnPhaseChange(state.phase));
-            if (subtitleText != null) {
-                player.sendSubtitle(subtitleText, CancelPredicates.cancelOnPhaseChange(state.phase));
-            }
+            player.sendTitle(winState.winCause, CancelPredicates.cancelOnPhaseChange(state.phase));
+            player.sendSubtitle(winState.mainWinners, CancelPredicates.cancelOnPhaseChange(state.phase));
         });
+
+        List<IndirectPlayer> winners = new ArrayList<>();
+
+        for(IndirectPlayer player : this.indirectPlayerManager
+            .getRecentlyOnlinePlayers(this.config.disconnectTime)) {
+            if (player.role.shouldWin(winState)) {
+                winners.add(player);
+                player.role.win();
+            } else {
+                player.role.lose();
+            }
+        }
         
         MutableText winnersText = TextUtil.gold("Winners are: ");
-        
+
         winnersText.append(
             Texts.join(
                 winners.stream().map(
                     (winner) ->
-                        winner.getName().copy().setStyle(winner.role.getStyle())
+                        winner.getName().copy()
+                            .append("(")
+                            .append(winner.role.getName())
+                            .append(")")
                 ).toList(),
                 TextUtil.gray(", ")
             )
         );
-        
-        this.broadcast(titleText.append(
-            subtitleText == null ?
-                Text.literal("") : subtitleText
-        ));
+
+        this.broadcast(
+            winState.winCause.copy().styled(style -> style.withBold(true))
+                .append(
+                    " - "
+                )
+                .append(
+                    winState.mainWinners.copy().styled(style -> style.withBold(false))
+                )
+        );
         
         this.broadcast(winnersText);
         
@@ -356,28 +353,14 @@ public class Shadow implements Tickable {
     public void checkWin(@Nullable UUID playerToIgnore) {
         if (this.state.phase != GamePhase.PLAYING) return;
 
-        final Predicate<IndirectPlayer> V_VICTOR_CONDITION =
-            (player) ->
-                player.originalRole != null &&
-                    (player.originalRole.faction == Faction.VILLAGER
-                    || player.role.getRole() == Roles.PINATA);
-        final Predicate<IndirectPlayer> S_VICTOR_CONDITION =
-            (player) ->
-                player.originalRole != null &&
-                    (player.originalRole.faction == Faction.SHADOW
-                        || player.role.getRole() == Roles.PINATA);
-        final Predicate<IndirectPlayer> N_VICTOR_CONDITION =
-            (player) ->
-                player.originalRole != null &&
-                    player.role.getRole() == Roles.PINATA;
-
         long villagers = this.indirectPlayerManager
             .getRecentlyOnlinePlayers(this.config.disconnectTime)
             .stream()
             .filter(
                 (player) ->
                         player.role.getFaction() == Faction.VILLAGER &&
-                        (playerToIgnore == null || !playerToIgnore.equals(player.playerUUID))
+                        (playerToIgnore == null || !playerToIgnore.equals(player.playerUUID)) &&
+                        player.isLiving()
             ).count();
         long shadows = this.indirectPlayerManager
             .getRecentlyOnlinePlayers(this.config.disconnectTime)
@@ -385,39 +368,16 @@ public class Shadow implements Tickable {
             .filter(
                 (player) ->
                         player.role.getFaction() == Faction.SHADOW &&
-                        (playerToIgnore == null || !playerToIgnore.equals(player.playerUUID))
+                        (playerToIgnore == null || !playerToIgnore.equals(player.playerUUID)) &&
+                        player.isLiving()
             ).count();
         
         if (villagers == 0 && shadows == 0) {
-            this.endGame(
-                this.indirectPlayerManager
-                    .getRecentlyOnlinePlayers(this.config.disconnectTime)
-                    .stream()
-                    .filter(
-                        N_VICTOR_CONDITION
-                    ).toList(), null, null);
+            this.endGame(WinState.TIE);
         } else if (villagers == 0) {
-            this.endGame(
-                this.indirectPlayerManager
-                    .getRecentlyOnlinePlayers(this.config.disconnectTime)
-                    .stream()
-                    .filter(
-                        S_VICTOR_CONDITION
-                    ).toList(),
-                Faction.SHADOW,
-                null
-            );
+            this.endGame(WinState.VILLAGERS_KILLED);
         } else if (shadows == 0) {
-            this.endGame(
-                this.indirectPlayerManager
-                    .getRecentlyOnlinePlayers(this.config.disconnectTime)
-                    .stream()
-                    .filter(
-                        V_VICTOR_CONDITION
-                    ).toList(),
-                Faction.VILLAGER,
-                null
-            );
+            this.endGame(WinState.SHADOWS_KILLED);
         }
     }
     

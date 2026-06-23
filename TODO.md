@@ -2,3 +2,4 @@
 - [ ] End regen
 - [ ] Save ability data
 - [ ] Make typed IDs for abilities and such
+- [ ] Change more GUIs to be SelectionRegistries

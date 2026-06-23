@@ -1,6 +1,8 @@
 package com.maximumg9.shadow.roles;
 
 import com.maximumg9.shadow.roles.shadow.AbstractShadow;
+import com.maximumg9.shadow.util.WinState;
+import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
@@ -8,6 +10,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,14 +21,22 @@ public class TemporaryRole extends Role {
     private static final Style STYLE = Style.EMPTY.withColor(Formatting.WHITE);
     private static final ItemStack ITEM_STACK = new ItemStack(Items.STRUCTURE_VOID);
     private Faction faction;
+    private final Text initText;
+    private final WinCondition winCon;
 
     static {
         ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new TemporaryRole(null, Faction.SPECTATOR).getName());
     }
 
     public TemporaryRole(@Nullable IndirectPlayer player, Faction faction) {
+        this(player,faction,(state) -> false,null);
+    }
+
+    public TemporaryRole(@Nullable IndirectPlayer player, Faction faction, WinCondition winCon, Text initText) {
         super(player, List.of());
         this.faction = faction;
+        this.initText = initText;
+        this.winCon = winCon;
     }
 
     @Override
@@ -48,6 +59,17 @@ public class TemporaryRole extends Role {
         super.roleInit();
 
         if (faction == Faction.SHADOW) AbstractShadow.announceShadowPartners(this.player);
+
+        if (initText != null)
+            this.player.sendMessage(
+                this.initText,
+                CancelPredicates.cancelOnLostRole(this)
+            );
+    }
+
+    @Override
+    public boolean shouldWin(WinState winState) {
+        return winCon.shouldWin(winState);
     }
 
     @Override
@@ -67,5 +89,10 @@ public class TemporaryRole extends Role {
         public TemporaryRole makeRole(@Nullable IndirectPlayer player) {
             return new TemporaryRole(player, Faction.SPECTATOR);
         }
+    }
+
+    @FunctionalInterface
+    public interface WinCondition {
+        boolean shouldWin(WinState state);
     }
 }

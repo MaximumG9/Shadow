@@ -130,7 +130,7 @@ public class AddHealthLink extends Ability {
                 this.getShadow().indirectPlayerManager
                     .getAllPlayers()
                     .stream()
-                    .filter(p -> p.role.getFaction() != Faction.SPECTATOR)
+                    .filter(IndirectPlayer::isLiving)
                     .toList()
             )
         );
@@ -159,13 +159,11 @@ public class AddHealthLink extends Ability {
 
         player1.giveEffect(
             firstResistance,
-            (p) ->
-                p.role.getFaction() != Faction.SPECTATOR
+            IndirectPlayer::isLiving
         );
         player1.giveEffect(
             firstRegeneration,
-            (p) ->
-                p.role.getFaction() != Faction.SPECTATOR
+            IndirectPlayer::isLiving
         );
 
         StatusEffectInstance secondResistance = new StatusEffectInstance(
@@ -188,13 +186,11 @@ public class AddHealthLink extends Ability {
 
         player2.giveEffect(
             secondResistance,
-            (p) ->
-                p.role.getFaction() != Faction.SPECTATOR
+            IndirectPlayer::isLiving
         );
         player2.giveEffect(
             secondRegeneration,
-            (p) ->
-                p.role.getFaction() != Faction.SPECTATOR
+            IndirectPlayer::isLiving
         );
     }
 

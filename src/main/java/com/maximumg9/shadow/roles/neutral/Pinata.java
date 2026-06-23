@@ -5,6 +5,7 @@ import com.maximumg9.shadow.abilities.neutral.PinataHit;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;
+import com.maximumg9.shadow.util.WinState;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
@@ -29,6 +30,10 @@ public class Pinata extends AbstractNeutral {
     public Pinata(@Nullable IndirectPlayer player) {
         // Fuck you too :)
         super(player, player == null ? List.of(PinataGift::new) : !player.getShadow().config.pinataHittable ? List.of(PinataGift::new) : List.of(PinataGift::new, PinataHit::new));
+    }
+
+    public boolean shouldWin(WinState winState) {
+        return this.player.isLiving();
     }
 
     @Override

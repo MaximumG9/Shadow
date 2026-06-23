@@ -4,6 +4,7 @@ import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.WinState;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -39,6 +40,10 @@ public abstract class AbstractVillager extends Role {
                 CancelPredicates.IS_DAY
         );
         super.onNight();
+    }
+
+    public boolean shouldWin(WinState winState) {
+        return winState == WinState.SHADOWS_KILLED || winState == WinState.DRAGON_KILLED;
     }
 
     @Override

@@ -55,7 +55,7 @@ public class SunCurse extends ToggleStrength {
                 TextUtil.gray("Toggle ")
                     .append(TextUtil.red("Strength I")),
                 TextUtil.gray("During the night you also get ")
-                    .append(TextUtil.gold("Haste II"))
+                    .append(TextUtil.gold("Haste V"))
                     .append(TextUtil.gray(" and "))
                     .append(TextUtil.withColour("Speed II",Formatting.AQUA))
                 ,

@@ -28,7 +28,7 @@ public class PlayerAdvancementTrackerMixin {
         }
         IndirectPlayer player = shadow.getIndirect(this.owner);
         
-        if (player.role.getFaction() != Faction.SPECTATOR) {
+        if (player.isLiving()) {
             instance.broadcast(message, overlay);
         }
     }

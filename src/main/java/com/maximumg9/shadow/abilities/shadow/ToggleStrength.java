@@ -35,7 +35,7 @@ public class ToggleStrength extends Ability {
                 TextUtil.gray("Toggle ")
                     .append(TextUtil.red("Strength I")),
                 TextUtil.gray("During the night you also get ")
-                    .append(TextUtil.gold("Haste II"))
+                    .append(TextUtil.gold("Haste V"))
                     .append(TextUtil.gray(" and "))
                     .append(TextUtil.withColour("Speed II",Formatting.AQUA))
                 ,
@@ -141,6 +141,17 @@ public class ToggleStrength extends Ability {
         this.player.removeEffect(
             StatusEffects.HASTE,
             CancelPredicates.NEVER_CANCEL
+        );
+        this.player.giveEffect(
+            new StatusEffectInstance(
+                StatusEffects.HASTE,
+                -1,
+                1,
+                false,
+                false,
+                true
+            ),
+            CancelPredicates.IS_DAY
         );
     }
     

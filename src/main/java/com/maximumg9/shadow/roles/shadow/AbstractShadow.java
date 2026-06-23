@@ -6,6 +6,7 @@ import com.maximumg9.shadow.abilities.shadow.ToggleStrength;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.WinState;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.text.Text;
@@ -81,6 +82,10 @@ public abstract class AbstractShadow extends Role {
     
     @Override
     public Faction getFaction() { return Faction.SHADOW; }
+
+    public boolean shouldWin(WinState winState) {
+        return winState == WinState.VILLAGERS_KILLED;
+    }
     
     @Override
     public void onNight() {

@@ -92,7 +92,7 @@ public class Cull extends Ability {
             (player) -> {
                 IndirectPlayer indirect = getShadow().getIndirect(player);
                 return player.squaredDistanceTo(p) <= this.player.getShadow().config.cullRadius * this.player.getShadow().config.cullRadius &&
-                    indirect.role.getFaction() != Faction.SHADOW && indirect.role.getFaction() != Faction.SPECTATOR;
+                    indirect.role.getFaction() != Faction.SHADOW && indirect.isLiving();
             }
         );
         

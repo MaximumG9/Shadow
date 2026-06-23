@@ -5,6 +5,7 @@ import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.villager.AddHealthLink;
 import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.modifiers.Modifier;
+import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.neutral.Spectator;
@@ -41,6 +42,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +61,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     public Role role;
     @Nullable
     public Roles originalRole;
+    private boolean isDead;
     public ArrayList<Modifier> modifiers = new ArrayList<>();
     public boolean participating = true;
     public boolean frozen;
@@ -77,7 +80,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.name = base.getNameForScoreboard();
         this.extraStorage = new NbtCompound();
 
-        getShadow().addTickable(Delay.instant(this.role::roleInit));
+        getShadow().addTickable(Delay.instant(this.role::baseInit));
     }
     
     IndirectPlayer(MinecraftServer server, UUID uuid) {
@@ -86,7 +89,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.extraStorage = new NbtCompound();
         this.role = new Spectator(this);
 
-        getShadow().addTickable(Delay.instant(this.role::roleInit));
+        getShadow().addTickable(Delay.instant(this.role::baseInit));
     }
     
     @SuppressWarnings("CopyConstructorMissesField")
@@ -156,7 +159,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             this.role = tempRole;
         } else {
             this.role = new Spectator(this);
-            getShadow().addTickable(Delay.instant(this.role::roleInit));
+            getShadow().addTickable(Delay.instant(this.role::baseInit));
         }
     }
 
@@ -236,6 +239,14 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         return Text.of(getLiteralName());
     }
 
+    public boolean isLiving() {
+        return !(this.role.getFaction() == Faction.SPECTATOR || this.isDead);
+    }
+
+    public void setDead(boolean isDead) {
+        this.isDead = isDead;
+    }
+
     @Override
     public boolean equals(Object object) {
         if(!(object instanceof IndirectPlayer)) return false;
@@ -270,7 +281,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         return thisPlayer.get().squaredDistanceTo(otherPlayer.get());
     }
     
-    public void damageOrThrow(DamageSource source, float amount) {
+    public void damageOrThrow(DamageSource source, float amount) throws OfflinePlayerException {
         this.getPlayerOrThrow()
             .damage(source, amount);
     }
@@ -282,7 +293,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
     
-    public void giveEffectOrThrow(StatusEffectInstance effect) {
+    public void giveEffectOrThrow(StatusEffectInstance effect) throws OfflinePlayerException {
         this.getPlayerOrThrow()
             .addStatusEffect(effect);
     }
@@ -294,7 +305,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
     
-    public void removeEffectOrThrow(RegistryEntry<StatusEffect> effectType) {
+    public void removeEffectOrThrow(RegistryEntry<StatusEffect> effectType) throws OfflinePlayerException {
         this.getPlayerOrThrow().removeStatusEffect(effectType);
     }
     
@@ -310,7 +321,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
     
-    public boolean giveItemOrThrow(ItemStack stack, BiConsumer<ServerPlayerEntity, ItemStack> ifFail) {
+    public boolean giveItemOrThrow(ItemStack stack, BiConsumer<ServerPlayerEntity, ItemStack> ifFail) throws OfflinePlayerException {
         ServerPlayerEntity player = this.getPlayerOrThrow();
         
         boolean succeeded = player
@@ -332,7 +343,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         );
     }
     
-    public void setTitleTimesOrThrow(int fadeInTicks, int stayTicks, int fadeOutTicks) {
+    public void setTitleTimesOrThrow(int fadeInTicks, int stayTicks, int fadeOutTicks) throws OfflinePlayerException {
         TitleFadeS2CPacket packet = new TitleFadeS2CPacket(fadeInTicks, stayTicks, fadeOutTicks);
         
         this.getPlayerOrThrow()
@@ -355,12 +366,10 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     
     public void sendSubtitle(Text subtitle, Predicate<IndirectPlayer> cancelCondition) {
         SubtitleS2CPacket packet = new SubtitleS2CPacket(subtitle);
-        TitleS2CPacket titlePacket = new TitleS2CPacket(Text.empty());
-        
+
         scheduleUntil(
             (player) -> {
                 player.networkHandler.sendPacket(packet);
-                player.networkHandler.sendPacket(titlePacket);
             }
             , cancelCondition);
     }
@@ -388,7 +397,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             , cancelCondition);
     }
     
-    public void playSoundOrThrow(RegistryEntry.Reference<SoundEvent> event, SoundCategory category, float volume, float pitch) throws OfflinePlayerException {
+    public void playSoundOrThrow(RegistryEntry<SoundEvent> event, SoundCategory category, float volume, float pitch) throws OfflinePlayerException {
         ServerPlayerEntity player = this.getPlayerOrThrow();
         player.networkHandler.sendPacket(
                 new PlaySoundFromEntityS2CPacket(
@@ -402,7 +411,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             );
     }
 
-    public void playSound(RegistryEntry.Reference<SoundEvent> event, SoundCategory category, float volume, float pitch, Predicate<IndirectPlayer> cancelCondition) {
+    public void playSound(RegistryEntry<SoundEvent> event, SoundCategory category, float volume, float pitch, Predicate<IndirectPlayer> cancelCondition) {
         scheduleUntil(
             (player) -> player.networkHandler.sendPacket(
                 new PlaySoundFromEntityS2CPacket(
@@ -453,6 +462,16 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     public void sendOverlayOrThrow(Text chatMessage) throws OfflinePlayerException {
         this.getPlayerOrThrow()
             .sendMessage(chatMessage, true);
+    }
+
+    public void changeGameMode(GameMode gameMode, Predicate<IndirectPlayer> cancelCondition) {
+        scheduleUntil(
+            (player) -> player.changeGameMode(gameMode)
+            , cancelCondition);
+    }
+
+    public void changeGameModeOrThrow(GameMode gameMode) throws OfflinePlayerException {
+        this.getPlayerOrThrow().changeGameMode(gameMode);
     }
     
     public void scheduleUntil(Consumer<ServerPlayerEntity> task, Predicate<IndirectPlayer> cancelCondition) {

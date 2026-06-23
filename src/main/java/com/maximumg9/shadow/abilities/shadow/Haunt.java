@@ -71,17 +71,18 @@ public class Haunt extends Ability {
     @Override
     public AbilityResult apply() {
         haunting = true;
-        this.player.getPlayerOrThrow().changeGameMode(GameMode.SPECTATOR);
+        this.player.changeGameModeOrThrow(GameMode.SPECTATOR);
         this.player.sendOverlayOrThrow(Text.of("You are now HAUNTING"));
         this.resetLastActivated();
 
         getShadow().addTickable(
             Delay.of(() -> {
                 haunting = false;
-                this.player.scheduleUntil((p) -> {
-                    p.changeGameMode(GameMode.SURVIVAL);
-                    this.player.sendOverlayOrThrow(Text.of("You are no longer HAUNTING"));
-                }, CancelPredicates.NEVER_CANCEL);
+                this.player.changeGameMode(
+                    GameMode.SURVIVAL,
+                    CancelPredicates.NEVER_CANCEL
+                );
+                this.player.sendOverlay(Text.of("You are no longer HAUNTING"), CancelPredicates.NEVER_CANCEL);
             }
             , 3 * 20));
         return AbilityResult.CLOSE;

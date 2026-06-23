@@ -178,7 +178,7 @@ public class LocationCommand {
         shadow.saveAsync();
         
         for (IndirectPlayer player : shadow.getOnlinePlayers()) {
-            player.getPlayerOrThrow().changeGameMode(GameMode.ADVENTURE);
+            player.changeGameModeOrThrow(GameMode.ADVENTURE);
             player.frozen = true;
         }
         
