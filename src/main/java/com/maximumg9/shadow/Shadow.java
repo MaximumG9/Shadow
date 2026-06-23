@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.maximumg9.shadow.commands.*;
 import com.maximumg9.shadow.config.Config;
+import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.items.AbilityStar;
 import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.items.ItemUseCallback;
@@ -55,10 +56,6 @@ public class Shadow implements Tickable {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final File STATE_FILE = new File("shadow-state.json");
     private static final Gson DATA_GSON;
-
-    public Team playerTeam = null;
-    public Team markedTeam = null;
-    public Team shieldedTeam = null;
     
     static {
         ITEM_USE_CALLBACK_MAP.put(
@@ -114,17 +111,13 @@ public class Shadow implements Tickable {
     public void onWorldLoad() {
         Scoreboard scoreboard = server.getScoreboard();
 
-        if(scoreboard.getTeam("Players") == null) scoreboard.addTeam("Players");
-        if(scoreboard.getTeam("DuskMarked") == null) scoreboard.addTeam("DuskMarked");
-        if(scoreboard.getTeam("Shielded") == null) scoreboard.addTeam("Shielded");
-        playerTeam = scoreboard.getTeam("Players");
-        markedTeam = scoreboard.getTeam("DuskMarked");
-        shieldedTeam = scoreboard.getTeam("Shielded");
-        playerTeam.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
-        markedTeam.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
-        shieldedTeam.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
-        markedTeam.setColor(Formatting.RED);
-        shieldedTeam.setColor(Formatting.AQUA);
+        for (InternalTeam internalTeam : InternalTeam.values()) {
+            if (scoreboard.getTeam(internalTeam.teamName) == null) scoreboard.addTeam(internalTeam.teamName);
+            Team team = Objects.requireNonNull(scoreboard.getTeam(internalTeam.teamName));
+
+            team.setNameTagVisibilityRule(internalTeam.nametagVisibility);
+            team.setColor(internalTeam.color);
+        }
     }
     
     public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -210,7 +203,7 @@ public class Shadow implements Tickable {
         if (config.debug) {
             this.getOnlinePlayers()
                 .forEach(
-                    (player) -> player.sendMessageNow(messageAsText)
+                    (player) -> player.sendMessageOrThrow(messageAsText)
                 );
         } else {
             this.getOnlinePlayers().stream()
@@ -219,7 +212,7 @@ public class Shadow implements Tickable {
                     player.getPlayerOrThrow().hasPermissionLevel(3)
                 )
                 .forEach(
-                    (player) -> player.sendMessageNow(messageAsText)
+                    (player) -> player.sendMessageOrThrow(messageAsText)
                 );
         }
     }

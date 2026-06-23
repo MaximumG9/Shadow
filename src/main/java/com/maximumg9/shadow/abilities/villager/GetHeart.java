@@ -96,11 +96,11 @@ public class GetHeart extends Ability {
             }
         );
 
-        if (!this.player.giveItemNow(
+        if (!this.player.giveItemOrThrow(
             heart,
             MiscUtil.DELETE
         )) {
-            this.player.sendMessageNow(TextUtil.red("Failed to get heart. Make sure you have enough space in your inventory!"));
+            this.player.sendMessageOrThrow(TextUtil.red("Failed to get heart. Make sure you have enough space in your inventory!"));
             return AbilityResult.CLOSE;
         } else {
             player.currentScreenHandler.sendContentUpdates();
@@ -128,7 +128,7 @@ public class GetHeart extends Ability {
                 ));
             }
 
-            this.player.sendMessageNow(
+            this.player.sendMessageOrThrow(
                 TextUtil.green("You got a heart! Your max health is now ")
                     .append(TextUtil.hearts(player.getMaxHealth() / 2))
                     .append(TextUtil.green("."))

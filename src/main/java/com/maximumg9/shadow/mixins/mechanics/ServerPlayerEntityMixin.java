@@ -4,6 +4,7 @@ import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.villager.AddHealthLink;
 import com.maximumg9.shadow.abilities.shadow.ObfuscateRole;
+import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.util.Delay;
@@ -54,7 +55,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         Shadow shadow = getShadow(this.server);
 
         IndirectPlayer p = shadow.getIndirect((ServerPlayerEntity) (Object) this);
-        if (p.role.getFaction() == Faction.SPECTATOR) server.getScoreboard().addScoreHolderToTeam(getNameForScoreboard(), shadow.playerTeam);
+        if (p.role.getFaction() == Faction.SPECTATOR) p.addToTeamNow(InternalTeam.PLAYER);
         shadow.addTickable(Delay.instant(() -> p.role.onJoin()));
     }
 

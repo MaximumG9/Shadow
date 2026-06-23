@@ -43,5 +43,6 @@ public class DragonDeathMixin extends MobEntity {
             Faction.VILLAGER,
             null
         );
+        super.onDeath(damageSource);
     }
 }

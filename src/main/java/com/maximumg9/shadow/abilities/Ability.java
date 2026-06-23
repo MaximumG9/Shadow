@@ -56,7 +56,7 @@ public abstract class Ability implements ItemRepresentable, Tickable {
         for (Filter filter : getFilters()) {
             AbilityFilterResult result = filter.test(this);
             if (!result.status.equals(AbilityFilterResult.Status.PASS)) {
-                this.player.sendMessageNow(TextUtil.red(result.message));
+                this.player.sendMessageOrThrow(TextUtil.red(result.message));
                 return AbilityResult.CLOSE;
             }
         }

@@ -1,5 +1,6 @@
 package com.maximumg9.shadow.roles.neutral;
 
+import com.maximumg9.shadow.config.InternalTeam;
 import com.maximumg9.shadow.roles.*;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
@@ -29,7 +30,7 @@ public class Spectator extends Role {
 
     @Override
     public void baseInit() {
-        player.addToTeam(player.getShadow().playerTeam, CancelPredicates.cancelOnLostRole(this));
+        player.addToTeamNow(InternalTeam.SPECTATOR);
     }
     
     @Override

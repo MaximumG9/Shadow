@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.mixins.glowing;
+package com.maximumg9.shadow.mixins.playervisuals;
 
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.shadow.MoonlitMark;
