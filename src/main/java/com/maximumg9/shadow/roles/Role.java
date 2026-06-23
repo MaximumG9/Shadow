@@ -128,7 +128,6 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     }
 
     public void onLeave() {
-        Text name = this.getName();
         Shadow shadow = player.getShadow();
 
         shadow.addTickable(
@@ -136,7 +135,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
                 () -> {
                     if (this.player.getOfflineTicks() >= shadow.config.disconnectTime && this.player.isLiving()) {
                         shadow.broadcast(
-                            name.copy().styled(style -> style.withColor(Formatting.YELLOW))
+                            player.getName().copy().styled(style -> style.withColor(Formatting.YELLOW))
                                 .append(
                                     Text.literal(
                                         " has been disconnected for too long"
