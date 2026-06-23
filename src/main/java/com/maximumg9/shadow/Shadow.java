@@ -40,6 +40,8 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 public class Shadow implements Tickable {
@@ -77,6 +79,7 @@ public class Shadow implements Tickable {
     public IndirectPlayerManager indirectPlayerManager;
     public GameState state = new GameState();
     public LinkRegistry linkRegistry = new LinkRegistry(this);
+    private final Set<Future<Void>> saveFutures = new HashSet<>();
 
     public Shadow(MinecraftServer server) {
         this.server = server;
@@ -394,8 +397,11 @@ public class Shadow implements Tickable {
         GameState stateCopy = this.state.clone();
         IndirectPlayerManager playerManagerCopy = new IndirectPlayerManager(this.indirectPlayerManager);
         Config configCopy = this.config.copy(this);
-        
-        Util.getIoWorkerExecutor().submit(
+
+        this.saveFutures.removeIf(Future::isDone);
+
+        //noinspection unchecked
+        this.saveFutures.add((Future<Void>) Util.getIoWorkerExecutor().submit(
             () -> {
                 try {
                     save(stateCopy, playerManagerCopy, configCopy);
@@ -403,7 +409,17 @@ public class Shadow implements Tickable {
                     LOGGER.error("Error while saving data async", e);
                 }
             }
-        );
+        ));
+    }
+
+    public void waitForSavesToFinish() {
+        for(Future<Void> future: this.saveFutures) {
+            try {
+                future.get();
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
     
     public void saveSync() throws IOException {
