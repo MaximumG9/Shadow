@@ -1,7 +1,6 @@
 package com.maximumg9.shadow.mixins.mechanics;
 
 import com.maximumg9.shadow.GamePhase;
-import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.server.PlayerManager;

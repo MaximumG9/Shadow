@@ -41,12 +41,12 @@ public class SelectionRegistry<T> implements Collection<T> {
     }
 
     @Override
-    public @NotNull Object[] toArray() {
+    public Object @NotNull [] toArray() {
         return values.toArray();
     }
 
     @Override
-    public @NotNull <T1> T1[] toArray(@NotNull T1[] a) {
+    public <T1> T1 @NotNull [] toArray(T1 @NotNull [] a) {
         return values.toArray(a);
     }
 

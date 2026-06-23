@@ -262,9 +262,12 @@ public class LocationCommand {
         
         shadow.saveAsync();
         
-        Optional<BlockBox> possibleBox = fakeStructureWorldAccess.getPathFromPortalToStart()
-                .stream().map(StructurePiece::getBoundingBox)
-                .reduce(BlockBox::encompass);
+        Optional<BlockBox> possibleBox =
+            BlockBox.encompass(
+                fakeStructureWorldAccess.getPathFromPortalToStart()
+                    .stream().map(StructurePiece::getBoundingBox)
+                    .toList()
+            );
         
         return possibleBox.orElse(null);
     }

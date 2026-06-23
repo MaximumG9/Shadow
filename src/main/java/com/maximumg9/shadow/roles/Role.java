@@ -18,7 +18,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -247,7 +246,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
         this.player.giveEffect(
             new StatusEffectInstance(
                 StatusEffects.HASTE,
-                -1, 1,
+                -1, 2 - 1,
                 false, false,
                 true
             ),
@@ -256,7 +255,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
         this.player.giveEffect(
             new StatusEffectInstance(
                 StatusEffects.FIRE_RESISTANCE,
-                10 * 20, 0,
+                10 * 20, 1 - 1,
                 false, false,
                 true
             ),
@@ -268,26 +267,23 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
 
     public void win() {
         Optional<ServerPlayerEntity> possiblePlayer = this.player.getPlayer();
-        possiblePlayer.ifPresent(sPlayer -> {
+        possiblePlayer.ifPresent(sPlayer ->
             this.player.playSoundOrThrow(
-                Registries.SOUND_EVENT.getEntry(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE),
-                SoundCategory.MASTER,
-                1.0f,
-                1.0f
-            );
-        });
+            Registries.SOUND_EVENT.getEntry(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE),
+            SoundCategory.MASTER,
+            1.0f,
+            1.0f
+        ));
     }
 
     public void lose() {
         Optional<ServerPlayerEntity> possiblePlayer = this.player.getPlayer();
-        possiblePlayer.ifPresent(sPlayer -> {
-            this.player.playSoundOrThrow(
-                SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE,
-                SoundCategory.MASTER,
-                1.0f,
-                1.0f
-            );
-        });
+        possiblePlayer.ifPresent(sPlayer -> this.player.playSoundOrThrow(
+            SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE,
+            SoundCategory.MASTER,
+            1.0f,
+            1.0f
+        ));
     }
 
     public abstract boolean shouldWin(WinState winState);

@@ -3,6 +3,7 @@ package com.maximumg9.shadow.roles.shadow;
 import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.abilities.shadow.BloodMoon;
 import com.maximumg9.shadow.abilities.shadow.MoonlitMark;
+import com.maximumg9.shadow.abilities.shadow.SeeGlowing;
 import com.maximumg9.shadow.abilities.shadow.SunCurse;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
@@ -21,14 +22,14 @@ public class Dusk extends AbstractShadow {
     public static final RoleFactory<Dusk> FACTORY = new Dusk.Factory();
     private static final Style STYLE = Style.EMPTY.withColor(0xff4B4A92);
     private static final ItemStack ITEM_STACK = new ItemStack(Items.BLACK_DYE);
-    private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(MoonlitMark::new, BloodMoon::new, SunCurse::new);
+    private static final List<Ability.Factory> ABILITY_FACTORIES = List.of(MoonlitMark::new, BloodMoon::new, SunCurse::new, SeeGlowing::new);
 
     static {
         ITEM_STACK.set(DataComponentTypes.ITEM_NAME, new Dusk(null).getName());
     }
 
     public Dusk(@Nullable IndirectPlayer player) {
-        super(player, ABILITY_FACTORIES);
+        super(player, ABILITY_FACTORIES, true);
     }
     @Override
     public SubFaction getSubFaction() {

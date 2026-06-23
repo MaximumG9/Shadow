@@ -5,7 +5,6 @@ import com.maximumg9.shadow.abilities.AbilityResult;
 import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.filters.Filters;
 import com.maximumg9.shadow.config.InternalTeam;
-import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
@@ -197,7 +196,7 @@ public class MoonlitMark extends Ability {
                     new StatusEffectInstance(
                         StatusEffects.STRENGTH,
                         -1,
-                        1,
+                        2 - 1,
                         false,
                         false,
                         true

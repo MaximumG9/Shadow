@@ -47,7 +47,7 @@ public class ShadowTheHedgehog extends Modifier {
         player.giveEffectOrThrow(new StatusEffectInstance(
             StatusEffects.SPEED,
             -1,
-            2,
+            3 - 1,
             true,
             false,
             true

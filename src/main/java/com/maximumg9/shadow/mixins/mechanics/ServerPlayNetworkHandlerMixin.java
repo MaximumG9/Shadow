@@ -2,7 +2,6 @@ package com.maximumg9.shadow.mixins.mechanics;
 
 import com.maximumg9.shadow.GamePhase;
 import com.maximumg9.shadow.Shadow;
-import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.TimeUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;

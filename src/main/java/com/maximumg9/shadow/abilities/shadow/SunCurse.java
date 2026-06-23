@@ -2,7 +2,6 @@ package com.maximumg9.shadow.abilities.shadow;
 
 import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.abilities.AbilityResult;
-import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.NBTUtil;
 import com.maximumg9.shadow.util.TextUtil;
@@ -18,8 +17,6 @@ import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Unit;
-
-import java.util.stream.Stream;
 
 public class SunCurse extends ToggleStrength {
     private static final ItemStack ITEM_STACK_DAY;
@@ -73,18 +70,6 @@ public class SunCurse extends ToggleStrength {
 
     @Override
     public void init() {
-        this.getShadow().addTickable(
-            Delay.instant(() -> {
-                Stream<Ability> abilities = player.role.getAbilities().stream();
-
-                player.role.removeAbilities(
-                    abilities.filter(
-                        (ability) -> ability.getID() == ID &&
-                        ability != this
-                    ).toList()
-                );
-            })
-        );
     }
 
     @Override
@@ -116,7 +101,7 @@ public class SunCurse extends ToggleStrength {
                 new StatusEffectInstance(
                     StatusEffects.STRENGTH,
                     -1,
-                    0,
+                    1 - 1,
                     false,
                     false,
                     true

@@ -3,7 +3,6 @@ package com.maximumg9.shadow.config;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.RoleSelect;
 import com.maximumg9.shadow.roles.*;
-import com.maximumg9.shadow.roles.neutral.Spectator;
 import com.maximumg9.shadow.saving.Saveable;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.screens.RoleSlotScreenHandler;

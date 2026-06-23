@@ -144,12 +144,10 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         NbtCompound teamViewOverrides = nbt.getCompound("team_view_overrides");
         teamViewOverrides.getKeys()
             .forEach(
-                (playerUUID) -> {
-                    this.teamViewOverrides.put(
-                        getShadow().indirectPlayerManager.get(UUID.fromString(playerUUID)),
-                        InternalTeam.getTeam(teamViewOverrides.getString(playerUUID))
-                    );
-                }
+                (playerUUID) -> this.teamViewOverrides.put(
+                    getShadow().indirectPlayerManager.get(UUID.fromString(playerUUID)),
+                    InternalTeam.getTeam(teamViewOverrides.getString(playerUUID))
+                )
             );
 
         this.offlineTicks = nbt.getInt("offline_ticks");
@@ -186,12 +184,10 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         NbtCompound teamViewOverrides = new NbtCompound();
 
         this.teamViewOverrides.forEach(
-            (player, team) -> {
-                teamViewOverrides.putString(
-                    player.playerUUID.toString(),
-                    team.teamName
-                );
-            }
+            (player, team) -> teamViewOverrides.putString(
+                player.playerUUID.toString(),
+                team.teamName
+            )
         );
 
         nbt.put("team_view_overrides", teamViewOverrides);
@@ -368,9 +364,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         SubtitleS2CPacket packet = new SubtitleS2CPacket(subtitle);
 
         scheduleUntil(
-            (player) -> {
-                player.networkHandler.sendPacket(packet);
-            }
+            (player) -> player.networkHandler.sendPacket(packet)
             , cancelCondition);
     }
     
@@ -439,9 +433,11 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
 
     public HashMap<String, Team> getLiteralViewOverrides() {
         HashMap<String, Team> literalNames = new HashMap<>();
-        this.teamViewOverrides.forEach((iP, team) -> {
-                literalNames.put(iP.getLiteralName(), server.getScoreboard().getTeam(team.teamName));
-            }
+        this.teamViewOverrides.forEach((iP, team) ->
+            literalNames.put(
+                iP.getLiteralName(),
+                server.getScoreboard().getTeam(team.teamName)
+            )
         );
         return literalNames;
     }
@@ -454,7 +450,6 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     }
 
     public void removeFromTeamViewOverrides(IndirectPlayer target) {
-        InternalTeam team = this.teamViewOverrides.get(target);
         this.teamViewOverrides.remove(target);
         server.getScoreboard().updateScoreboardTeamAndPlayers(server.getScoreboard().getScoreHolderTeam(target.getLiteralName()));
     }

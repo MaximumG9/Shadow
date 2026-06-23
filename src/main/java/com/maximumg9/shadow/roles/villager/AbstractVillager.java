@@ -33,7 +33,7 @@ public abstract class AbstractVillager extends Role {
         this.player.giveEffect(
                 new StatusEffectInstance(
                         StatusEffects.DARKNESS,
-                        -1,0,
+                        -1,1 - 1,
                         true,false,
                         true
                 ),

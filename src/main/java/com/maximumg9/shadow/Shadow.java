@@ -10,7 +10,6 @@ import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.items.ItemUseCallback;
 import com.maximumg9.shadow.items.ParticipationEye;
 import com.maximumg9.shadow.roles.Faction;
-import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.util.LinkRegistry;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.WinState;
@@ -21,7 +20,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.logging.LogUtils;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -42,14 +40,9 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.io.*;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class Shadow implements Tickable {
-    
-    public static final Map<Identifier, Function<Item.Settings, Item>> modifiedItems = new HashMap<>();
-    
     public static final HashMap<Identifier, ItemUseCallback> ITEM_USE_CALLBACK_MAP = new HashMap<>();
     public static final File CONFIG_FILE = new File("config.nbt");
     private static final File INDIRECT_PLAYERS_FILE = new File("shadow-indirect-players.nbt");
@@ -153,16 +146,12 @@ public class Shadow implements Tickable {
     
     public void setNight() {
         this.state.isNight = true;
-        this.indirectPlayerManager.getAllPlayers().forEach((player) -> {
-            player.role.onNight();
-        });
+        this.indirectPlayerManager.getAllPlayers().forEach((player) -> player.role.onNight());
     }
     
     public void setDay() {
         this.state.isNight = false;
-        this.indirectPlayerManager.getAllPlayers().forEach((player) -> {
-            player.role.onDay();
-        });
+        this.indirectPlayerManager.getAllPlayers().forEach((player) -> player.role.onDay());
     }
     
     public void setSilentDay() {

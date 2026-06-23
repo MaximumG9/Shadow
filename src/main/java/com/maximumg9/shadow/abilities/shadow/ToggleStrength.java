@@ -69,7 +69,7 @@ public class ToggleStrength extends Ability {
                 new StatusEffectInstance(
                     StatusEffects.STRENGTH,
                     -1,
-                    0,
+                    1 - 1,
                     false,
                     false,
                     true
@@ -80,7 +80,7 @@ public class ToggleStrength extends Ability {
                     new StatusEffectInstance(
                         StatusEffects.HASTE,
                         -1,
-                        4,
+                        5 - 1,
                         false,
                         false,
                         true
@@ -90,7 +90,7 @@ public class ToggleStrength extends Ability {
                     new StatusEffectInstance(
                         StatusEffects.SPEED,
                         -1,
-                        1,
+                        2 - 1,
                         false,
                         false,
                         true
@@ -115,7 +115,7 @@ public class ToggleStrength extends Ability {
                     new StatusEffectInstance(
                         StatusEffects.HASTE,
                         -1,
-                        1,
+                        2 - 1,
                         false,
                         false,
                         true
@@ -146,7 +146,7 @@ public class ToggleStrength extends Ability {
             new StatusEffectInstance(
                 StatusEffects.HASTE,
                 -1,
-                1,
+                2 - 1,
                 false,
                 false,
                 true
@@ -162,7 +162,7 @@ public class ToggleStrength extends Ability {
                 new StatusEffectInstance(
                     StatusEffects.HASTE,
                     -1,
-                    4,
+                    5 - 1,
                     false,
                     false,
                     true
@@ -173,7 +173,7 @@ public class ToggleStrength extends Ability {
                 new StatusEffectInstance(
                     StatusEffects.SPEED,
                     -1,
-                    1,
+                    2 - 1,
                     false,
                     false,
                     true
@@ -197,7 +197,7 @@ public class ToggleStrength extends Ability {
             new StatusEffectInstance(
                 StatusEffects.HASTE,
                 -1,
-                1,
+                2 - 1,
                 false,
                 false,
                 true

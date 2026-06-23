@@ -5,6 +5,7 @@ import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.abilities.AbilityFilterResult;
 import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.util.TimeUtil;
+import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 
 public abstract class Filters {
 
@@ -136,9 +137,7 @@ public abstract class Filters {
                 ).count();
             long nonShadows = shadow.indirectPlayerManager
                 .getRecentlyOnlinePlayers(shadow.config.disconnectTime)
-                .stream().filter(
-                    (player) -> player.isLiving()
-                )
+                .stream().filter(IndirectPlayer::isLiving)
                 .count() - shadows;
 
             return nonShadows > shadows;
@@ -160,6 +159,10 @@ public abstract class Filters {
 
         private final int maxUses;
         private int uses = 0;
+
+        public LimitedUses(int maxUses) {
+            this(maxUses,DEFAULT_MESSAGE);
+        }
 
         public LimitedUses(int maxUses, String message) {
             super(message);

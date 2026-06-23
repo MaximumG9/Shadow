@@ -5,7 +5,6 @@ import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.Tickable;
 import com.maximumg9.shadow.items.Eye;
 import com.maximumg9.shadow.modifiers.Modifier;
-import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.util.indirectplayer.CancelPredicates;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.block.BlockState;
@@ -22,7 +21,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameMode;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.dimension.DimensionType;
 
