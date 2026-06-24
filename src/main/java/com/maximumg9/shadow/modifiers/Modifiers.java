@@ -13,7 +13,8 @@ import java.util.concurrent.CompletableFuture;
 
 public enum Modifiers {
     QUICK_START(QuickStart.FACTORY),
-    SHADOW_THE_HEDGEHOG(ShadowTheHedgehog.FACTORY);
+    SHADOW_THE_HEDGEHOG(ShadowTheHedgehog.FACTORY),
+    SPECIALIST(Specialist.FACTORY);
     
     public final String name;
     public final ModifierFactory<?> factory;

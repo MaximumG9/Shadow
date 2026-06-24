@@ -2,7 +2,7 @@ package com.maximumg9.shadow.screens;
 
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.config.Config;
-import com.maximumg9.shadow.config.Food;
+import com.maximumg9.shadow.items.Food;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import net.minecraft.component.type.LoreComponent;

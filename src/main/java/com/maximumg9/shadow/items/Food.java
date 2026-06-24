@@ -1,4 +1,4 @@
-package com.maximumg9.shadow.config;
+package com.maximumg9.shadow.items;
 
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import net.minecraft.component.DataComponentTypes;
