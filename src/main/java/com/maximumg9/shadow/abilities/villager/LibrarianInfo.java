@@ -11,7 +11,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -20,6 +22,7 @@ import java.util.List;
 
 public class LibrarianInfo extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("librarian_info");
+    private static final Style STYLE = Style.EMPTY.withColor(Formatting.DARK_GREEN);
     private static final ItemStack ITEM_STACK;
     private MutableText playerText = Text.empty();
 
