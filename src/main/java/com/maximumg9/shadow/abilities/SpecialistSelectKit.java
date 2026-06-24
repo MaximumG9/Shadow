@@ -56,7 +56,7 @@ public class SpecialistSelectKit extends Ability {
     @Override
     public AbilityResult apply() {
         this.player.getPlayerOrThrow().openHandledScreen(
-            new DecisionScreenHandler.Factory<Kit>(
+            new DecisionScreenHandler.Factory<>(
                 Text.literal("Kit to select"),
                 (kit, clicker, _a, _b) -> {
                     if (kit == null) {
@@ -64,7 +64,7 @@ public class SpecialistSelectKit extends Ability {
                         return;
                     }
                     RegistryWrapper.WrapperLookup reg = clicker.server.getRegistryManager();
-                    for(Function<RegistryWrapper.WrapperLookup,ItemStack> itemSupplier : kit.items) {
+                    for (Function<RegistryWrapper.WrapperLookup, ItemStack> itemSupplier : kit.items) {
                         this.player.giveItemOrThrow(
                             itemSupplier.apply(reg),
                             MiscUtil.DROP

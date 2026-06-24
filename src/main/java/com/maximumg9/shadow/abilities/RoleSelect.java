@@ -74,7 +74,7 @@ public class RoleSelect extends Ability {
     @Override
     public AbilityResult apply() {
         this.player.getPlayerOrThrow().openHandledScreen(
-            new DecisionScreenHandler.Factory<Role>(
+            new DecisionScreenHandler.Factory<>(
                 Text.literal("Role to select"),
                 (target, actor, _a, _b) -> {
                     if (target == null) {

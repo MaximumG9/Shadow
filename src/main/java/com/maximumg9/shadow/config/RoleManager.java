@@ -108,15 +108,15 @@ public class RoleManager implements Saveable {
         // Set non participating players to spectators
         shadow.getOnlinePlayers().stream()
             .filter((player -> !player.participating))
-            .forEach(player -> {
-                player.role = Roles.SPECTATOR.factory.makeRole(player);
-            });
+            .forEach(player ->
+                player.role = Roles.SPECTATOR.factory.makeRole(player)
+            );
         
         shadow.getAllPlayers().stream()
             .filter(player -> player.getPlayer().isEmpty())
-            .forEach(player -> {
-                player.role = Roles.SPECTATOR.factory.makeRole(player);
-            });
+            .forEach(player ->
+                player.role = Roles.SPECTATOR.factory.makeRole(player)
+            );
         
         return true;
     }

@@ -27,6 +27,7 @@ public enum Roles {
     LIFEWEAVER_REWORK(LifeweaverRework.FACTORY),
     LIFELINK(Lifelink.FACTORY),
     PARANOID(Paranoid.FACTORY),
+    LIBRARIAN(Librarian.FACTORY),
 
     POSEIDONS_WRATH(PoseidonsWrath.FACTORY),
     SHADOW(ShadowRole.FACTORY),
