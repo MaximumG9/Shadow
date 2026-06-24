@@ -14,7 +14,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -44,10 +43,10 @@ public abstract class MiscUtil {
     public static Identifier shadowID(String id) {
         return Identifier.of("shadow", id);
     }
-    public static LoreComponent makeLore(MutableText... texts) {
+    public static LoreComponent makeLore(Text... texts) {
         List<Text> lore = Arrays.stream(texts)
             .map(
-                (text) -> (Text) text.setStyle(text.getStyle().withParent(DEFAULT_STYLE))
+                (text) -> (Text) text.copy().setStyle(text.getStyle().withParent(DEFAULT_STYLE))
             ).toList();
         return new LoreComponent(lore, lore);
     }
