@@ -92,7 +92,6 @@ public class RoleManager implements Saveable {
             if (selectionRegistry != null && role.faction == Faction.SHADOW) {
                 selectionRegistry.add(role.factory.makeRole(null));
 
-                player.originalRole = Roles.TEMP_ROLE;
                 player.role = new TemporaryRole(
                     player,
                     Faction.SHADOW,
@@ -102,7 +101,6 @@ public class RoleManager implements Saveable {
                 RoleSelect a = (RoleSelect) player.role.addAbility(p -> new RoleSelect(p, selectionRegistry));
                 a.setForceSelectionTimer(shadow.config.gracePeriodTicks);
             } else {
-                player.originalRole = role;
                 player.role = role.factory.makeRole(player);
             }
         }
@@ -111,14 +109,12 @@ public class RoleManager implements Saveable {
         shadow.getOnlinePlayers().stream()
             .filter((player -> !player.participating))
             .forEach(player -> {
-                player.originalRole = Roles.SPECTATOR;
                 player.role = Roles.SPECTATOR.factory.makeRole(player);
             });
         
         shadow.getAllPlayers().stream()
             .filter(player -> player.getPlayer().isEmpty())
             .forEach(player -> {
-                player.originalRole = Roles.SPECTATOR;
                 player.role = Roles.SPECTATOR.factory.makeRole(player);
             });
         

@@ -103,7 +103,6 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.name = src.getLiteralName();
         this.chatMessageCooldown = src.chatMessageCooldown;
         this.originalRole = src.originalRole;
-        this.offlineTicks = src.offlineTicks;
         this.extraStorage = src.extraStorage.copy();
     }
 
@@ -119,12 +118,6 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
 
         if (nbt.contains("role", NbtElement.COMPOUND_TYPE)) {
             tempRole = Role.load(nbt.getCompound("role"), this);
-        }
-
-        if (nbt.contains("original_role", NbtElement.STRING_TYPE)) {
-            this.originalRole = Roles.getRole(nbt.getString("original_role"));
-        } else {
-            this.originalRole = null;
         }
 
         if (nbt.contains("modifiers", NbtElement.LIST_TYPE)) {
@@ -172,10 +165,6 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         nbt.putString("name", this.name);
 
         nbt.put("role", this.role.writeNBT(new NbtCompound()));
-
-        if (this.originalRole != null) {
-            nbt.putString("original_role", this.originalRole.name);
-        }
         
         NbtList list = new NbtList();
         list.addAll(this.modifiers.stream().map(modifier -> modifier.writeNBT(new NbtCompound())).toList());
