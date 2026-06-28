@@ -3,6 +3,7 @@ package com.maximumg9.shadow.items;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.abilities.AbilityResult;
+import com.maximumg9.shadow.roles.Faction;
 import com.maximumg9.shadow.roles.Role;
 import com.maximumg9.shadow.screens.DecisionScreenHandler;
 import com.maximumg9.shadow.screens.ItemRepresentable;
@@ -15,7 +16,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -73,13 +76,42 @@ public class AbilityStar implements ItemUseCallback {
                     DataComponentTypes.ITEM_NAME,
                     player.role.getName()
                 );
-                roleCard.set(
-                    DataComponentTypes.LORE,
-                    MiscUtil.makeLore(
-                        TextUtil.gray("Subfaction: ").append(player.role.getSubFaction().name),
-                        TextUtil.gray("Your alignment: ").append(player.role.getFaction().name)
-                    )
-                );
+                if(role.getFaction() == Faction.SHADOW) {
+                    roleCard.set(
+                        DataComponentTypes.LORE,
+                        MiscUtil.makeLore(
+                            TextUtil.gray("Subfaction: ").append(player.role.getSubFaction().name),
+                            TextUtil.gray("Your alignment: ").append(player.role.getFaction().name),
+                            TextUtil.gray("Your shadow partners: ").append(
+                                Texts.join(
+                                    shadow.getAllLivingPlayers()
+                                        .filter((p) -> p.role.getFaction() == Faction.SHADOW)
+                                        .map((p) -> {
+                                            MutableText playerName = p.getName()
+                                                .copy()
+                                                .setStyle(p.role.getStyle());
+                                            if(!p.isLiving()) {
+                                                playerName.append(
+                                                    TextUtil.gray("(Dead)")
+                                                );
+                                            }
+                                            return playerName;
+                                        }).toList(),
+                                    Text.literal(",")
+                                )
+                            )
+                        )
+                    );
+                } else {
+                    roleCard.set(
+                        DataComponentTypes.LORE,
+                        MiscUtil.makeLore(
+                            TextUtil.gray("Subfaction: ").append(player.role.getSubFaction().name),
+                            TextUtil.gray("Your alignment: ").append(player.role.getFaction().name)
+                        )
+                    );
+                }
+
                 roleCard.set(
                     DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE,
                     true

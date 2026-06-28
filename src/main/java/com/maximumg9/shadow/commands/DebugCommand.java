@@ -19,6 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.Heightmap;
@@ -154,12 +155,19 @@ public class DebugCommand {
                     literal("eyes")
                         .requires((source) -> source.hasPermissionLevel(3))
                         .executes((ctx) -> {
-                            StringBuilder text = new StringBuilder("Eyes: ");
-                            for (Eye eye : getShadow(ctx.getSource().getServer()).state.eyes) {
-                                text.append(eye.toString()).append(", ");
-                            }
-                            
-                            ctx.getSource().sendFeedback(() -> Text.literal(text.toString()), false);
+                            Text eyeText = Texts.join(
+                                getShadow(ctx.getSource().getServer())
+                                    .state.eyes.stream()
+                                    .map(Eye::toString)
+                                    .map(Text::literal)
+                                    .toList(),
+                                Text.literal(",")
+                            );
+
+                            ctx.getSource().sendFeedback(
+                                () -> Text.literal("Eyes: ").append(eyeText),
+                                false
+                            );
                             
                             return 1;
                         })

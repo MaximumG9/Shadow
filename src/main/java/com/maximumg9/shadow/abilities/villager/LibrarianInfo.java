@@ -12,6 +12,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -21,7 +22,7 @@ import java.util.List;
 public class LibrarianInfo extends Ability {
     public static final Identifier ID = MiscUtil.shadowID("librarian_info");
     private static final ItemStack ITEM_STACK;
-    private final MutableText playerText = Text.empty();
+    private Text playerText = Text.empty();
 
     static {
         ITEM_STACK = Items.BOOK.getDefaultStack();
@@ -66,13 +67,10 @@ public class LibrarianInfo extends Ability {
 
             MutableText message = Text.literal("At least two of these players are on your faction:\n").setStyle(Librarian.STYLE);
 
-            boolean first = true;
-
-            for(IndirectPlayer p : players) {
-                if(!first) playerText.append(", ");
-                first = false;
-                playerText.append(p.getName());
-            }
+            playerText = Texts.join(
+                players.stream().map(IndirectPlayer::getName).toList(),
+                Text.literal(",")
+            );
 
             this.player.sendMessageOrThrow(
                 message.append(playerText)

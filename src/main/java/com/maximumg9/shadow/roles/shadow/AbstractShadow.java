@@ -66,7 +66,7 @@ public abstract class AbstractShadow extends Role {
                                 ).map(
                                     (p) -> p.getName().copy().setStyle(p.role.getStyle())
                                 ).toList(),
-                            TextUtil.gray(", ")
+                            Text.literal(", ")
                         )
                     ),
                 CancelPredicates.cancelOnPhaseChange(player.getShadow().state.phase)
