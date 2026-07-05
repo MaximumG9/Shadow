@@ -30,15 +30,17 @@ public abstract class AbstractVillager extends Role {
             TextUtil.green("It is now night. The power of the shadows grow."),
             CancelPredicates.IS_DAY
         );
-        this.player.giveEffect(
+        if(this.player.isLiving()) {
+            this.player.giveEffect(
                 new StatusEffectInstance(
-                        StatusEffects.DARKNESS,
-                        -1,1 - 1,
-                        true,false,
-                        true
+                    StatusEffects.DARKNESS,
+                    -1,1 - 1,
+                    true,false,
+                    true
                 ),
                 CancelPredicates.IS_DAY
-        );
+            );
+        }
         super.onNight();
     }
 

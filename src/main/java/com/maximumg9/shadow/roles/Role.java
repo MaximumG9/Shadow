@@ -71,8 +71,12 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     }
     
     public void onDeath(DamageSource damageSource) {
-        for (Ability ability : this.getAbilities()) {
+        for (ListIterator<Ability> it = this.abilities.listIterator(); it.hasNext(); ) {
+            Ability ability = it.next();
             ability.onDeath(damageSource);
+            if(!ability.preserveOnDeath()) {
+                it.remove();
+            }
         }
         for (IndirectPlayer indirect : player.getShadow().getAllPlayers()) {
             indirect.role.onAnyDeath(damageSource, player);

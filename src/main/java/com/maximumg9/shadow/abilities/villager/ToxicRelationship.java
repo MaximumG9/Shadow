@@ -94,6 +94,11 @@ public class ToxicRelationship extends Ability {
     }
 
     @Override
+    public boolean preserveOnDeath() {
+        return true;
+    }
+
+    @Override
     public Identifier getID() { return ID; }
 
     @Override

@@ -107,6 +107,8 @@ public abstract class Ability implements ItemRepresentable, Tickable {
 
     public void tick() { }
 
+    public boolean preserveOnDeath() { return false; }
+
     public Optional<Boolean> overrideWin(WinState state) { return Optional.empty(); }
 
     @FunctionalInterface

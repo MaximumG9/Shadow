@@ -28,7 +28,7 @@ public class Paranoia extends Ability {
     private static final List<Identifier> NIGHT_TRIGGER   = List.of(SeeGlowing.ID, BloodMoon.ID);
     private static final List<Identifier> DAY_TRIGGER     = List.of(SunCurse.ID);
     private static final List<Identifier> TOGGLE_TRIGGER  = List.of(ToggleStrength.ID, SunCurse.ID, Haunt.ID);
-    private static Set<IndirectPlayer> suspiciousPlayers  = new HashSet<>();
+    private static final Set<IndirectPlayer> suspiciousPlayers  = new HashSet<>();
     private Set<IndirectPlayer> playersToPing = new HashSet<>();
     private boolean currentPing = false;
     private int pingDelay = 20 * 5 * 60;
@@ -101,11 +101,6 @@ public class Paranoia extends Ability {
     }
 
     @Override
-    public void onDay() {
-        suspiciousPlayers = new HashSet<>();
-    }
-
-    @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
         ItemStack pingStack = ITEM_STACK.copy();
         pingStack.set(
@@ -131,6 +126,8 @@ public class Paranoia extends Ability {
     public void tick() {
         List<IndirectPlayer> livingPlayers = getShadow().getAllLivingPlayers().toList();
 
+        suspiciousPlayers.clear();
+
         livingPlayers.stream()
             .filter(p -> p.role.hasAbility(MoonlitMark.ID))
             .flatMap(
@@ -138,7 +135,7 @@ public class Paranoia extends Ability {
                     .flatMap(a -> ((MoonlitMark) a).getMarkedTarget())
                     .stream()
             ).forEach(
-                p -> suspiciousPlayers.add(p)
+                suspiciousPlayers::add
             );
         livingPlayers.stream()
             .filter(p -> p.role.hasAbility(LifeShield.ID))
@@ -147,7 +144,7 @@ public class Paranoia extends Ability {
                     .flatMap(a -> ((LifeShield) a).getShieldedPlayer())
                     .stream()
             ).forEach(
-                p -> suspiciousPlayers.add(p)
+                suspiciousPlayers::add
             );
 
         Optional<ServerPlayerEntity> possiblePlayer = this.player.getPlayer();
