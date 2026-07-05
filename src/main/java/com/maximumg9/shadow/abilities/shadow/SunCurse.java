@@ -16,11 +16,14 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 
 public class SunCurse extends ToggleStrength {
     private static final ItemStack ITEM_STACK_DAY;
     private static final ItemStack ITEM_STACK_NIGHT;
+
+    public static final Identifier ID = MiscUtil.shadowID("sun_curse");
 
     static {
         ITEM_STACK_DAY = PotionContentsComponent.createStack(Items.POTION, Potions.LONG_WEAKNESS);
@@ -86,6 +89,11 @@ public class SunCurse extends ToggleStrength {
             StatusEffects.HASTE,
             CancelPredicates.NEVER_CANCEL
         );
+    }
+
+    @Override
+    public Identifier getID() {
+        return ID;
     }
 
     @Override

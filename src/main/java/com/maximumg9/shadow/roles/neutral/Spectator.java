@@ -76,7 +76,7 @@ public class Spectator extends Role {
     }
 
     @Override
-    public boolean shouldWin(WinState winState) {
+    public boolean shouldWinRole(WinState winState) {
         return false;
     }
 

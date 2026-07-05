@@ -2,6 +2,7 @@ package com.maximumg9.shadow.roles.shadow;
 
 import com.maximumg9.shadow.abilities.shadow.Haunt;
 import com.maximumg9.shadow.abilities.shadow.NoStrength;
+import com.maximumg9.shadow.abilities.shadow.SeeGlowing;
 import com.maximumg9.shadow.roles.RoleFactory;
 import com.maximumg9.shadow.roles.Roles;
 import com.maximumg9.shadow.roles.SubFaction;
@@ -26,7 +27,7 @@ public class Spectre extends AbstractShadow {
     }
 
     public Spectre(@Nullable IndirectPlayer player) {
-        super(player, List.of(Haunt::new, NoStrength::new));
+        super(player, List.of(Haunt::new, NoStrength::new, SeeGlowing::new), true);
     }
     @Override
     public SubFaction getSubFaction() {

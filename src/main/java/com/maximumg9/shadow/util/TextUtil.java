@@ -17,6 +17,10 @@ public class TextUtil {
         return Text.literal(text).styled(style -> style.withColor(Formatting.RED));
     }
 
+    public static MutableText yellow(String text) {
+        return Text.literal(text).styled(style -> style.withColor(Formatting.YELLOW));
+    }
+
     public static MutableText gold(String text) {
         return Text.literal(text).styled(style -> style.withColor(Formatting.GOLD));
     }

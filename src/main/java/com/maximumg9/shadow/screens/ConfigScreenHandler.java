@@ -5,6 +5,7 @@ import com.maximumg9.shadow.config.Config;
 import com.maximumg9.shadow.items.Food;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.TimeUtil;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -141,6 +142,14 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
         else pinataHitStack.set(DataComponentTypes.ITEM_NAME, TextUtil.withColour("[DISABLED] Piñata gifts on hit", Formatting.GRAY));
         //this.inventory.setStack(5+(1*9),pinataHitStack);
 
+        ItemStack toxicRelationshipLengthStack = Items.TARGET.getDefaultStack();
+        toxicRelationshipLengthStack.set(
+            DataComponentTypes.ITEM_NAME,
+            TextUtil.withColour("Toxic Relationship length: ", Formatting.WHITE)
+                .append(Text.literal(TimeUtil.ticksToText(config.toxicRelationshipLength,false)))
+        );
+        this.inventory.setStack(6+(0*9),toxicRelationshipLengthStack);
+
 
         ItemStack infoStack = Items.PAPER.getDefaultStack();
         infoStack.set(DataComponentTypes.ITEM_NAME, DEBUG_INFO_PAPER);
@@ -160,12 +169,12 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
 
         ClickType clickType = button == 0 ? ClickType.LEFT : ClickType.RIGHT;
 
-        if(slotIndex == 0) {
+        if(slotIndex == 0+(0*9)) {
             if (actionType == SlotActionType.THROW) config.overworldEyes = 8;
             else if (clickType == ClickType.LEFT) config.overworldEyes++;
             else if (config.overworldEyes > 1) config.overworldEyes--;
         }
-        if(slotIndex == 0+9) {
+        if(slotIndex == 0+(1*9)) {
             if (actionType == SlotActionType.THROW) config.netherEyes = 8;
             else if (clickType == ClickType.LEFT) config.netherEyes++;
             else if (config.netherEyes > 1) config.netherEyes--;
@@ -176,7 +185,7 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
             else if (config.netherRoofEyes > 1) config.netherRoofEyes--;
         }
 
-        if(slotIndex == 1) {
+        if(slotIndex == 1+(0*9)) {
             if (actionType == SlotActionType.THROW) {
                 config.foodAmount = 16;
                 config.food = Food.BREAD;
@@ -186,7 +195,7 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
             else if (config.foodAmount > 1) config.foodAmount--;
         }
 
-        if(slotIndex == 2) {
+        if(slotIndex == 2+(0*9)) {
             if (actionType == SlotActionType.THROW) {
                 config.chatMessageCooldown = 30 * 20;
                 config.disableChat = false;
@@ -202,7 +211,7 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
             else if (config.gracePeriodTicks > 20) config.gracePeriodTicks -= 20;
         }
 
-        if(slotIndex == 3) {
+        if(slotIndex == 3+(0*9)) {
             if (actionType == SlotActionType.THROW) config.cullRadius = 18;
             else if (clickType == ClickType.LEFT) config.cullRadius+=0.5;
             else if (config.chatMessageCooldown > 1) config.cullRadius-=0.5;
@@ -218,19 +227,25 @@ public class ConfigScreenHandler extends ShadowScreenHandler {
             else if (config.chatMessageCooldown > 1) config.markRadius-=0.5;
         }
 
-        if(slotIndex == 4) {
+        if(slotIndex == 4+(0*9)) {
             if (actionType == SlotActionType.THROW) config.worldBorderSize = 150;
             else if (clickType == ClickType.LEFT) config.worldBorderSize++;
             else if (config.worldBorderSize > 1) config.worldBorderSize--;
         }
 
-        if(slotIndex == 5) {
+        if(slotIndex == 5+(0*9)) {
             if (actionType == SlotActionType.THROW) config.shadowsChooseRole = false;
             else config.shadowsChooseRole = !config.shadowsChooseRole;
         }
         if(slotIndex == 5+(1*9)) {
             if (actionType == SlotActionType.THROW) config.pinataHittable = false;
             else config.pinataHittable = !config.pinataHittable;
+        }
+
+        if(slotIndex == 6+(0*9)) {
+            if (actionType == SlotActionType.THROW) config.toxicRelationshipLength = 10 * 60 * 20;
+            else if (clickType == ClickType.LEFT) config.toxicRelationshipLength += 20;
+            else if (config.worldBorderSize > 20) config.toxicRelationshipLength -= 20;
         }
 
         this.buildUI();

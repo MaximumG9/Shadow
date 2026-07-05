@@ -10,6 +10,7 @@ public class CancellableDelay extends Delay {
     private final Runnable cancelTask;
     private int timer;
     private final Supplier<Boolean> cancelCondition;
+    private boolean cancelled = false;
 
     private CancellableDelay(Runnable task, Runnable cancelTask, int tickDelay, Supplier<Boolean> cancelCondition) {
         super(task, tickDelay);
@@ -33,10 +34,19 @@ public class CancellableDelay extends Delay {
     }
 
     @Override
-    public boolean shouldEnd() { return timer <= 0 || cancelCondition.get(); }
+    public boolean shouldEnd() {
+        this.cancelled = cancelCondition.get();
+        return timer <= 0 || cancelled;
+    }
 
     @Override
-    public void onEnd() { if (!cancelCondition.get()) task.run(); }
+    public void onEnd() {
+        if (this.cancelled) {
+            cancelTask.run();
+        } else {
+            task.run();
+        }
+    }
 
     public static Supplier<Boolean> wrapCancelCondition(Predicate<IndirectPlayer> s, IndirectPlayer iP) {
         return () -> s.test(iP);

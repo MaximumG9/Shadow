@@ -68,7 +68,7 @@ public class TemporaryRole extends Role {
     }
 
     @Override
-    public boolean shouldWin(WinState winState) {
+    public boolean shouldWinRole(WinState winState) {
         return winCon.shouldWin(winState);
     }
 

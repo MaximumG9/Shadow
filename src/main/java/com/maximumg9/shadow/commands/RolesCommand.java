@@ -14,11 +14,10 @@ public class RolesCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
             literal("$roles")
+                .requires(ServerCommandSource::isExecutedByPlayer)
                 .executes((ctx) -> {
                     ServerCommandSource src = ctx.getSource();
-                    
-                    if (!src.isExecutedByPlayer()) { return -1; }
-                    
+
                     Shadow shadow = getShadow(src.getServer());
                     
                     shadow.config.roleManager.showRoleListIndex(Objects.requireNonNull(src.getPlayer()), src.hasPermissionLevel(3));

@@ -42,7 +42,7 @@ public abstract class AbstractVillager extends Role {
         super.onNight();
     }
 
-    public boolean shouldWin(WinState winState) {
+    public boolean shouldWinRole(WinState winState) {
         return winState == WinState.SHADOWS_KILLED || winState == WinState.DRAGON_KILLED;
     }
 

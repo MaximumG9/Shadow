@@ -32,7 +32,7 @@ public class Pinata extends AbstractNeutral {
         super(player, player == null ? List.of(PinataGift::new) : !player.getShadow().config.pinataHittable ? List.of(PinataGift::new) : List.of(PinataGift::new, PinataHit::new));
     }
 
-    public boolean shouldWin(WinState winState) {
+    public boolean shouldWinRole(WinState winState) {
         return this.player.isLiving();
     }
 

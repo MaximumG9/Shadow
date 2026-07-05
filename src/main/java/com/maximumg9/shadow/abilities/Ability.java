@@ -6,6 +6,7 @@ import com.maximumg9.shadow.abilities.filters.Filter;
 import com.maximumg9.shadow.abilities.villager.Paranoia;
 import com.maximumg9.shadow.screens.ItemRepresentable;
 import com.maximumg9.shadow.util.TextUtil;
+import com.maximumg9.shadow.util.WinState;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.text.MutableText;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class Ability implements ItemRepresentable, Tickable {
+    private static final Text INFO_TEXT = TextUtil.withColour("[INFORMATION]",Formatting.AQUA);
     private static final Text PASSIVE_TEXT = TextUtil.blue("[PASSIVE]");
     private static final Text ITEM_TEXT = TextUtil.gold("[ITEM]");
     private static final Text INVISIBLE_TEXT = TextUtil.gray("[INVISIBLE]");
@@ -29,10 +31,12 @@ public abstract class Ability implements ItemRepresentable, Tickable {
     public Ability(IndirectPlayer player) {
         this.player = player;
     }
+    protected static MutableText InfoText() { return INFO_TEXT.copy(); }
     protected static MutableText PassiveText() { return PASSIVE_TEXT.copy(); }
     protected static MutableText ItemText() { return ITEM_TEXT.copy(); }
     protected static MutableText InvisibleText() { return INVISIBLE_TEXT.copy(); }
     protected static MutableText AbilityText() { return ABILITY_TEXT.copy(); }
+
     public List<Filter> getFilters() { return List.of(); }
     public long getLastActivated() { return lastActivated; }
     public void resetLastActivated() { this.lastActivated = this.getShadow().getServer().getOverworld().getTime(); }
@@ -102,6 +106,8 @@ public abstract class Ability implements ItemRepresentable, Tickable {
     public void onPlayerKill() { }
 
     public void tick() { }
+
+    public Optional<Boolean> overrideWin(WinState state) { return Optional.empty(); }
 
     @FunctionalInterface
     public interface Factory {

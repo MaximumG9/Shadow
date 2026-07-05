@@ -91,13 +91,14 @@ public class LibrarianInfo extends Ability {
 
     @Override
     public ItemStack getAsItem(RegistryWrapper.WrapperLookup registries) {
-        Text constant = Text.literal("At least two of these players are in your faction").setStyle(Librarian.STYLE);
+        Text prefix = Text.literal("At least two of these players are in your faction").setStyle(Librarian.STYLE);
         ItemStack stack = ITEM_STACK.copy();
         stack.set(
             DataComponentTypes.LORE,
             MiscUtil.makeLore(
-                constant,
-                playerText
+                prefix,
+                playerText,
+                InfoText()
             )
         );
         return stack;

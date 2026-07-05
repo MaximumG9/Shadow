@@ -83,7 +83,7 @@ public abstract class AbstractShadow extends Role {
     @Override
     public Faction getFaction() { return Faction.SHADOW; }
 
-    public boolean shouldWin(WinState winState) {
+    public boolean shouldWinRole(WinState winState) {
         return winState == WinState.VILLAGERS_KILLED;
     }
     

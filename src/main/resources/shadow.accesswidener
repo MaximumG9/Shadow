@@ -26,4 +26,6 @@ mutable field net/minecraft/entity/boss/dragon/EnderDragonFight previouslyKilled
 accessible method net/minecraft/entity/LivingEntity tryUseTotem (Lnet/minecraft/entity/damage/DamageSource;)Z
 accessible field net/minecraft/entity/LivingEntity HEALTH Lnet/minecraft/entity/data/TrackedData;
 
+accessible field net/minecraft/command/EntitySelector uuid Ljava/util/UUID;
+
 accessible class net/minecraft/structure/StrongholdGenerator$Piece

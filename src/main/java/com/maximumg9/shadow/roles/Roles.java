@@ -28,6 +28,7 @@ public enum Roles {
     LIFELINK(Lifelink.FACTORY),
     PARANOID(Paranoid.FACTORY),
     LIBRARIAN(Librarian.FACTORY),
+    LOVER(Lover.FACTORY),
 
     POSEIDONS_WRATH(PoseidonsWrath.FACTORY),
     SHADOW(ShadowRole.FACTORY),

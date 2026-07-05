@@ -1,5 +1,6 @@
 package com.maximumg9.shadow.roles;
 
+import com.google.common.collect.ImmutableList;
 import com.maximumg9.shadow.Shadow;
 import com.maximumg9.shadow.Tickable;
 import com.maximumg9.shadow.abilities.Ability;
@@ -51,7 +52,7 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     public abstract SubFaction getSubFaction();
     
     public List<Ability> getAbilities() {
-        return this.abilities;
+        return ImmutableList.copyOf(this.abilities);
     }
 
     public Optional<Ability> getAbility(Identifier id) {
@@ -101,6 +102,14 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
 
     public Ability addAbility(Ability.Factory abilityFactory) {
         Ability newAbility = abilityFactory.create(this.player);
+        if(
+            this.abilities.stream()
+            .anyMatch(
+                (ability) -> newAbility.getID().equals(ability.getID())
+            )
+        ) {
+            return null;
+        }
         this.abilities.add(newAbility);
         newAbility.init();
         return newAbility;
@@ -285,7 +294,25 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
         ));
     }
 
-    public abstract boolean shouldWin(WinState winState);
+    public abstract boolean shouldWinRole(WinState winState);
+
+    public boolean shouldWin(WinState winState) {
+        int winPoints = 0;
+        for(Ability ability : this.abilities) {
+            Optional<Boolean> bool = ability.overrideWin(winState);
+            if(bool.isPresent()) {
+                winPoints += bool.get() ? 1 : -1;
+            }
+        }
+
+        if(winPoints > 0) {
+            return true;
+        } else if(winPoints < 0) {
+            return false;
+        } else {
+            return shouldWinRole(winState);
+        }
+    }
     
     public abstract Roles getRole();
     

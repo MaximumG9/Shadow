@@ -2,7 +2,6 @@ package com.maximumg9.shadow.abilities.shadow;
 
 import com.maximumg9.shadow.abilities.Ability;
 import com.maximumg9.shadow.abilities.AbilityResult;
-import com.maximumg9.shadow.util.Delay;
 import com.maximumg9.shadow.util.MiscUtil;
 import com.maximumg9.shadow.util.TextUtil;
 import com.maximumg9.shadow.util.indirectplayer.IndirectPlayer;
@@ -13,10 +12,10 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.stream.Stream;
-
 public class NoStrength extends ToggleStrength {
     private static final ItemStack ITEM_STACK;
+
+    public static final Identifier ID = MiscUtil.shadowID("no_strength");
 
     static {
         ITEM_STACK = new ItemStack(Items.GLASS_BOTTLE, 1);
@@ -40,13 +39,11 @@ public class NoStrength extends ToggleStrength {
 
     @Override
     public void init() {
-        this.getShadow().addTickable(
-            Delay.instant(() -> {
-                Stream<Ability> abilities = player.role.getAbilities().stream();
+    }
 
-                player.role.removeAbilities(abilities.filter((ability) -> ability.getID() == ID && ability != this).toList());
-            })
-        );
+    @Override
+    public Identifier getID() {
+        return ID;
     }
 
     @Override

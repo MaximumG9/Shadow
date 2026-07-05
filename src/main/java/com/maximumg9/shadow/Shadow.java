@@ -127,6 +127,7 @@ public class Shadow implements Tickable {
         CancelCommand.register(dispatcher);
         ShadowChatCommand.register(dispatcher);
         ConfigCommand.register(dispatcher);
+        LoveLetterCommand.register(dispatcher);
     }
     
     private static void save(GameState state, IndirectPlayerManager playerManager, Config config) throws IOException {
