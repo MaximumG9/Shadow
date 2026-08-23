@@ -131,6 +131,7 @@ public abstract class Filters {
             long shadows = shadow.indirectPlayerManager
                 .getRecentlyOnlinePlayers(shadow.config.disconnectTime)
                 .stream()
+                .filter(IndirectPlayer::isLiving)
                 .filter(
                     (player) ->
                         player.role.getFaction() == Faction.SHADOW
