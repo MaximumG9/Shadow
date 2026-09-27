@@ -27,6 +27,12 @@ public class Paranoid extends AbstractVillager {
     public Paranoid(@Nullable IndirectPlayer player) {
         super(player, List.of(Paranoia::new));
     }
+
+    @Override
+    public String aOrAn() {
+        return "";
+    }
+
     @Override
     public SubFaction getSubFaction() {
         return SubFaction.VILLAGER_INFORMATION;
