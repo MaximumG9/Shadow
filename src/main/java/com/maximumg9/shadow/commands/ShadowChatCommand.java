@@ -26,39 +26,24 @@ public class ShadowChatCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> cmd = dispatcher.register(
             literal("shadowchat")
-                .requires(ServerCommandSource::isExecutedByPlayer)
-                .requires((src) -> {
-                    IndirectPlayer p = getShadow(src.getServer()).indirectPlayerManager.getIndirect(
-                        Objects.requireNonNull(src.getPlayer())
-                    );
-                    return p.role.getFaction() == Faction.SHADOW;
-                })
+                .requires(ShadowChatCommand::isShadowPlayer)
                 .then(
                     argument("message", message())
                         .executes(ShadowChatCommand::sendShadowChat)
                 )
         );
-        dispatcher.register(literal("sc").requires(ServerCommandSource::isExecutedByPlayer)
-            .requires((src) -> {
-                IndirectPlayer p = getShadow(src.getServer()).indirectPlayerManager.getIndirect(
-                    Objects.requireNonNull(src.getPlayer())
-                );
-                return p.role.getFaction() == Faction.SHADOW;
-            }).redirect(cmd));
-        dispatcher.register(literal("$shadowchat").requires(ServerCommandSource::isExecutedByPlayer)
-            .requires((src) -> {
-                IndirectPlayer p = getShadow(src.getServer()).indirectPlayerManager.getIndirect(
-                    Objects.requireNonNull(src.getPlayer())
-                );
-                return p.role.getFaction() == Faction.SHADOW;
-            }).redirect(cmd));
-        dispatcher.register(literal("$sc").requires(ServerCommandSource::isExecutedByPlayer)
-            .requires((src) -> {
-                IndirectPlayer p = getShadow(src.getServer()).indirectPlayerManager.getIndirect(
-                    Objects.requireNonNull(src.getPlayer())
-                );
-                return p.role.getFaction() == Faction.SHADOW;
-            }).redirect(cmd));
+        dispatcher.register(literal("sc").requires(ShadowChatCommand::isShadowPlayer).redirect(cmd));
+        dispatcher.register(literal("$shadowchat").requires(ShadowChatCommand::isShadowPlayer).redirect(cmd));
+        dispatcher.register(literal("$sc").requires(ShadowChatCommand::isShadowPlayer).redirect(cmd));
+    }
+
+    private static boolean isShadowPlayer(ServerCommandSource src) {
+        if(!src.isExecutedByPlayer()) return false;
+
+        IndirectPlayer p = getShadow(src.getServer()).indirectPlayerManager.getIndirect(
+            Objects.requireNonNull(src.getPlayer())
+        );
+        return p.role.getFaction() == Faction.SHADOW;
     }
     
     private static int sendShadowChat(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {

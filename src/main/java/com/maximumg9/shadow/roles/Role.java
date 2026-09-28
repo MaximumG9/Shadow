@@ -278,6 +278,8 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             ),
             CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
         );
+
+        this.player.sendCommandTreeIfOnline();
     }
 
     public void win() {

@@ -25,15 +25,23 @@ public class MessageCommandMixin {
     @Inject(method = "execute", at = @At("HEAD"), cancellable = true)
     private static void execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, SignedMessage message, CallbackInfo ci) throws CommandSyntaxException {
         if (!source.isExecutedByPlayer()) return;
-        ServerPlayerEntity p = source.getPlayerOrThrow();
+        ServerPlayerEntity serverPlayer = source.getPlayerOrThrow();
         Shadow shadow = getShadow(source.getServer());
         
         if (shadow.state.phase != GamePhase.PLAYING) return;
-        if (shadow.config.disableChat) ci.cancel();
+        if (shadow.config.disableChat) {
+            serverPlayer.sendMessage(
+                TextUtil.withColour(
+                    "Chat is disabled this game",
+                    Formatting.GRAY
+                )
+            );
+            ci.cancel();
+        }
         
-        IndirectPlayer player = shadow.getIndirect(p);
-        if (!player.isLiving() && !p.hasPermissionLevel(3)) {
-            player.sendMessageOrThrow(
+        IndirectPlayer iPlayer = shadow.getIndirect(serverPlayer);
+        if (!iPlayer.isLiving() && !serverPlayer.hasPermissionLevel(3)) {
+            serverPlayer.sendMessage(
                 TextUtil.withColour(
                     "You are not alive so you cannot message",
                     Formatting.YELLOW
@@ -43,12 +51,12 @@ public class MessageCommandMixin {
             return;
         }
         
-        if (player.chatMessageCooldown > 0) {
-            player.sendMessageOrThrow(
+        if (iPlayer.chatMessageCooldown > 0) {
+            serverPlayer.sendMessage(
                 TextUtil.gray("You are still on chat cooldown for ")
                     .append(
                         TextUtil.withColour(
-                            TimeUtil.ticksToText(player.chatMessageCooldown, false),
+                            TimeUtil.ticksToText(iPlayer.chatMessageCooldown, false),
                             Formatting.YELLOW
                         )
                     )
@@ -58,6 +66,6 @@ public class MessageCommandMixin {
             return;
         }
         
-        player.chatMessageCooldown = shadow.config.chatMessageCooldown;
+        iPlayer.chatMessageCooldown = shadow.config.chatMessageCooldown;
     }
 }

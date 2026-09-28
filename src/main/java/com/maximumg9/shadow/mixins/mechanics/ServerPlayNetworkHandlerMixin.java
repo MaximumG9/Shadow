@@ -85,22 +85,27 @@ public abstract class ServerPlayNetworkHandlerMixin {
         
         if (shadow.state.phase != GamePhase.PLAYING) return;
         
-        if (shadow.config.disableChat) ci.cancel();
+        if (shadow.config.disableChat) {
+            this.player.sendMessage(
+                TextUtil.withColour("Chat is disabled this game", Formatting.GRAY)
+            );
+            ci.cancel();
+        }
         
-        IndirectPlayer p = shadow.getIndirect(this.player);
-        if (!p.isLiving() && !this.player.hasPermissionLevel(3)) {
-            p.sendMessageOrThrow(
+        IndirectPlayer iPlayer = shadow.getIndirect(this.player);
+        if (!iPlayer.isLiving() && !this.player.hasPermissionLevel(3)) {
+            this.player.sendMessage(
                 TextUtil.withColour("You are a spectator so you cannot chat", Formatting.YELLOW)
             );
             ci.cancel();
             return;
         }
-        if (p.chatMessageCooldown > 0) {
-            p.sendMessageOrThrow(
+        if (iPlayer.chatMessageCooldown > 0) {
+            this.player.sendMessage(
                 TextUtil.gray("You are still on chat cooldown for ")
                     .append(
                         TextUtil.withColour(
-                            TimeUtil.ticksToText(p.chatMessageCooldown, false),
+                            TimeUtil.ticksToText(iPlayer.chatMessageCooldown, false),
                             Formatting.YELLOW
                         )
                     )
@@ -109,6 +114,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
             ci.cancel();
             return;
         }
-        p.chatMessageCooldown = shadow.config.chatMessageCooldown;
+        iPlayer.chatMessageCooldown = shadow.config.chatMessageCooldown;
     }
 }

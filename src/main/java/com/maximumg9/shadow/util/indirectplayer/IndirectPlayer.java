@@ -443,6 +443,12 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
     public void changeGameModeOrThrow(GameMode gameMode) throws OfflinePlayerException {
         this.getPlayerOrThrow().changeGameMode(gameMode);
     }
+
+    public void sendCommandTreeIfOnline() {
+        this.getPlayer().ifPresent(
+            (p) -> p.server.getPlayerManager().sendCommandTree(p)
+        );
+    }
     
     public void scheduleUntil(Consumer<ServerPlayerEntity> task, Predicate<IndirectPlayer> cancelCondition) {
         Optional<ServerPlayerEntity> sPlayer = this.getPlayer();
