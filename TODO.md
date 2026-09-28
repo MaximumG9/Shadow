@@ -3,3 +3,6 @@
 - [ ] Save ability data
 - [ ] Make typed IDs for abilities and such
 - [ ] Change more GUIs to be SelectionRegistries
+- [ ] Redo Ender eyes
+- [ ] Save at better times
+- [ ] Makes GUIs work in spectator
