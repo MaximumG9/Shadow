@@ -194,6 +194,11 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
     
     public void readNBT(NbtCompound nbt) { }
 
+    public void fullInit() {
+        this.baseInit();
+        this.roleInit();
+    }
+
     public void roleInit() {
         this.abilities.forEach(Ability::init);
 
@@ -273,8 +278,6 @@ public abstract class Role implements ItemRepresentable, Saveable, Tickable {
             ),
             CancelPredicates.cancelOnPhaseChange(this.player.getShadow().state.phase)
         );
-
-        roleInit();
     }
 
     public void win() {

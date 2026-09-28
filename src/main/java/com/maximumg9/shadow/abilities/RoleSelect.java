@@ -53,6 +53,8 @@ public class RoleSelect extends Ability {
                     List<Role> availableRoles = selectionRegistry.get().stream().toList();
                     Role targetRole = availableRoles.get(Random.createLocal().nextBetween(0, availableRoles.size()-1));
 
+                    this.player.role.deInit();
+
                     this.player.role = targetRole.getRole().factory.makeRole(player);
                     this.player.role.roleInit();
                     selectionRegistry.remove(targetRole);
@@ -82,6 +84,7 @@ public class RoleSelect extends Ability {
                         return;
                     }
 
+                    this.player.role.deInit();
                     this.player.role = target.getRole().factory.makeRole(player);
                     this.player.role.roleInit();
                     selectionRegistry.remove(target);

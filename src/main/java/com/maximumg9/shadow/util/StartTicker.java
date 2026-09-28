@@ -64,11 +64,18 @@ public class StartTicker implements Tickable {
         if (!shadow.config.roleManager.pickRoles()) return;
         if (!shadow.config.modifierManager.pickModifiers()) return;
 
-        for (IndirectPlayer player : shadow.getOnlinePlayers()) {
 
+        // Get all players in a base initialized state
+        for(IndirectPlayer player : shadow.getOnlinePlayers()) {
             player.clearPlayerData(CancelPredicates.NEVER_CANCEL);
-
             player.role.baseInit();
+
+            player.frozen = false;
+        }
+
+        // Initialize role things
+        for (IndirectPlayer player : shadow.getOnlinePlayers()) {
+            player.role.roleInit();
             player.modifiers.forEach(Modifier::init);
             player.sendMessage(TextUtil.gray("Your modifiers: ").append(
                 player.modifiers.isEmpty() ? TextUtil.red("None") : Texts.join(
@@ -77,8 +84,6 @@ public class StartTicker implements Tickable {
                     Text.literal(", ").styled(style -> style.withColor(Formatting.GRAY))
                 )
             ), CancelPredicates.NEVER_CANCEL);
-
-            player.frozen = false;
 
             player.setTitleTimesOrThrow(10, 40, 10);
             player.sendTitleOrThrow(player.role.getName());

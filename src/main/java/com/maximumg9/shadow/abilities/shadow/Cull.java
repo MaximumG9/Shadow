@@ -74,7 +74,7 @@ public class Cull extends Ability {
                     .append(TextUtil.gray(" blocks of you")),
                 TextUtil.gray("For each non-shadow within range"),
                 TextUtil.gray("damage increases by ")
-                    .append(TextUtil.hearts(2)),
+                    .append(TextUtil.hearts(2.5f)),
                 TextUtil.gray("(max of ")
                     .append(TextUtil.hearts(9.5f))
                     .append(TextUtil.gray(")")),
@@ -111,7 +111,7 @@ public class Cull extends Ability {
             }
         );
         
-        float damage = Math.min(realTargets.size() * 4, 19);
+        float damage = realTargets.size() * 5;
         
         realTargets.forEach((player) ->
             player.damage(

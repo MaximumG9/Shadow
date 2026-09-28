@@ -80,7 +80,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.name = base.getNameForScoreboard();
         this.extraStorage = new NbtCompound();
 
-        getShadow().addTickable(Delay.instant(this.role::baseInit));
+        getShadow().addTickable(Delay.instant(this.role::fullInit));
     }
     
     IndirectPlayer(MinecraftServer server, UUID uuid) {
@@ -89,7 +89,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
         this.extraStorage = new NbtCompound();
         this.role = new Spectator(this);
 
-        getShadow().addTickable(Delay.instant(this.role::baseInit));
+        getShadow().addTickable(Delay.instant(this.role::fullInit));
     }
     
     @SuppressWarnings("CopyConstructorMissesField")
@@ -150,7 +150,7 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
             this.role = tempRole;
         } else {
             this.role = new Spectator(this);
-            getShadow().addTickable(Delay.instant(this.role::baseInit));
+            getShadow().addTickable(Delay.instant(this.role::fullInit));
         }
     }
 

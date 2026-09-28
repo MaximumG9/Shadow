@@ -59,7 +59,7 @@ public class DebugCommand {
 
                                             indirectPlayer.role = newRole;
 
-                                            indirectPlayer.role.baseInit();
+                                            indirectPlayer.role.fullInit();
 
                                             ctx.getSource().sendFeedback(
                                                 () ->
