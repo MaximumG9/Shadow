@@ -91,20 +91,6 @@ public class IndirectPlayer implements ItemRepresentable, Saveable {
 
         getShadow().addTickable(Delay.instant(this.role::fullInit));
     }
-    
-    @SuppressWarnings("CopyConstructorMissesField")
-    IndirectPlayer(IndirectPlayer src) {
-        this.playerUUID = src.playerUUID;
-        this.server = src.server;
-        this.role = src.role;
-        this.modifiers = src.modifiers;
-        this.participating = src.participating;
-        this.frozen = src.frozen;
-        this.name = src.getLiteralName();
-        this.chatMessageCooldown = src.chatMessageCooldown;
-        this.originalRole = src.originalRole;
-        this.extraStorage = src.extraStorage.copy();
-    }
 
     static UUID getUUIDForData(NbtCompound nbt) {
         return nbt.getUuid("playerUUID");

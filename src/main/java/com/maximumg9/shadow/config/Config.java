@@ -19,7 +19,7 @@ public class Config implements Saveable {
     public final RoleManager roleManager;
     public final ModifierManager modifierManager;
     public final MaxCooldownManager maxCooldownManager;
-    private final Path saveFile;
+    public final Path saveFile;
     
     public int worldBorderSize = 150;
     public int roleSlotCount = 25;
@@ -118,9 +118,5 @@ public class Config implements Saveable {
         NbtCompound compound = NbtIo.readCompressed(saveFile, new NbtSizeTracker(0xffffffffffffL, 256));
         if (compound == null) throw new FileNotFoundException("Could not find config file");
         this.readNBT(compound);
-    }
-    public void save() throws IOException {
-        NbtCompound data = this.writeNBT(new NbtCompound());
-        NbtIo.writeCompressed(data, this.saveFile);
     }
 }

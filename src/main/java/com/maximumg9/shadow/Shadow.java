@@ -20,6 +20,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.logging.LogUtils;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -39,6 +41,7 @@ import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -128,19 +131,6 @@ public class Shadow implements Tickable {
         ShadowChatCommand.register(dispatcher);
         ConfigCommand.register(dispatcher);
         LoveLetterCommand.register(dispatcher);
-    }
-    
-    private static void save(GameState state, IndirectPlayerManager playerManager, Config config) throws IOException {
-        FileWriter writer = new FileWriter(STATE_FILE);
-        DATA_GSON.toJson(
-            state,
-            GameState.class,
-            writer
-        );
-        writer.close();
-        
-        playerManager.save();
-        config.save();
     }
     
     public boolean isNight() {
@@ -391,13 +381,25 @@ public class Shadow implements Tickable {
         
         this.state.startTick = server.getOverworld().getTime();
     }
+
+    private static void save(GameState state, Path playerManagerPath, NbtCompound playerManagerData, Path configPath, NbtCompound configData) throws IOException {
+        FileWriter writer = new FileWriter(STATE_FILE);
+        DATA_GSON.toJson(
+            state,
+            GameState.class,
+            writer
+        );
+        writer.close();
+
+        NbtIo.writeCompressed(playerManagerData, playerManagerPath);
+
+        NbtIo.writeCompressed(configData, configPath);
+    }
     
     public void saveAsync() {
         LOGGER.info("Saving async...");
         
         GameState stateCopy = this.state.clone();
-        IndirectPlayerManager playerManagerCopy = new IndirectPlayerManager(this.indirectPlayerManager);
-        Config configCopy = this.config.copy(this);
 
         this.saveFutures.removeIf(Future::isDone);
 
@@ -405,7 +407,11 @@ public class Shadow implements Tickable {
         this.saveFutures.add((Future<Void>) Util.getIoWorkerExecutor().submit(
             () -> {
                 try {
-                    save(stateCopy, playerManagerCopy, configCopy);
+                    save(
+                        stateCopy,
+                        this.indirectPlayerManager.saveFile, this.indirectPlayerManager.writeNBT(new NbtCompound()),
+                        this.config.saveFile, this.config.writeNBT(new NbtCompound())
+                    );
                 } catch (IOException e) {
                     LOGGER.error("Error while saving data async", e);
                 }
@@ -424,7 +430,10 @@ public class Shadow implements Tickable {
     }
     
     public void saveSync() throws IOException {
-        save(this.state, this.indirectPlayerManager, this.config);
+        save(this.state,
+            this.indirectPlayerManager.saveFile, this.indirectPlayerManager.writeNBT(new NbtCompound()),
+            this.config.saveFile, this.config.writeNBT(new NbtCompound())
+        );
     }
     
     public void loadSync() throws IOException {

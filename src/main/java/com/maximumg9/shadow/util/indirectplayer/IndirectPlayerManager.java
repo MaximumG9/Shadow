@@ -29,18 +29,10 @@ public class IndirectPlayerManager implements Tickable, Saveable {
         GSON = builder.create();
     }
     
-    private final Path saveFile;
+    public final Path saveFile;
     private final HashMap<UUID, IndirectPlayer> indirectPlayers = new HashMap<>();
     private final MinecraftServer server;
     private final ArrayListDeque<IndirectPlayerTask> tasks = new ArrayListDeque<>();
-    
-    public IndirectPlayerManager(IndirectPlayerManager other) {
-        this.saveFile = other.saveFile;
-        this.server = other.server;
-        other.indirectPlayers.forEach(
-            (uuid, indirectPlayer) -> this.indirectPlayers.put(uuid, new IndirectPlayer(indirectPlayer))
-        );
-    }
     
     public IndirectPlayerManager(File saveFile, MinecraftServer server) {
         this.saveFile = saveFile.toPath();
@@ -67,11 +59,6 @@ public class IndirectPlayerManager implements Tickable, Saveable {
                 player.readNBT(indirectPlayerData);
             }
         }
-    }
-
-    public void save() throws IOException {
-        NbtCompound data = this.writeNBT(new NbtCompound());
-        NbtIo.writeCompressed(data, this.saveFile);
     }
 
     public NbtCompound writeNBT(NbtCompound nbt) {
